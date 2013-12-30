@@ -1,0 +1,14 @@
+name: MinigamesParty
+main: com.comze_instancelabs.minigamesparty.Main
+version: 1.0
+author: instancelabs
+permissions:
+  mparty.sign:
+    description: Gives access to create signs for joining games.
+commands:
+   mp:
+      description: Main command
+      usage: /mp [name]
+   minigamesparty:
+      description: Main command
+      usage: /minigamesparty [name]
