@@ -16,9 +16,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -33,6 +35,8 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import com.comze_instancelabs.minigamesparty.minigames.ColorMatch;
 import com.comze_instancelabs.minigamesparty.minigames.MineField;
 import com.comze_instancelabs.minigamesparty.minigames.Spleef;
+import com.comze_instancelabs.minigamesparty.nms.CraftMassBlockUpdate;
+import com.comze_instancelabs.minigamesparty.nms.MassBlockUpdate;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -103,6 +107,17 @@ public class Main extends JavaPlugin implements Listener {
 	
 	
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
+    	if(cmd.getName().equalsIgnoreCase("test")){
+    		Location s = new Location(Bukkit.getWorld("void"), 0, 1, 0);
+    		//ColorMatch.setBlockSuperFast(s.getWorld(), s.getWorld().getBlockAt(s), 35, (byte)1);
+    	
+    		final MassBlockUpdate mbu = CraftMassBlockUpdate.createMassBlockUpdater(this, s.getWorld());
+    		 
+    		mbu.setRelightingStrategy(MassBlockUpdate.RelightingStrategy.NEVER);
+    		
+    		mbu.setBlock(0, 1, 0, 35);
+    	}
+    	
     	if(cmd.getName().equalsIgnoreCase("minigamesparty") || cmd.getName().equalsIgnoreCase("mp")){
     		if(args.length > 0){
     			if(args[0].equalsIgnoreCase("setup")){
@@ -178,7 +193,7 @@ public class Main extends JavaPlugin implements Listener {
     	}
     	return false;
     }
-	
+
     
     //TODO: player quits and rejoins -> still in arena!
     @EventHandler
@@ -326,6 +341,20 @@ public class Main extends JavaPlugin implements Listener {
     		}else{
     			event.setCancelled(true);
     		}
+    	}
+    }
+    
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event){
+    	if(players.contains(event.getPlayer())){
+    		event.setCancelled(true);
+    	}
+    }
+    
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event){
+    	if(players.contains(((Player)event.getView()))){
+    		event.setCancelled(true);
     	}
     }
 	

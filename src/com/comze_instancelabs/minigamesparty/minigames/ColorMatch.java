@@ -1,24 +1,34 @@
 package com.comze_instancelabs.minigamesparty.minigames;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
+
+import net.minecraft.server.v1_7_R1.ChunkSection;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_7_R1.CraftChunk;
+import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 import org.bukkit.material.Wool;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.comze_instancelabs.minigamesparty.Main;
 import com.comze_instancelabs.minigamesparty.Minigame;
+import com.comze_instancelabs.minigamesparty.nms.CraftMassBlockUpdate;
+import com.comze_instancelabs.minigamesparty.nms.MassBlockUpdate;
 
 public class ColorMatch extends Minigame implements Listener{
 	
@@ -68,7 +78,7 @@ public class ColorMatch extends Minigame implements Listener{
 	long n = 0;
 	int currentw = 0;
 	@Override
-	public BukkitTask start(){
+	public BukkitTask start(){		
 		// setup ints arraylist
 		getAll(this.spawn);
 		
@@ -95,15 +105,16 @@ public class ColorMatch extends Minigame implements Listener{
 					p.updateInventory();
 				}
 				// remove all wools except current one
-				Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(m, new Runnable(){
+				Bukkit.getServer().getScheduler().runTaskLater(m, new Runnable(){
+				//Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(m, new Runnable(){
 					public void run(){
 						removeAllExceptOne(spawn, currentw);
 					}
 				}, 40L - n);
 				
 				
-				BukkitTask id = Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(m, new Runnable() {
-				//BukkitTask id = Bukkit.getServer().getScheduler().runTaskLater(m, new Runnable() {
+				//BukkitTask id = Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(m, new Runnable() {
+				BukkitTask id = Bukkit.getServer().getScheduler().runTaskLater(m, new Runnable() {
 					@Override
 					public void run(){
 						reset(spawn);
@@ -141,6 +152,10 @@ public class ColorMatch extends Minigame implements Listener{
 	
 	public static void reset(final Location start){
 		try{
+			final MassBlockUpdate mbu = CraftMassBlockUpdate.createMassBlockUpdater(m, start.getWorld());
+   		 
+    		mbu.setRelightingStrategy(MassBlockUpdate.RelightingStrategy.NEVER);
+    		
 			if(ints.size() < 1){
 				getAll(start);
 			}
@@ -148,6 +163,8 @@ public class ColorMatch extends Minigame implements Listener{
 			int x = start.getBlockX() - 32;
 			int y = start.getBlockY() - 2;
 			int z = start.getBlockZ() - 32;
+			
+			World w = start.getWorld();
 			
 			int current = 0;
 			int count = 0;
@@ -160,19 +177,29 @@ public class ColorMatch extends Minigame implements Listener{
 					//current = r.nextInt(colors.size());
 					current = ints.get(count);
 					count += 1;
-										
+					
 					for(int i_ = 0; i_ < 4; i_++){
 						for(int j_ = 0; j_ < 4; j_++){
-							Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x_ + i_, y, z_ + j_));
-							b.setType(Material.WOOL);
-							b.setData((byte)current);
+							//Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x_ + i_, y, z_ + j_));
+
+							mbu.setBlock(x_ + i_, y, z_ + j_, 35, current);
+							
+							//b.setTypeIdAndData(35, (byte)current, false);
+							
+							//setBlockFast(b, 35, (byte)current);
+							//setBlockSuperFast(w, b, 35, (byte)current);
+							//b.setType(Material.WOOL);
+							//b.setData((byte)current);
 						}
 					}
 				}
-			}	
+			}
+			
+			//sendClientChanges(start, test);
+			mbu.notifyClients();
 			
 		}catch (Exception e){
-			System.out.println(e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -183,7 +210,7 @@ public class ColorMatch extends Minigame implements Listener{
 				int x = start.getBlockX() - 32;
 				int y = start.getBlockY() - 2;
 				int z = start.getBlockZ() - 32;
-				
+
 				int current = 0;
 				
 				for(int i = 0; i < 16; i++){
@@ -210,6 +237,10 @@ public class ColorMatch extends Minigame implements Listener{
 	
 	
 	public void removeAllExceptOne(Location start, int exception){
+		final MassBlockUpdate mbu = CraftMassBlockUpdate.createMassBlockUpdater(m, start.getWorld());
+  		 
+		mbu.setRelightingStrategy(MassBlockUpdate.RelightingStrategy.NEVER);
+		
 		int x = start.getBlockX() - 32;
 		int y = start.getBlockY() - 2;
 		int z = start.getBlockZ() - 32;
@@ -219,9 +250,15 @@ public class ColorMatch extends Minigame implements Listener{
 			for(int j = 0; j < 64; j++){
 				Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x + i, y, z + j));
 				if(b.getData() != data){
-					b.setType(Material.AIR);
+					//b.setType(Material.AIR);
+					mbu.setBlock(x + i, y, z + j, 0);
 				}
 			}
 		}
+		
+		mbu.notifyClients();
 	}
+	
+
+
 }
