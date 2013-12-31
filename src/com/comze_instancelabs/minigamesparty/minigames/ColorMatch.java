@@ -82,9 +82,6 @@ public class ColorMatch extends Minigame implements Listener{
 		// setup ints arraylist
 		getAll(this.spawn);
 		
-		//TODO: "If you really want to use the async task and need to access the Bukkit API, you can call a synchronous task from an asynchronous one." 
-		
-		//TODO: try runTaskTimerAsync
 		final BukkitTask id__ = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(m, new Runnable() {
 			@Override
 			public void run(){
@@ -183,11 +180,7 @@ public class ColorMatch extends Minigame implements Listener{
 							//Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x_ + i_, y, z_ + j_));
 
 							mbu.setBlock(x_ + i_, y, z_ + j_, 35, current);
-							
-							//b.setTypeIdAndData(35, (byte)current, false);
-							
-							//setBlockFast(b, 35, (byte)current);
-							//setBlockSuperFast(w, b, 35, (byte)current);
+
 							//b.setType(Material.WOOL);
 							//b.setData((byte)current);
 						}

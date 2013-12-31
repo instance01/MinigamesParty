@@ -21,6 +21,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -33,6 +34,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
 import com.comze_instancelabs.minigamesparty.minigames.ColorMatch;
+import com.comze_instancelabs.minigamesparty.minigames.JumpnRun;
 import com.comze_instancelabs.minigamesparty.minigames.MineField;
 import com.comze_instancelabs.minigamesparty.minigames.Spleef;
 import com.comze_instancelabs.minigamesparty.nms.CraftMassBlockUpdate;
@@ -99,6 +101,9 @@ public class Main extends JavaPlugin implements Listener {
 					MineField mf = new MineField(m, m.getComponentForMinigame("MineField", "spawn"), m.getLobby(), m.getComponentForMinigame("MineField", "spectatorlobby"), m.getComponentForMinigame("MineField", "finishline"));
 					minigames.add(mf);
 					getServer().getPluginManager().registerEvents(mf, m);
+					JumpnRun jr = new JumpnRun(m, m.getComponentForMinigame("JumpnRun", "spawn"), m.getLobby(), m.getComponentForMinigame("JumpnRun", "spectatorlobby"), m.getComponentForMinigame("JumpnRun", "finishline"));
+					minigames.add(jr);
+					getServer().getPluginManager().registerEvents(jr, m);
 				}
 			}
 		}, 40);
@@ -353,10 +358,20 @@ public class Main extends JavaPlugin implements Listener {
     
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event){
-    	if(players.contains(((Player)event.getView()))){
+    	if(players.contains(((Player)event.getWhoClicked()))){
     		event.setCancelled(true);
     	}
     }
+    
+    @EventHandler
+    public void onDrop(PlayerDropItemEvent event) {
+    	if(players.contains(event.getPlayer())){
+			event.getItemDrop().remove();
+			event.setCancelled(true);
+    	}
+    }
+    
+    
 	
 	/*public void nextMinigame(Player p){
 		// get current minigame and make winners
@@ -514,9 +529,9 @@ public class Main extends JavaPlugin implements Listener {
 	public void updateScoreboard(int c){
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
 	    
-		boolean isMineFieldRunning = false;
-		if(minigames.get(currentmg).name.equalsIgnoreCase("MineField")){
-			isMineFieldRunning = true;
+		boolean isNeeded = false;
+		if(minigames.get(currentmg).name.equalsIgnoreCase("MineField") || minigames.get(currentmg).name.equalsIgnoreCase("JumpnRun")){
+			isNeeded = true;
 		}
 		
 	    for(Player p : players){
@@ -528,7 +543,7 @@ public class Main extends JavaPlugin implements Listener {
 	        objective.setDisplayName("[" + Integer.toString(currentmg + 1) + "/" + Integer.toString(minigames.size()) + "] [" + Integer.toString(c) + "]");
 
 	        for(Player p_ : players){
-	        	if(isMineFieldRunning){
+	        	if(isNeeded){
 	        		int score = p_.getLocation().getBlockZ() - minigames.get(currentmg).finish.getBlockZ();
 	        		if(currentscore.containsKey(p_)){
 	        			int oldscore = currentscore.get(p_);
@@ -718,11 +733,13 @@ public class Main extends JavaPlugin implements Listener {
 		ColorMatch.setup(start, this, "ColorMatch");
 		Spleef.setup(new Location(start.getWorld(), x, y, z + 64 + 20), this, "Spleef");
 		MineField.setup(new Location(start.getWorld(), x, y, z + 64 * 2 + 20 * 2), this, "MineField");
+		JumpnRun.setup(new Location(start.getWorld(), x, y, z + 64 * 3 + 20 * 3), this, "JumpnRun");
+		
 		/*
 		 * next minigame locations: (TODO FOR LATER USE)
 		 * 
 		 * new Location(start.getWorld(), x, y, z + 64 * 2 + 20 * 2) [MINEFIELD]
-		 * new Location(start.getWorld(), x, y, z + 64 * 3 + 20 * 3)
+		 * new Location(start.getWorld(), x, y, z + 64 * 3 + 20 * 3) [JUMPNRUN]
 		 * new Location(start.getWorld(), x + 64 + 20, y, z)
 		 * new Location(start.getWorld(), x + 64 * 2 + 20 * 2, y, z)
 		 * new Location(start.getWorld(), x + 64 * 3 + 20 * 3, y, z)
@@ -740,9 +757,10 @@ public class Main extends JavaPlugin implements Listener {
 		 */ 
 		
 		minigames.add(new ColorMatch(this, this.getComponentForMinigame("ColorMatch", "spawn"), this.getComponentForMinigame("ColorMatch", "lobby"), this.getComponentForMinigame("ColorMatch", "spectatorlobby")));
-		minigames.add(new ColorMatch(this, this.getComponentForMinigame("Spleef", "spawn"), this.getComponentForMinigame("Spleef", "lobby"), this.getComponentForMinigame("Spleef", "spectatorlobby")));
-		minigames.add(new ColorMatch(this, this.getComponentForMinigame("MineField", "spawn"), this.getComponentForMinigame("MineField", "lobby"), this.getComponentForMinigame("MineField", "spectatorlobby")));
-
+		minigames.add(new Spleef(this, this.getComponentForMinigame("Spleef", "spawn"), this.getComponentForMinigame("Spleef", "lobby"), this.getComponentForMinigame("Spleef", "spectatorlobby")));
+		minigames.add(new MineField(this, this.getComponentForMinigame("MineField", "spawn"), this.getComponentForMinigame("MineField", "lobby"), this.getComponentForMinigame("MineField", "spectatorlobby"), m.getComponentForMinigame("MineField", "finishline")));
+		minigames.add(new JumpnRun(this, this.getComponentForMinigame("JumpnRun", "spawn"), this.getComponentForMinigame("JumpnRun", "lobby"), this.getComponentForMinigame("JumpnRun", "spectatorlobby"), m.getComponentForMinigame("JumpnRun", "finishline")));
+	
 		
 		getLogger().info("Finished Setup");
 	}
