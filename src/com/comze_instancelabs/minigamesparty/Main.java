@@ -7,10 +7,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,6 +24,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -32,8 +37,10 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.util.BlockIterator;
 
 import com.comze_instancelabs.minigamesparty.minigames.ColorMatch;
+import com.comze_instancelabs.minigamesparty.minigames.DeadEnd;
 import com.comze_instancelabs.minigamesparty.minigames.JumpnRun;
 import com.comze_instancelabs.minigamesparty.minigames.MineField;
 import com.comze_instancelabs.minigamesparty.minigames.Spleef;
@@ -104,6 +111,9 @@ public class Main extends JavaPlugin implements Listener {
 					JumpnRun jr = new JumpnRun(m, m.getComponentForMinigame("JumpnRun", "spawn"), m.getLobby(), m.getComponentForMinigame("JumpnRun", "spectatorlobby"), m.getComponentForMinigame("JumpnRun", "finishline"));
 					minigames.add(jr);
 					getServer().getPluginManager().registerEvents(jr, m);
+					DeadEnd de = new DeadEnd(m, m.getComponentForMinigame("DeadEnd", "spawn"), m.getLobby(), m.getComponentForMinigame("DeadEnd", "spectatorlobby"));
+					minigames.add(de);
+					getServer().getPluginManager().registerEvents(de, m);
 				}
 			}
 		}, 40);
@@ -277,6 +287,13 @@ public class Main extends JavaPlugin implements Listener {
 					final Minigame current = minigames.get(currentmg);
 					if(!current.lost.contains(event.getPlayer())){
 						if(started){
+							if(current.name.equalsIgnoreCase("DeadEnd")){
+								World w = event.getPlayer().getWorld();
+								Location under = new Location(w, event.getPlayer().getLocation().getBlockX(), event.getPlayer().getLocation().getBlockY() - 1, event.getPlayer().getLocation().getBlockZ());
+								if(w.getBlockAt(under).getType() == Material.LAPIS_BLOCK){
+									w.getBlockAt(under).setType(Material.AIR);
+								}
+							}
 							if(event.getPlayer().getLocation().getBlockY() + 2 < current.spawn.getBlockY()){
 								if(current.name.equalsIgnoreCase("JumpnRun")){
 									final Player p = event.getPlayer();
@@ -380,6 +397,37 @@ public class Main extends JavaPlugin implements Listener {
     	}
     }
     
+    @EventHandler
+    public void onSnowballLand(ProjectileHitEvent e) {   
+        if (e.getEntity().getShooter() instanceof Player) {
+            if (e.getEntity() instanceof Snowball) {
+                    
+                Player player = (Player) e.getEntity().getShooter();
+                if(players.contains(player)){
+	            	BlockIterator bi = new BlockIterator(e.getEntity().getWorld(), e.getEntity().getLocation().toVector(), e.getEntity().getVelocity().normalize(), 0.0D, 4);
+	                Block hit = null;
+	                while (bi.hasNext()) {
+	                        hit = bi.next();
+	                        if (hit.getTypeId() != 0) {
+	                                break;
+	                        }
+	                }
+	                
+	                if (hit.getLocation().getBlockY() < minigames.get(currentmg).spawn.getBlockY() && hit.getType() == Material.SNOW_BLOCK) {
+	
+	                    hit.setTypeId(0);
+	                    
+	                    player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1F, 1F);
+	                    /*for (Player sp : players) {
+	                    	
+	                            sp.getPlayer().playEffect(new Location(hit.getWorld(), hit.getLocation().getBlockX(), hit.getLocation().getBlockY() + 1.0D, hit.getLocation().getBlockZ()), Effect.MOBSPAWNER_FLAMES, 25);
+	                    }*/
+	    
+	                }	
+            	}
+            }
+        }
+    }
     
 	
 	/*public void nextMinigame(Player p){
@@ -678,7 +726,12 @@ public class Main extends JavaPlugin implements Listener {
 		
 		currentmg = 0;
 		
-		resetAll();
+		Bukkit.getScheduler().runTask(this, new Runnable(){
+			public void run(){
+				resetAll();
+			}
+		});
+		
 	}
 	
 	public void stopFull(){
@@ -696,7 +749,11 @@ public class Main extends JavaPlugin implements Listener {
 		players.clear();
 		currentmg = 0;
 		
-		resetAll();
+		Bukkit.getScheduler().runTask(this, new Runnable(){
+			public void run(){
+				resetAll();
+			}
+		});
 	}
 	
 	public Location getLobby(){
@@ -745,13 +802,14 @@ public class Main extends JavaPlugin implements Listener {
 		Spleef.setup(new Location(start.getWorld(), x, y, z + 64 + 20), this, "Spleef");
 		MineField.setup(new Location(start.getWorld(), x, y, z + 64 * 2 + 20 * 2), this, "MineField");
 		JumpnRun.setup(new Location(start.getWorld(), x, y, z + 64 * 3 + 20 * 3), this, "JumpnRun");
+		DeadEnd.setup(new Location(start.getWorld(), x + 64 + 20, y, z), this, "DeadEnd");
 		
 		/*
 		 * next minigame locations: (TODO FOR LATER USE)
 		 * 
 		 * new Location(start.getWorld(), x, y, z + 64 * 2 + 20 * 2) [MINEFIELD]
 		 * new Location(start.getWorld(), x, y, z + 64 * 3 + 20 * 3) [JUMPNRUN]
-		 * new Location(start.getWorld(), x + 64 + 20, y, z)
+		 * new Location(start.getWorld(), x + 64 + 20, y, z) [DEADEND]
 		 * new Location(start.getWorld(), x + 64 * 2 + 20 * 2, y, z)
 		 * new Location(start.getWorld(), x + 64 * 3 + 20 * 3, y, z)
 		 * 
@@ -767,11 +825,12 @@ public class Main extends JavaPlugin implements Listener {
 		 * IMPORTANT: LOBBY SPAWN MUST BE ABOVE SPAWNS!
 		 */ 
 		
+		minigames.clear();
 		minigames.add(new ColorMatch(this, this.getComponentForMinigame("ColorMatch", "spawn"), this.getComponentForMinigame("ColorMatch", "lobby"), this.getComponentForMinigame("ColorMatch", "spectatorlobby")));
 		minigames.add(new Spleef(this, this.getComponentForMinigame("Spleef", "spawn"), this.getComponentForMinigame("Spleef", "lobby"), this.getComponentForMinigame("Spleef", "spectatorlobby")));
 		minigames.add(new MineField(this, this.getComponentForMinigame("MineField", "spawn"), this.getComponentForMinigame("MineField", "lobby"), this.getComponentForMinigame("MineField", "spectatorlobby"), m.getComponentForMinigame("MineField", "finishline")));
 		minigames.add(new JumpnRun(this, this.getComponentForMinigame("JumpnRun", "spawn"), this.getComponentForMinigame("JumpnRun", "lobby"), this.getComponentForMinigame("JumpnRun", "spectatorlobby"), m.getComponentForMinigame("JumpnRun", "finishline")));
-	
+		minigames.add(new DeadEnd(this, this.getComponentForMinigame("DeadEnd", "spawn"), this.getComponentForMinigame("DeadEnd", "lobby"), this.getComponentForMinigame("DeadEnd", "spectatorlobby")));
 		
 		getLogger().info("Finished Setup");
 	}
@@ -779,7 +838,9 @@ public class Main extends JavaPlugin implements Listener {
 	public void resetAll(){
 		ColorMatch.reset(this.getComponentForMinigame("ColorMatch", "spawn"));
 		Spleef.reset(this.getComponentForMinigame("Spleef", "spawn"));
-		MineField.reset(this.getComponentForMinigame("MineField", "spawn"));
+		Location t = this.getComponentForMinigame("MineField", "spawn");
+		MineField.reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
+		DeadEnd.reset(this.getComponentForMinigame("DeadEnd", "spawn"));
 	}
 
 }
