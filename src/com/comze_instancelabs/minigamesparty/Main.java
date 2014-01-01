@@ -274,10 +274,19 @@ public class Main extends JavaPlugin implements Listener {
 		try{
 			if(m.players.contains(event.getPlayer())){
 				if(currentmg > -1){
-					Minigame current = minigames.get(currentmg);
+					final Minigame current = minigames.get(currentmg);
 					if(!current.lost.contains(event.getPlayer())){
 						if(started){
 							if(event.getPlayer().getLocation().getBlockY() + 2 < current.spawn.getBlockY()){
+								if(current.name.equalsIgnoreCase("JumpnRun")){
+									final Player p = event.getPlayer();
+									Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
+										public void run(){
+											p.teleport(current.spawn);
+										}
+									}, 5);
+									return;
+								}
 								current.lost.add(event.getPlayer());
 								current.spectate(event.getPlayer());
 							}
@@ -355,7 +364,7 @@ public class Main extends JavaPlugin implements Listener {
     		event.setCancelled(true);
     	}
     }
-    
+
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event){
     	if(players.contains(((Player)event.getWhoClicked()))){
@@ -469,8 +478,11 @@ public class Main extends JavaPlugin implements Listener {
 
 	public BukkitTask nextMinigame(){
 		if(currentmg > -1){
-			minigames.get(currentmg).getWinner();	
+			minigames.get(currentmg).getWinner();
+			//TODO: add winners for score based minigames like MineField or JumpnRun
+			// get top three of players who got most far
 		}
+		currentscore.clear();
 		if(currentmg < minigames.size() - 1){
 			currentmg += 1;
 		}else{
@@ -665,11 +677,8 @@ public class Main extends JavaPlugin implements Listener {
 		remove.clear();
 		
 		currentmg = 0;
-		 
-		// reset all:
-		ColorMatch.reset(this.getComponentForMinigame("ColorMatch", "spawn"));
-		Spleef.reset(this.getComponentForMinigame("Spleef", "spawn"));
-		MineField.reset(this.getComponentForMinigame("MineField", "spawn"));
+		
+		resetAll();
 	}
 	
 	public void stopFull(){
@@ -686,6 +695,8 @@ public class Main extends JavaPlugin implements Listener {
 		started = false;
 		players.clear();
 		currentmg = 0;
+		
+		resetAll();
 	}
 	
 	public Location getLobby(){
@@ -763,6 +774,12 @@ public class Main extends JavaPlugin implements Listener {
 	
 		
 		getLogger().info("Finished Setup");
+	}
+	
+	public void resetAll(){
+		ColorMatch.reset(this.getComponentForMinigame("ColorMatch", "spawn"));
+		Spleef.reset(this.getComponentForMinigame("Spleef", "spawn"));
+		MineField.reset(this.getComponentForMinigame("MineField", "spawn"));
 	}
 
 }
