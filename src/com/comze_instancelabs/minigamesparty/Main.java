@@ -1,5 +1,6 @@
 package com.comze_instancelabs.minigamesparty;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -117,6 +118,26 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}
 		}, 40);
+		
+		getConfig().options().header("I recommend you to set auto_updating to true for possible future bugfixes.");
+		getConfig().addDefault("config.auto_updating", true);
+		/*getConfig().addDefault("config.rounds_per_game", 10);
+		getConfig().addDefault("config.min_players", 4);
+		getConfig().addDefault("config.use_economy", true);
+		getConfig().addDefault("config.money_reward", 30);
+		getConfig().addDefault("config.itemid", 264); // diamond
+		getConfig().addDefault("config.itemamount", 1);*/
+		getConfig().options().copyDefaults(true);
+		this.saveConfig();
+		
+		try{
+			Metrics metrics = new Metrics(this);
+			metrics.start();
+		} catch (IOException e) { }
+		
+		if(getConfig().getBoolean("config.auto_updating")){
+        	Updater updater = new Updater(this, 71596, this.getFile(), Updater.UpdateType.DEFAULT, false);
+        }
 	}
 	
 	
@@ -326,7 +347,7 @@ public class Main extends JavaPlugin implements Listener {
 										//p.getLocation().setPitch(c);
 									}
 								}, 5);
-							}	
+							}
 						}
 					}	
 				}
