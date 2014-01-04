@@ -3,6 +3,7 @@ package com.comze_instancelabs.minigamesparty;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -188,8 +189,15 @@ public class Main extends JavaPlugin implements Listener {
 	    				}
     				}
     			}else if(args[0].equalsIgnoreCase("stats")){
-    				sender.sendMessage("§3-- §6Statistics §3--");
-    				//TODO: add statistics
+    				if(sender instanceof Player){
+	    				sender.sendMessage("§3-- §6Statistics §3--");
+	    				if(args.length > 1){
+	    					String player = args[1];
+	    					sender.sendMessage("§2You have " + Integer.toString(this.getPlayerStats(player, "credits")) + " Credits.");
+	    				}else{
+	    					sender.sendMessage("§2You have " + Integer.toString(this.getPlayerStats(sender.getName(), "credits")) + " Credits.");
+	    				}
+    				}
     			}else if(args[0].equalsIgnoreCase("list")){
     				sender.sendMessage("§3-- §6Minigames: §3--");
     				for(Minigame m : minigames){
@@ -471,6 +479,12 @@ public class Main extends JavaPlugin implements Listener {
 	public void win(Player p){
 		//TODO: add winning of stars and statistics and scoreboard
 		p.sendMessage("§6You won this round!");
+		this.updatePlayerStats(p.getName(), "wins", getPlayerStats(p.getName(), "wins") + 1);
+		Random r = new Random();
+		int reward = r.nextInt(21) + 10; // between 10 and 30
+		this.updatePlayerStats(p.getName(), "credits", getPlayerStats(p.getName(), "credits") + reward);		
+		
+		updateScoreboardOUTGAME(p.getName());
 	}
 	
 	
@@ -646,6 +660,23 @@ public class Main extends JavaPlugin implements Listener {
 	    }
 	}
 	
+	
+	public void updateScoreboardOUTGAME(String player){
+		ScoreboardManager manager = Bukkit.getScoreboardManager();
+
+		Player p = Bukkit.getPlayer(player);
+		
+		Scoreboard board = manager.getNewScoreboard();
+    	
+    	Objective objective = board.registerNewObjective("test", "dummy");
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+        objective.setDisplayName("§6MinigamesParty!");
+
+        objective.getScore(Bukkit.getOfflinePlayer("Credits")).setScore(this.getPlayerStats(player, "credits"));
+
+        p.setScoreboard(board);
+	}
 	
 	
 	 /*public void start(){
@@ -862,6 +893,25 @@ public class Main extends JavaPlugin implements Listener {
 		Location t = this.getComponentForMinigame("MineField", "spawn");
 		MineField.reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
 		DeadEnd.reset(this.getComponentForMinigame("DeadEnd", "spawn"));
+	}
+	
+
+	/***
+	 * saves player statistics
+	 * @param player
+	 * @param component component to be updated; can be "wins" or "credits"
+	 * @param value value to be saved
+	 */
+	public void updatePlayerStats(String player, String component, int value){
+		getConfig().set(player + "." + component, value);
+	}
+	
+	public int getPlayerStats(String player, String component){
+		int ret = 0;
+		if(getConfig().isSet(player + "." + component)){
+			ret = getConfig().getInt(player + "." + component);
+		}
+		return ret;
 	}
 
 }
