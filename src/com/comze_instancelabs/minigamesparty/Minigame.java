@@ -8,6 +8,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.comze_instancelabs.minigamesparty.minigames.MinigameUtil;
+
 public class Minigame {
 	
 	public ArrayList<Player> lost = new ArrayList<Player>();
@@ -52,7 +54,7 @@ public class Minigame {
 				p.setGameMode(GameMode.SURVIVAL);
 				p.setAllowFlight(false);
 				p.setFlying(false);
-				p.sendMessage("§6You are playing §2" + name + "§6!");
+				p.sendMessage(MinigameUtil.nowPlaying(name));
 			}
 		}, 5);
 	}

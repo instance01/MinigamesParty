@@ -175,7 +175,7 @@ public class Main extends JavaPlugin implements Listener {
 	    				getConfig().set("lobby.location.y", p.getLocation().getBlockY());
 	    				getConfig().set("lobby.location.z", p.getLocation().getBlockZ());
 	    				this.saveConfig();
-	    				p.sendMessage("§2Saved Main lobby.");	
+	    				p.sendMessage(ChatColor.GREEN + "Saved Main lobby.");	
     				}
     			}else if(args[0].equalsIgnoreCase("setcomponent")){
     				// /mp setcomponent [minigame] [component]
@@ -183,25 +183,25 @@ public class Main extends JavaPlugin implements Listener {
     					Player p = (Player)sender;
 	    				if(args.length > 2){
 	    					this.saveComponentForMinigame(args[1], args[2], p.getLocation());
-	    					p.sendMessage("§2Saved component");
+	    					p.sendMessage(ChatColor.GREEN + "Saved component");
 	    				}else{
-	    					p.sendMessage("§3Possible components: spectatorlobby, spawn");
+	    					p.sendMessage(ChatColor.DARK_AQUA + "Possible components: spectatorlobby, spawn");
 	    				}
     				}
     			}else if(args[0].equalsIgnoreCase("stats")){
     				if(sender instanceof Player){
-	    				sender.sendMessage("§3-- §6Statistics §3--");
+	    				sender.sendMessage(ChatColor.DARK_AQUA + "-- " + ChatColor.GOLD + "Statistics " + ChatColor.DARK_AQUA + "--");
 	    				if(args.length > 1){
 	    					String player = args[1];
-	    					sender.sendMessage("§2You have " + Integer.toString(this.getPlayerStats(player, "credits")) + " Credits.");
+	    					sender.sendMessage(ChatColor.GREEN + "You have " + Integer.toString(this.getPlayerStats(player, "credits")) + " Credits.");
 	    				}else{
-	    					sender.sendMessage("§2You have " + Integer.toString(this.getPlayerStats(sender.getName(), "credits")) + " Credits.");
+	    					sender.sendMessage(ChatColor.GREEN + "You have " + Integer.toString(this.getPlayerStats(sender.getName(), "credits")) + " Credits.");
 	    				}
     				}
     			}else if(args[0].equalsIgnoreCase("list")){
-    				sender.sendMessage("§3-- §6Minigames: §3--");
+    				sender.sendMessage(ChatColor.DARK_AQUA + "-- " + ChatColor.GOLD + "Minigames: " + ChatColor.DARK_AQUA + "--");
     				for(Minigame m : minigames){
-    					sender.sendMessage("§3" + m.name);
+    					sender.sendMessage(ChatColor.DARK_AQUA + m.name);
     				}
     			}else if(args[0].equalsIgnoreCase("leave")){
     				final Player p = (Player)sender;
@@ -219,18 +219,18 @@ public class Main extends JavaPlugin implements Listener {
     					minigames.get(currentmg).leave(p);
     				}
     				players.remove(p);
-    				p.sendMessage("§cYou left the game.");
+    				p.sendMessage(ChatColor.RED + "You left the game.");
     				if(players.size() < min_players){
     					stopFull();
     				}
     			}else{
-    				sender.sendMessage("§3Help: ");
-    				sender.sendMessage("§3/mp setlobby");
-    				sender.sendMessage("§3/mp setup");
-    				sender.sendMessage("§3/mp stats");
-    				sender.sendMessage("§3/mp list");
-    				sender.sendMessage("§3/mp leave");
-    				sender.sendMessage("§3/mp setcomponent");
+    				sender.sendMessage(ChatColor.DARK_AQUA + "Help: ");
+    				sender.sendMessage(ChatColor.DARK_AQUA + "/mp setlobby");
+    				sender.sendMessage(ChatColor.DARK_AQUA + "/mp setup");
+    				sender.sendMessage(ChatColor.DARK_AQUA + "/mp stats");
+    				sender.sendMessage(ChatColor.DARK_AQUA + "/mp list");
+    				sender.sendMessage(ChatColor.DARK_AQUA + "/mp leave");
+    				sender.sendMessage(ChatColor.DARK_AQUA + "/mp setcomponent");
     			}
     		}
     		return true;
@@ -260,9 +260,9 @@ public class Main extends JavaPlugin implements Listener {
 		    	if (event.getClickedBlock().getType() == Material.SIGN_POST || event.getClickedBlock().getType() == Material.WALL_SIGN)
 		        {
 		            final Sign s = (Sign) event.getClickedBlock().getState();
-	                if (s.getLine(1).equalsIgnoreCase(ChatColor.BOLD + "§5[PARTY]")){
+	                if (s.getLine(1).equalsIgnoreCase(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + "[PARTY]")){
 	                	if(players.contains(event.getPlayer())){
-	                		event.getPlayer().sendMessage("§6You can leave with /mp leave");
+	                		event.getPlayer().sendMessage(ChatColor.GOLD + "Use /mp leave to leave!");
 	                	}else{
 		                	players.add(event.getPlayer());
 		                	// if its the first player to join, start the whole minigame
@@ -303,7 +303,7 @@ public class Main extends JavaPlugin implements Listener {
         if(event.getLine(0).toLowerCase().contains("[party]") || event.getLine(1).toLowerCase().contains("[party]")){
         	if(event.getPlayer().hasPermission("mp.sign")){
         		event.setLine(0, "");
-	        	event.setLine(1, ChatColor.BOLD + "§5[PARTY]");
+	        	event.setLine(1, ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + "[PARTY]");
         	}
         }
 	}
@@ -478,7 +478,7 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public void win(Player p){
 		//TODO: add winning of stars and statistics and scoreboard
-		p.sendMessage("§6You won this round!");
+		p.sendMessage(ChatColor.GOLD + "You won this round!");
 		this.updatePlayerStats(p.getName(), "wins", getPlayerStats(p.getName(), "wins") + 1);
 		Random r = new Random();
 		int reward = r.nextInt(21) + 10; // between 10 and 30
@@ -515,7 +515,7 @@ public class Main extends JavaPlugin implements Listener {
 			for(Player p : players){
 				if(p.isOnline()){
 					minigames.get(minigames.size() - 1).leave(p);
-					p.sendMessage("§6Next round in 30 seconds!");
+					p.sendMessage(ChatColor.GOLD + "Next round in 30 seconds!");
 					p.getInventory().clear();
 					p.updateInventory();
 				}else{
@@ -671,7 +671,7 @@ public class Main extends JavaPlugin implements Listener {
     	Objective objective = board.registerNewObjective("test", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        objective.setDisplayName("§6MinigamesParty!");
+        objective.setDisplayName(ChatColor.GOLD + "MinigamesParty!");
 
         objective.getScore(Bukkit.getOfflinePlayer("Credits")).setScore(this.getPlayerStats(player, "credits"));
 
@@ -761,7 +761,7 @@ public class Main extends JavaPlugin implements Listener {
 		for(Player p : players){
 			if(p.isOnline()){
 				minigames.get(minigames.size() - 1).leave(p);
-				p.sendMessage("§6Next round in 30 seconds!");
+				p.sendMessage(ChatColor.GOLD + "Next round in 30 seconds!");
 				p.getInventory().clear();
 				p.updateInventory();
 			}else{
@@ -792,7 +792,7 @@ public class Main extends JavaPlugin implements Listener {
 		for(Player p : players){
 			if(p.isOnline()){
 				minigames.get(minigames.size() - 1).leave(p);
-				p.sendMessage("§4Stopping minigame.");
+				p.sendMessage(ChatColor.DARK_RED + "Stopping minigame.");
 			}
 		}
 		
@@ -913,5 +913,7 @@ public class Main extends JavaPlugin implements Listener {
 		}
 		return ret;
 	}
+	
+	
 
 }
