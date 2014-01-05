@@ -100,7 +100,7 @@ public class Main extends JavaPlugin implements Listener {
 		int id = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			@Override
 			public void run(){
-				if(isValidMinigame("ColorMatch") && isValidMinigame("Spleef") && isValidMinigame("MineField")){
+				if(isValidMinigame("ColorMatch") && isValidMinigame("Spleef") && isValidMinigame("MineField") && isValidMinigame("JumpnRun") && isValidMinigame("DeadEnd")){
 					ColorMatch cm = new ColorMatch(m, m.getComponentForMinigame("ColorMatch", "spawn"), m.getLobby(), m.getComponentForMinigame("ColorMatch", "spectatorlobby"));
 					minigames.add(cm);
 					getServer().getPluginManager().registerEvents(cm, m);
@@ -122,14 +122,11 @@ public class Main extends JavaPlugin implements Listener {
 		
 		getConfig().options().header("I recommend you to set auto_updating to true for possible future bugfixes.");
 		getConfig().addDefault("config.auto_updating", true);
-		/*getConfig().addDefault("config.rounds_per_game", 10);
-		getConfig().addDefault("config.min_players", 4);
-		getConfig().addDefault("config.use_economy", true);
-		getConfig().addDefault("config.money_reward", 30);
-		getConfig().addDefault("config.itemid", 264); // diamond
-		getConfig().addDefault("config.itemamount", 1);*/
+		getConfig().addDefault("config.min_players", 1);
 		getConfig().options().copyDefaults(true);
 		this.saveConfig();
+		
+		min_players = getConfig().getInt("config.min_players");
 		
 		try{
 			Metrics metrics = new Metrics(this);
@@ -143,18 +140,7 @@ public class Main extends JavaPlugin implements Listener {
 	
 	
 	
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
-    	if(cmd.getName().equalsIgnoreCase("test")){
-    		Location s = new Location(Bukkit.getWorld("void"), 0, 1, 0);
-    		//ColorMatch.setBlockSuperFast(s.getWorld(), s.getWorld().getBlockAt(s), 35, (byte)1);
-    	
-    		final MassBlockUpdate mbu = CraftMassBlockUpdate.createMassBlockUpdater(this, s.getWorld());
-    		 
-    		mbu.setRelightingStrategy(MassBlockUpdate.RelightingStrategy.NEVER);
-    		
-    		mbu.setBlock(0, 1, 0, 35);
-    	}
-    	
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){    	
     	if(cmd.getName().equalsIgnoreCase("minigamesparty") || cmd.getName().equalsIgnoreCase("mp")){
     		if(args.length > 0){
     			if(args[0].equalsIgnoreCase("setup")){
@@ -477,7 +463,6 @@ public class Main extends JavaPlugin implements Listener {
 	}*/
 	
 	public void win(Player p){
-		//TODO: add winning of stars and statistics and scoreboard
 		p.sendMessage(ChatColor.GOLD + "You won this round!");
 		this.updatePlayerStats(p.getName(), "wins", getPlayerStats(p.getName(), "wins") + 1);
 		Random r = new Random();
@@ -844,7 +829,6 @@ public class Main extends JavaPlugin implements Listener {
 		return false;
 	}
 	
-	@Deprecated
 	public void setupAll(Location start){
 		int x = start.getBlockX();
 		int y = start.getBlockY();

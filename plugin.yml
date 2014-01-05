@@ -12,6 +12,3 @@ commands:
    minigamesparty:
       description: Main command
       usage: /minigamesparty [name]
-   test:
-      description: Test command
-      usage: /test
