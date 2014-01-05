@@ -3,6 +3,7 @@ package com.comze_instancelabs.minigamesparty.minigames;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -29,7 +30,7 @@ public class JumpnRun extends Minigame implements Listener{
 				p.setGameMode(GameMode.SURVIVAL);
 				p.setAllowFlight(false);
 				p.setFlying(false);
-				p.sendMessage("§6You are playing §2" + name + "§6!");
+				p.sendMessage(MinigameUtil.nowPlaying(name));
 				
 				p.getInventory().clear();
 				p.updateInventory();
@@ -52,9 +53,9 @@ public class JumpnRun extends Minigame implements Listener{
 		Block s = start.getWorld().getBlockAt(new Location(start.getWorld(), start.getBlockX(), y + 1, start.getBlockZ() - 30));
 		s.setType(Material.SIGN_POST);
 		Sign sign = (Sign)s.getState();
-		sign.setLine(0, "§lNow go build");
-		sign.setLine(1, "§la nice");
-		sign.setLine(2, "§lJumpnRun!");
+		sign.setLine(0, ChatColor.BOLD + "Now go build");
+		sign.setLine(1, ChatColor.BOLD + "a nice");
+		sign.setLine(2, ChatColor.BOLD + "JumpnRun!");
 		sign.update();
 		
 		Random r = new Random();
