@@ -44,6 +44,7 @@ public class ColorMatch extends Minigame implements Listener{
 	public static void setup(Location start, Main main, String name_){
 		int x = start.getBlockX() - 32;
 		int y = start.getBlockY();
+		int y_ = start.getBlockY() - 4;
 		int z = start.getBlockZ() - 32;
 		
 		main.saveComponentForMinigame(name_, "spawn", new Location(start.getWorld(), start.getBlockX(), y + 2, start.getBlockZ()));
@@ -51,8 +52,6 @@ public class ColorMatch extends Minigame implements Listener{
 		main.saveComponentForMinigame(name_, "lobby", main.getLobby());
 		
 		int current = 0;
-		int temp = 4;
-		boolean cont = false;
 		
 		for(int i = 0; i < 16; i++){
 			for(int j = 0; j < 16; j++){
@@ -65,6 +64,8 @@ public class ColorMatch extends Minigame implements Listener{
 				for(int i_ = 0; i_ < 4; i_++){
 					for(int j_ = 0; j_ < 4; j_++){
 						Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x_ + i_, y, z_ + j_));
+						Block b_ = start.getWorld().getBlockAt(new Location(start.getWorld(), x_ + i_, y_, z_ + j_));
+						b_.setType(Material.GLOWSTONE);
 						b.setType(Material.WOOL);
 						b.setData(colors.get(current).getData());
 					}
@@ -74,7 +75,6 @@ public class ColorMatch extends Minigame implements Listener{
 	}
 	
 	
-	//TODO CHANGE SYNC TO ASYNC
 	long n = 0;
 	int currentw = 0;
 	@Override
@@ -159,6 +159,7 @@ public class ColorMatch extends Minigame implements Listener{
 			
 			int x = start.getBlockX() - 32;
 			int y = start.getBlockY() - 2;
+			int y_ = start.getBlockY() - 6;
 			int z = start.getBlockZ() - 32;
 			
 			World w = start.getWorld();
@@ -180,7 +181,8 @@ public class ColorMatch extends Minigame implements Listener{
 							//Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x_ + i_, y, z_ + j_));
 
 							mbu.setBlock(x_ + i_, y, z_ + j_, 35, current);
-
+							mbu.setBlock(x_ + i_, y_, z_ + j_, 89);
+							
 							//b.setType(Material.WOOL);
 							//b.setData((byte)current);
 						}
