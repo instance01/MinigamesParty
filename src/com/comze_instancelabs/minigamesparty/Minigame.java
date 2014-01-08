@@ -31,7 +31,8 @@ public class Minigame {
 	}
 	
 	public void getWinner(){
-		for(Player p : m.players){
+		for(String pl : m.players){
+			Player p = Bukkit.getPlayerExact(pl);
 			if(p.isOnline()){
 				if(!lost.contains(p)){
 					m.win(p);

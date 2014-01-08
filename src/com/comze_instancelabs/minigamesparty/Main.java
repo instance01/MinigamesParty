@@ -46,8 +46,6 @@ import com.comze_instancelabs.minigamesparty.minigames.DeadEnd;
 import com.comze_instancelabs.minigamesparty.minigames.JumpnRun;
 import com.comze_instancelabs.minigamesparty.minigames.MineField;
 import com.comze_instancelabs.minigamesparty.minigames.Spleef;
-import com.comze_instancelabs.minigamesparty.nms.CraftMassBlockUpdate;
-import com.comze_instancelabs.minigamesparty.nms.MassBlockUpdate;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -83,8 +81,8 @@ public class Main extends JavaPlugin implements Listener {
 	 */
 	
 	public ArrayList<Minigame> minigames = new ArrayList<Minigame>();
-	public ArrayList<Player> players = new ArrayList<Player>();
-	public HashMap<Player, ItemStack[]> pinv = new HashMap<Player, ItemStack[]>();
+	public ArrayList<String> players = new ArrayList<String>();
+	public HashMap<String, ItemStack[]> pinv = new HashMap<String, ItemStack[]>();
 	
 	public int min_players = 1; //TODO: increment to more like 2 or 3
 	public boolean running = false;
@@ -95,7 +93,7 @@ public class Main extends JavaPlugin implements Listener {
 	
 	@Override
 	public void onEnable(){
-		getServer().getPluginManager().registerEvents(this, this);
+		Bukkit.getServer().getPluginManager().registerEvents(this, this);
 		m = this;
 		int id = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			@Override
@@ -142,6 +140,12 @@ public class Main extends JavaPlugin implements Listener {
 	
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){    	
     	if(cmd.getName().equalsIgnoreCase("minigamesparty") || cmd.getName().equalsIgnoreCase("mp")){
+    		
+    		if (!(sender instanceof Player)) {
+    			sender.sendMessage("You must be a player to run this command.");
+    			return true;
+    		}
+    		
     		if(args.length > 0){
     			if(args[0].equalsIgnoreCase("setup")){
     				// setup all arenas and spawns and lobbies and spectatorlobbies and what not
@@ -250,14 +254,14 @@ public class Main extends JavaPlugin implements Listener {
 	                	if(players.contains(event.getPlayer())){
 	                		event.getPlayer().sendMessage(ChatColor.GOLD + "Use /mp leave to leave!");
 	                	}else{
-		                	players.add(event.getPlayer());
+		                	players.add(event.getPlayer().getName());
 		                	// if its the first player to join, start the whole minigame
 		                	if(players.size() < min_players + 1){
-		                		pinv.put(event.getPlayer(), event.getPlayer().getInventory().getContents());
+		                		pinv.put(event.getPlayer().getName(), event.getPlayer().getInventory().getContents());
 		                		startNew();
 		                	}else{ // else: just join the minigame
 		                		try{
-		                			pinv.put(event.getPlayer(), event.getPlayer().getInventory().getContents());
+		                			pinv.put(event.getPlayer().getName(), event.getPlayer().getInventory().getContents());
 		                			minigames.get(currentmg).join(event.getPlayer());
 		                		}catch(Exception e){
 		                			
@@ -497,7 +501,8 @@ public class Main extends JavaPlugin implements Listener {
 			started = false;
 			
 			ArrayList<Player> remove = new ArrayList<Player>();
-			for(Player p : players){
+			for(String pl : players){
+				Player p = Bukkit.getPlayerExact(pl);
 				if(p.isOnline()){
 					minigames.get(minigames.size() - 1).leave(p);
 					p.sendMessage(ChatColor.GOLD + "Next round in 30 seconds!");
@@ -561,7 +566,8 @@ public class Main extends JavaPlugin implements Listener {
 		for(Minigame mg : minigames){
 			mg.lost.clear();
 		}
-		for(Player p : players){
+		for(String pl : players){
+			Player p = Bukkit.getPlayerExact(pl);
 			if(p.isOnline()){
 				p.setAllowFlight(false);
 				p.setFlying(false);
@@ -614,7 +620,8 @@ public class Main extends JavaPlugin implements Listener {
 			isNeeded = true;
 		}
 		
-	    for(Player p : players){
+		for(String pl : players){
+			Player p = Bukkit.getPlayerExact(pl);
 	    	Scoreboard board = manager.getNewScoreboard();
 	    	
 	    	Objective objective = board.registerNewObjective("test", "dummy");
@@ -622,7 +629,8 @@ public class Main extends JavaPlugin implements Listener {
 
 	        objective.setDisplayName("[" + Integer.toString(currentmg + 1) + "/" + Integer.toString(minigames.size()) + "] [" + Integer.toString(c) + "]");
 
-	        for(Player p_ : players){
+			for(String pl_ : players){
+				Player p_ = Bukkit.getPlayerExact(pl_);
 	        	if(isNeeded){
 	        		int score = p_.getLocation().getBlockZ() - minigames.get(currentmg).finish.getBlockZ();
 	        		if(currentscore.containsKey(p_)){
@@ -743,7 +751,8 @@ public class Main extends JavaPlugin implements Listener {
 		running = false;
 		
 		ArrayList<Player> remove = new ArrayList<Player>();
-		for(Player p : players){
+		for(String pl : players){
+			Player p = Bukkit.getPlayerExact(pl);
 			if(p.isOnline()){
 				minigames.get(minigames.size() - 1).leave(p);
 				p.sendMessage(ChatColor.GOLD + "Next round in 30 seconds!");
@@ -774,7 +783,8 @@ public class Main extends JavaPlugin implements Listener {
 	public void stopFull(){
 		Bukkit.getServer().getScheduler().cancelAllTasks();
 		
-		for(Player p : players){
+		for(String pl : players){
+			Player p = Bukkit.getPlayerExact(pl);
 			if(p.isOnline()){
 				minigames.get(minigames.size() - 1).leave(p);
 				p.sendMessage(ChatColor.DARK_RED + "Stopping minigame.");

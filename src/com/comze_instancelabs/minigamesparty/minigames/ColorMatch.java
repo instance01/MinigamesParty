@@ -1,24 +1,15 @@
 package com.comze_instancelabs.minigamesparty.minigames;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
-import java.util.Set;
-
-import net.minecraft.server.v1_7_R1.ChunkSection;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_7_R1.CraftChunk;
-import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -87,7 +78,8 @@ public class ColorMatch extends Minigame implements Listener{
 			public void run(){
 				
 				currentw = r.nextInt(colors.size());
-				for(Player p : m.players){
+				for(String pl : m.players){
+					Player p = Bukkit.getPlayerExact(pl);
 					// set inventory and exp bar
 					p.getInventory().clear();
 					p.updateInventory();
