@@ -142,6 +142,12 @@ public class Main extends JavaPlugin implements Listener {
 	
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){    	
     	if(cmd.getName().equalsIgnoreCase("minigamesparty") || cmd.getName().equalsIgnoreCase("mp")){
+    		
+    		if (!(sender instanceof Player)) {
+    			sender.sendMessage("You must be a player to run this command.");
+    			return true;
+    		}
+    		
     		if(args.length > 0){
     			if(args[0].equalsIgnoreCase("setup")){
     				// setup all arenas and spawns and lobbies and spectatorlobbies and what not
