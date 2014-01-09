@@ -203,7 +203,7 @@ public class Main extends JavaPlugin implements Listener {
     				}, 5);
     				p.getInventory().clear();
     				p.updateInventory();
-    				p.getInventory().setContents(pinv.get(p));
+    				p.getInventory().setContents(pinv.get(p.getName()));
     				p.updateInventory();
     				if(currentmg > -1){
     					minigames.get(currentmg).leave(p);
@@ -213,6 +213,29 @@ public class Main extends JavaPlugin implements Listener {
     				if(players.size() < min_players){
     					stopFull();
     				}
+    			}else if(args[0].equalsIgnoreCase("join")){
+    				if(!(sender instanceof Player)){
+    					sender.sendMessage("Please execute this command ingame.");
+    					return true;
+    				}
+    				Player p = (Player) sender;
+    				if(players.contains(p.getName())){
+                		p.sendMessage(ChatColor.GOLD + "Use /mp leave to leave!");
+                	}else{
+	                	players.add(p.getName());
+	                	// if its the first player to join, start the whole minigame
+	                	if(players.size() < min_players + 1){
+	                		pinv.put(p.getName(), p.getInventory().getContents());
+	                		startNew();
+	                	}else{ // else: just join the minigame
+	                		try{
+	                			pinv.put(p.getName(), p.getInventory().getContents());
+	                			minigames.get(currentmg).join(p);
+	                		}catch(Exception e){
+	                			
+	                		}
+	                	}	
+                	}
     			}else{
     				sender.sendMessage(ChatColor.DARK_AQUA + "Help: ");
     				sender.sendMessage(ChatColor.DARK_AQUA + "/mp setlobby");
@@ -232,7 +255,7 @@ public class Main extends JavaPlugin implements Listener {
     //TODO: player quits and rejoins -> still in arena!
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event){
-    	if(players.contains(event.getPlayer())){
+    	if(players.contains(event.getPlayer().getName())){
     		players.remove(event.getPlayer());
     	}
     	
@@ -251,7 +274,7 @@ public class Main extends JavaPlugin implements Listener {
 		        {
 		            final Sign s = (Sign) event.getClickedBlock().getState();
 	                if (s.getLine(1).equalsIgnoreCase(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + "[PARTY]")){
-	                	if(players.contains(event.getPlayer())){
+	                	if(players.contains(event.getPlayer().getName())){
 	                		event.getPlayer().sendMessage(ChatColor.GOLD + "Use /mp leave to leave!");
 	                	}else{
 		                	players.add(event.getPlayer().getName());
@@ -273,7 +296,7 @@ public class Main extends JavaPlugin implements Listener {
 	    	}
 	    }else if(event.getAction().equals(Action.PHYSICAL)){
 	    	if(event.getClickedBlock().getType() == Material.STONE_PLATE){
-	    		if(players.contains(event.getPlayer())){
+	    		if(players.contains(event.getPlayer().getName())){
 	    			final Player p = event.getPlayer();
 	    			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 						@Override
@@ -301,7 +324,7 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onMove(PlayerMoveEvent event){
 		try{
-			if(m.players.contains(event.getPlayer())){
+			if(players.contains(event.getPlayer().getName())){
 				if(currentmg > -1){
 					final Minigame current = minigames.get(currentmg);
 					if(!current.lost.contains(event.getPlayer())){
@@ -363,7 +386,7 @@ public class Main extends JavaPlugin implements Listener {
     public void onEntityDamage(EntityDamageEvent event){
     	if(event.getEntity() instanceof Player){
     		Player p = (Player)event.getEntity();
-    		if(players.contains(p)){
+    		if(players.contains(p.getName())){
     			event.setCancelled(true);
     		}
     	}
@@ -373,7 +396,7 @@ public class Main extends JavaPlugin implements Listener {
     public void onHunger(FoodLevelChangeEvent event){
     	if(event.getEntity() instanceof Player){
     		Player p = (Player)event.getEntity();
-    		if(players.contains(p)){
+    		if(players.contains(p.getName())){
     			event.setCancelled(true);
     		}
     	}
@@ -381,7 +404,7 @@ public class Main extends JavaPlugin implements Listener {
     
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event){
-    	if(players.contains(event.getPlayer())){
+    	if(players.contains(event.getPlayer().getName())){
     		//SPLEEF
     		if(event.getBlock().getType() == Material.SNOW_BLOCK){
     			event.getPlayer().getInventory().addItem(new ItemStack(Material.SNOW_BALL, 2));
@@ -396,21 +419,21 @@ public class Main extends JavaPlugin implements Listener {
     
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event){
-    	if(players.contains(event.getPlayer())){
+    	if(players.contains(event.getPlayer().getName())){
     		event.setCancelled(true);
     	}
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event){
-    	if(players.contains(((Player)event.getWhoClicked()))){
+    	if(players.contains(((Player)event.getWhoClicked()).getName())){
     		event.setCancelled(true);
     	}
     }
     
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
-    	if(players.contains(event.getPlayer())){
+    	if(players.contains(event.getPlayer().getName())){
 			event.getItemDrop().remove();
 			event.setCancelled(true);
     	}
@@ -422,7 +445,7 @@ public class Main extends JavaPlugin implements Listener {
             if (e.getEntity() instanceof Snowball) {
                     
                 Player player = (Player) e.getEntity().getShooter();
-                if(players.contains(player)){
+                if(players.contains(player.getName())){
 	            	BlockIterator bi = new BlockIterator(e.getEntity().getWorld(), e.getEntity().getLocation().toVector(), e.getEntity().getVelocity().normalize(), 0.0D, 4);
 	                Block hit = null;
 	                while (bi.hasNext()) {
@@ -500,7 +523,7 @@ public class Main extends JavaPlugin implements Listener {
 			t.cancel();
 			started = false;
 			
-			ArrayList<Player> remove = new ArrayList<Player>();
+			ArrayList<String> remove = new ArrayList<String>();
 			for(String pl : players){
 				Player p = Bukkit.getPlayerExact(pl);
 				if(p.isOnline()){
@@ -509,12 +532,12 @@ public class Main extends JavaPlugin implements Listener {
 					p.getInventory().clear();
 					p.updateInventory();
 				}else{
-					remove.add(p);
+					remove.add(p.getName());
 				}
 			}
 			
 			// removes players that aren't online anymore
-			for(Player p : remove){
+			for(String p : remove){
 				players.remove(p);
 			}
 			
