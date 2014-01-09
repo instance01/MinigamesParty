@@ -208,7 +208,7 @@ public class Main extends JavaPlugin implements Listener {
     				if(currentmg > -1){
     					minigames.get(currentmg).leave(p);
     				}
-    				players.remove(p);
+    				players.remove(p.getName());
     				p.sendMessage(ChatColor.RED + "You left the game.");
     				if(players.size() < min_players){
     					stopFull();
@@ -256,7 +256,7 @@ public class Main extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event){
     	if(players.contains(event.getPlayer().getName())){
-    		players.remove(event.getPlayer());
+    		players.remove(event.getPlayer().getName());
     	}
     	
     	if(players.size() < min_players){
