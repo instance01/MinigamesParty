@@ -50,13 +50,13 @@ import com.comze_instancelabs.minigamesparty.minigames.Spleef;
 public class Main extends JavaPlugin implements Listener {
 
 	// ATTENTION: VERY RESOURCE INTENSIVE PLUGIN
-	
+
 	//TODO:
 	// [HIGH] add all other minigames
 	// [MEDIUM] add more commands and stats etc.
 	// [LOW] add config support
-	
-	
+
+
 	/* setup pattern:
 	 * 
 	 * # - - -
@@ -68,7 +68,7 @@ public class Main extends JavaPlugin implements Listener {
 	 * 
 	 * IMPORTANT: LOBBY SPAWN MUST BE ABOVE SPAWNS
 	 */
-	
+
 	/*
 	 * SETUP
 	 * 
@@ -79,18 +79,18 @@ public class Main extends JavaPlugin implements Listener {
 	 * 5. reload server
 	 * 
 	 */
-	
+
 	public ArrayList<Minigame> minigames = new ArrayList<Minigame>();
 	public ArrayList<String> players = new ArrayList<String>();
 	public HashMap<String, ItemStack[]> pinv = new HashMap<String, ItemStack[]>();
-	
+
 	public int min_players = 1; //TODO: increment to more like 2 or 3
 	public boolean running = false;
 
 	public Location mainlobby = null;
-	
+
 	Main m;
-	
+
 	@Override
 	public void onEnable(){
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
@@ -117,210 +117,192 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}
 		}, 40);
-		
+
 		getConfig().options().header("I recommend you to set auto_updating to true for possible future bugfixes.");
-		getConfig().addDefault("config.auto_updating", true);
-		getConfig().addDefault("config.min_players", 1);
 		getConfig().options().copyDefaults(true);
 		this.saveConfig();
-		
+
 		min_players = getConfig().getInt("config.min_players");
-		
+
 		try{
 			Metrics metrics = new Metrics(this);
 			metrics.start();
 		} catch (IOException e) { }
-		
-		if(getConfig().getBoolean("config.auto_updating")){
-        	Updater updater = new Updater(this, 71596, this.getFile(), Updater.UpdateType.DEFAULT, false);
-        }
-	}
-	
-	
-	
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){    	
-    	if(cmd.getName().equalsIgnoreCase("minigamesparty") || cmd.getName().equalsIgnoreCase("mp")){
-    		
-    		if (!(sender instanceof Player)) {
-    			sender.sendMessage("You must be a player to run this command.");
-    			return true;
-    		}
-    		
-    		if(args.length > 0){
-    			if(args[0].equalsIgnoreCase("setup")){
-    				// setup all arenas and spawns and lobbies and spectatorlobbies and what not
-    				if(sender.hasPermission("mp.setup")){
-	    				final Player p = (Player) sender;
-	    				Bukkit.getServer().getScheduler().runTask(this, new Runnable(){
-	    					public void run(){
-	    						setupAll(p.getLocation());
-	    					}
-	    				});
-    				}
-    			}else if(args[0].equalsIgnoreCase("setlobby")){
-    				if(sender.hasPermission("mp.setlobby")){
-	    				Player p = (Player)sender;
-	    				getConfig().set("lobby.world", p.getLocation().getWorld().getName());
-	    				getConfig().set("lobby.location.x", p.getLocation().getBlockX());
-	    				getConfig().set("lobby.location.y", p.getLocation().getBlockY());
-	    				getConfig().set("lobby.location.z", p.getLocation().getBlockZ());
-	    				this.saveConfig();
-	    				p.sendMessage(ChatColor.GREEN + "Saved Main lobby.");	
-    				}
-    			}else if(args[0].equalsIgnoreCase("setcomponent")){
-    				// /mp setcomponent [minigame] [component]
-    				if(sender.hasPermission("mp.setcomponent")){
-    					Player p = (Player)sender;
-	    				if(args.length > 2){
-	    					this.saveComponentForMinigame(args[1], args[2], p.getLocation());
-	    					p.sendMessage(ChatColor.GREEN + "Saved component");
-	    				}else{
-	    					p.sendMessage(ChatColor.DARK_AQUA + "Possible components: spectatorlobby, spawn");
-	    				}
-    				}
-    			}else if(args[0].equalsIgnoreCase("stats")){
-    				if(sender instanceof Player){
-	    				sender.sendMessage(ChatColor.DARK_AQUA + "-- " + ChatColor.GOLD + "Statistics " + ChatColor.DARK_AQUA + "--");
-	    				if(args.length > 1){
-	    					String player = args[1];
-	    					sender.sendMessage(ChatColor.GREEN + "You have " + Integer.toString(this.getPlayerStats(player, "credits")) + " Credits.");
-	    				}else{
-	    					sender.sendMessage(ChatColor.GREEN + "You have " + Integer.toString(this.getPlayerStats(sender.getName(), "credits")) + " Credits.");
-	    				}
-    				}
-    			}else if(args[0].equalsIgnoreCase("list")){
-    				sender.sendMessage(ChatColor.DARK_AQUA + "-- " + ChatColor.GOLD + "Minigames: " + ChatColor.DARK_AQUA + "--");
-    				for(Minigame m : minigames){
-    					sender.sendMessage(ChatColor.DARK_AQUA + m.name);
-    				}
-    			}else if(args[0].equalsIgnoreCase("leave")){
-    				final Player p = (Player)sender;
-    				p.teleport(getLobby());
-    				Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
-    					public void run(){
-    						p.teleport(getLobby());
-    					}
-    				}, 5);
-    				p.getInventory().clear();
-    				p.updateInventory();
-    				p.getInventory().setContents(pinv.get(p.getName()));
-    				p.updateInventory();
-    				if(currentmg > -1){
-    					minigames.get(currentmg).leave(p);
-    				}
-    				players.remove(p.getName());
-    				p.sendMessage(ChatColor.RED + "You left the game.");
-    				if(players.size() < min_players){
-    					stopFull();
-    				}
-    			}else if(args[0].equalsIgnoreCase("join")){
-    				if(!(sender instanceof Player)){
-    					sender.sendMessage("Please execute this command ingame.");
-    					return true;
-    				}
-    				Player p = (Player) sender;
-    				if(players.contains(p.getName())){
-                		p.sendMessage(ChatColor.GOLD + "Use /mp leave to leave!");
-                	}else{
-	                	players.add(p.getName());
-	                	// if its the first player to join, start the whole minigame
-	                	if(players.size() < min_players + 1){
-	                		pinv.put(p.getName(), p.getInventory().getContents());
-	                		startNew();
-	                	}else{ // else: just join the minigame
-	                		try{
-	                			pinv.put(p.getName(), p.getInventory().getContents());
-	                			minigames.get(currentmg).join(p);
-	                		}catch(Exception e){
-	                			
-	                		}
-	                	}	
-                	}
-    			}else{
-    				sender.sendMessage(ChatColor.DARK_AQUA + "Help: ");
-    				sender.sendMessage(ChatColor.DARK_AQUA + "/mp setlobby");
-    				sender.sendMessage(ChatColor.DARK_AQUA + "/mp setup");
-    				sender.sendMessage(ChatColor.DARK_AQUA + "/mp stats");
-    				sender.sendMessage(ChatColor.DARK_AQUA + "/mp list");
-    				sender.sendMessage(ChatColor.DARK_AQUA + "/mp leave");
-    				sender.sendMessage(ChatColor.DARK_AQUA + "/mp setcomponent");
-    			}
-    		}
-    		return true;
-    	}
-    	return false;
-    }
 
-    
-    //TODO: player quits and rejoins -> still in arena!
-    @EventHandler
-    public void onPlayerLeave(PlayerQuitEvent event){
-    	if(players.contains(event.getPlayer().getName())){
-    		players.remove(event.getPlayer().getName());
-    	}
-    	
-    	if(players.size() < min_players){
-    		stopFull();
-    	}
-    }
-    
+		if(getConfig().getBoolean("config.auto_updating")){
+			Updater updater = new Updater(this, 71596, this.getFile(), Updater.UpdateType.DEFAULT, false);
+		}
+	}
+
+
+
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){    	
+		if(cmd.getName().equalsIgnoreCase("minigamesparty") || cmd.getName().equalsIgnoreCase("mp")){
+
+			if (!(sender instanceof Player)) {
+				sender.sendMessage("You must be a player to run this command.");
+				return true;
+			}
+			final Player p = (Player)sender;
+
+			if(args.length > 0){
+				if(args[0].equalsIgnoreCase("setup")){
+					// setup all arenas and spawns and lobbies and spectatorlobbies and what not
+					if(p.hasPermission("mp.setup")){
+ 						Bukkit.getServer().getScheduler().runTask(this, new Runnable(){
+							public void run(){
+								setupAll(p.getLocation());
+							}
+						});
+					}
+				}else if(args[0].equalsIgnoreCase("setlobby")){
+					if(sender.hasPermission("mp.setlobby")){
+						getConfig().set("lobby.world", p.getLocation().getWorld().getName());
+						getConfig().set("lobby.location.x", p.getLocation().getBlockX());
+						getConfig().set("lobby.location.y", p.getLocation().getBlockY());
+						getConfig().set("lobby.location.z", p.getLocation().getBlockZ());
+						this.saveConfig();
+						p.sendMessage(ChatColor.GREEN + "Saved Main lobby.");	
+					}
+				}else if(args[0].equalsIgnoreCase("setcomponent")){
+					// /mp setcomponent [minigame] [component]
+					if(args.length > 2){
+						this.saveComponentForMinigame(args[1], args[2], p.getLocation());
+						p.sendMessage(ChatColor.GREEN + "Saved component");
+					}
+				}else if(args[0].equalsIgnoreCase("stats")){
+					sender.sendMessage(ChatColor.DARK_AQUA + "-- " + ChatColor.GOLD + "Statistics " + ChatColor.DARK_AQUA + "--");
+					if(args.length > 1){
+						String player = args[1];
+						sender.sendMessage(ChatColor.GREEN + "You have " + Integer.toString(this.getPlayerStats(player, "credits")) + " Credits.");
+					}
+				}else if(args[0].equalsIgnoreCase("list")){
+					sender.sendMessage(ChatColor.DARK_AQUA + "-- " + ChatColor.GOLD + "Minigames: " + ChatColor.DARK_AQUA + "--");
+					for(Minigame m : minigames){
+						sender.sendMessage(ChatColor.DARK_AQUA + m.name);
+					}
+				}else if(args[0].equalsIgnoreCase("leave")){
+					p.teleport(getLobby());
+					Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
+						public void run(){
+							p.teleport(getLobby());
+						}
+					}, 5);
+					p.getInventory().clear();
+					p.updateInventory();
+					p.getInventory().setContents(pinv.get(p.getName()));
+					p.updateInventory();
+					if(currentmg > -1){
+						minigames.get(currentmg).leave(p);
+					}
+					players.remove(p.getName());
+					p.sendMessage(ChatColor.RED + "You left the game.");
+					if(players.size() < min_players){
+						stopFull();
+					}
+				}else if(args[0].equalsIgnoreCase("join")){
+					if(players.contains(p.getName())){
+						p.sendMessage(ChatColor.GOLD + "Use /mp leave to leave!");
+					}else{
+						players.add(p.getName());
+						// if its the first player to join, start the whole minigame
+						if(players.size() < min_players + 1){
+							pinv.put(p.getName(), p.getInventory().getContents());
+							startNew();
+						}else{ // else: just join the minigame
+							try{
+								pinv.put(p.getName(), p.getInventory().getContents());
+								minigames.get(currentmg).join(p);
+							}catch(Exception e){
+
+							}
+						}	
+					}
+				}else{
+					p.sendMessage(ChatColor.DARK_AQUA + "Help: ");
+					p.sendMessage(ChatColor.DARK_AQUA + "/mp setlobby");
+					p.sendMessage(ChatColor.DARK_AQUA + "/mp setup");
+					p.sendMessage(ChatColor.DARK_AQUA + "/mp stats");
+					p.sendMessage(ChatColor.DARK_AQUA + "/mp list");
+					p.sendMessage(ChatColor.DARK_AQUA + "/mp leave");
+					p.sendMessage(ChatColor.DARK_AQUA + "/mp setcomponent");
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
+
+	//TODO: player quits and rejoins -> still in arena!
+	@EventHandler
+	public void onPlayerLeave(PlayerQuitEvent event){
+		if(players.contains(event.getPlayer().getName())){
+			players.remove(event.getPlayer().getName());
+		}
+
+		if(players.size() < min_players){
+			stopFull();
+		}
+	}
+
 	@EventHandler
 	public void onSignUse(PlayerInteractEvent event)
 	{	
-	    if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)
-	    {
-	    	if(event.hasBlock()){
-		    	if (event.getClickedBlock().getType() == Material.SIGN_POST || event.getClickedBlock().getType() == Material.WALL_SIGN)
-		        {
-		            final Sign s = (Sign) event.getClickedBlock().getState();
-	                if (s.getLine(1).equalsIgnoreCase(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + "[PARTY]")){
-	                	if(players.contains(event.getPlayer().getName())){
-	                		event.getPlayer().sendMessage(ChatColor.GOLD + "Use /mp leave to leave!");
-	                	}else{
-		                	players.add(event.getPlayer().getName());
-		                	// if its the first player to join, start the whole minigame
-		                	if(players.size() < min_players + 1){
-		                		pinv.put(event.getPlayer().getName(), event.getPlayer().getInventory().getContents());
-		                		startNew();
-		                	}else{ // else: just join the minigame
-		                		try{
-		                			pinv.put(event.getPlayer().getName(), event.getPlayer().getInventory().getContents());
-		                			minigames.get(currentmg).join(event.getPlayer());
-		                		}catch(Exception e){
-		                			
-		                		}
-		                	}	
-	                	}
-	                }
-		        }	
-	    	}
-	    }else if(event.getAction().equals(Action.PHYSICAL)){
-	    	if(event.getClickedBlock().getType() == Material.STONE_PLATE){
-	    		if(players.contains(event.getPlayer().getName())){
-	    			final Player p = event.getPlayer();
-	    			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)
+		{
+			if(event.hasBlock()){
+				if (event.getClickedBlock().getType() == Material.SIGN_POST || event.getClickedBlock().getType() == Material.WALL_SIGN)
+				{
+					final Sign s = (Sign) event.getClickedBlock().getState();
+					if (s.getLine(1).equalsIgnoreCase(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + "[PARTY]")){
+						if(players.contains(event.getPlayer().getName())){
+							event.getPlayer().sendMessage(ChatColor.GOLD + "Use /mp leave to leave!");
+						}else{
+							players.add(event.getPlayer().getName());
+							// if its the first player to join, start the whole minigame
+							if(players.size() < min_players + 1){
+								pinv.put(event.getPlayer().getName(), event.getPlayer().getInventory().getContents());
+								startNew();
+							}else{ // else: just join the minigame
+								try{
+									pinv.put(event.getPlayer().getName(), event.getPlayer().getInventory().getContents());
+									minigames.get(currentmg).join(event.getPlayer());
+								}catch(Exception e){
+
+								}
+							}	
+						}
+					}
+				}	
+			}
+		}else if(event.getAction().equals(Action.PHYSICAL)){
+			if(event.getClickedBlock().getType() == Material.STONE_PLATE){
+				if(players.contains(event.getPlayer().getName())){
+					final Player p = event.getPlayer();
+					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 						@Override
 						public void run() {
 							p.teleport(minigames.get(currentmg).spawn);
 						}
 					}, 5);
-	    			event.getClickedBlock().setType(Material.AIR);
-	    		}
-	    	}
-	    }
+					event.getClickedBlock().setType(Material.AIR);
+				}
+			}
+		}
 	}
-	
+
 	@EventHandler
-    public void onSignChange(SignChangeEvent event) {
-        Player p = event.getPlayer();
-        if(event.getLine(0).toLowerCase().contains("[party]") || event.getLine(1).toLowerCase().contains("[party]")){
-        	if(event.getPlayer().hasPermission("mp.sign")){
-        		event.setLine(0, "");
-	        	event.setLine(1, ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + "[PARTY]");
-        	}
-        }
+	public void onSignChange(SignChangeEvent event) {
+		Player p = event.getPlayer();
+		if(event.getLine(0).toLowerCase().contains("[party]") || event.getLine(1).toLowerCase().contains("[party]")){
+			if(event.getPlayer().hasPermission("mp.sign")){
+				event.setLine(0, "");
+				event.setLine(1, ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + "[PARTY]");
+			}
+		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onMove(PlayerMoveEvent event){
 		try{
@@ -372,106 +354,106 @@ public class Main extends JavaPlugin implements Listener {
 						}
 					}	
 				}
-				
+
 			}	
 		}catch(Exception e){
 			for(StackTraceElement et : e.getStackTrace()){
 				System.out.println(et);
 			}
 		}
-		
-	}
-	
-	@EventHandler
-    public void onEntityDamage(EntityDamageEvent event){
-    	if(event.getEntity() instanceof Player){
-    		Player p = (Player)event.getEntity();
-    		if(players.contains(p.getName())){
-    			event.setCancelled(true);
-    		}
-    	}
-    }
-    
-    @EventHandler
-    public void onHunger(FoodLevelChangeEvent event){
-    	if(event.getEntity() instanceof Player){
-    		Player p = (Player)event.getEntity();
-    		if(players.contains(p.getName())){
-    			event.setCancelled(true);
-    		}
-    	}
-    }
-    
-    @EventHandler
-    public void onBlockBreak(BlockBreakEvent event){
-    	if(players.contains(event.getPlayer().getName())){
-    		//SPLEEF
-    		if(event.getBlock().getType() == Material.SNOW_BLOCK){
-    			event.getPlayer().getInventory().addItem(new ItemStack(Material.SNOW_BALL, 2));
-    			event.getPlayer().updateInventory();
-    			event.getBlock().setType(Material.AIR);
-    			event.setCancelled(true);
-    		}else{
-    			event.setCancelled(true);
-    		}
-    	}
-    }
-    
-    @EventHandler
-    public void onBlockPlace(BlockPlaceEvent event){
-    	if(players.contains(event.getPlayer().getName())){
-    		event.setCancelled(true);
-    	}
-    }
 
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event){
-    	if(players.contains(((Player)event.getWhoClicked()).getName())){
-    		event.setCancelled(true);
-    	}
-    }
-    
-    @EventHandler
-    public void onDrop(PlayerDropItemEvent event) {
-    	if(players.contains(event.getPlayer().getName())){
+	}
+
+	@EventHandler
+	public void onEntityDamage(EntityDamageEvent event){
+		if(event.getEntity() instanceof Player){
+			Player p = (Player)event.getEntity();
+			if(players.contains(p.getName())){
+				event.setCancelled(true);
+			}
+		}
+	}
+
+	@EventHandler
+	public void onHunger(FoodLevelChangeEvent event){
+		if(event.getEntity() instanceof Player){
+			Player p = (Player)event.getEntity();
+			if(players.contains(p.getName())){
+				event.setCancelled(true);
+			}
+		}
+	}
+
+	@EventHandler
+	public void onBlockBreak(BlockBreakEvent event){
+		if(players.contains(event.getPlayer().getName())){
+			//SPLEEF
+			if(event.getBlock().getType() == Material.SNOW_BLOCK){
+				event.getPlayer().getInventory().addItem(new ItemStack(Material.SNOW_BALL, 2));
+				event.getPlayer().updateInventory();
+				event.getBlock().setType(Material.AIR);
+				event.setCancelled(true);
+			}else{
+				event.setCancelled(true);
+			}
+		}
+	}
+
+	@EventHandler
+	public void onBlockPlace(BlockPlaceEvent event){
+		if(players.contains(event.getPlayer().getName())){
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onInventoryClick(InventoryClickEvent event){
+		if(players.contains(((Player)event.getWhoClicked()).getName())){
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onDrop(PlayerDropItemEvent event) {
+		if(players.contains(event.getPlayer().getName())){
 			event.getItemDrop().remove();
 			event.setCancelled(true);
-    	}
-    }
-    
-    @EventHandler
-    public void onSnowballLand(ProjectileHitEvent e) {   
-        if (e.getEntity().getShooter() instanceof Player) {
-            if (e.getEntity() instanceof Snowball) {
-                    
-                Player player = (Player) e.getEntity().getShooter();
-                if(players.contains(player.getName())){
-	            	BlockIterator bi = new BlockIterator(e.getEntity().getWorld(), e.getEntity().getLocation().toVector(), e.getEntity().getVelocity().normalize(), 0.0D, 4);
-	                Block hit = null;
-	                while (bi.hasNext()) {
-	                        hit = bi.next();
-	                        if (hit.getTypeId() != 0) {
-	                                break;
-	                        }
-	                }
-	                
-	                if (hit.getLocation().getBlockY() < minigames.get(currentmg).spawn.getBlockY() && hit.getType() == Material.SNOW_BLOCK) {
-	
-	                    hit.setTypeId(0);
-	                    
-	                    player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1F, 1F);
-	                    /*for (Player sp : players) {
-	                    	
+		}
+	}
+
+	@EventHandler
+	public void onSnowballLand(ProjectileHitEvent e) {   
+		if (e.getEntity().getShooter() instanceof Player) {
+			if (e.getEntity() instanceof Snowball) {
+
+				Player player = (Player) e.getEntity().getShooter();
+				if(players.contains(player.getName())){
+					BlockIterator bi = new BlockIterator(e.getEntity().getWorld(), e.getEntity().getLocation().toVector(), e.getEntity().getVelocity().normalize(), 0.0D, 4);
+					Block hit = null;
+					while (bi.hasNext()) {
+						hit = bi.next();
+						if (hit.getTypeId() != 0) {
+							break;
+						}
+					}
+
+					if (hit.getLocation().getBlockY() < minigames.get(currentmg).spawn.getBlockY() && hit.getType() == Material.SNOW_BLOCK) {
+
+						hit.setTypeId(0);
+
+						player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1F, 1F);
+						/*for (Player sp : players) {
+
 	                            sp.getPlayer().playEffect(new Location(hit.getWorld(), hit.getLocation().getBlockX(), hit.getLocation().getBlockY() + 1.0D, hit.getLocation().getBlockZ()), Effect.MOBSPAWNER_FLAMES, 25);
 	                    }*/
-	    
-	                }	
-            	}
-            }
-        }
-    }
-    
-	
+
+					}	
+				}
+			}
+		}
+	}
+
+
 	/*public void nextMinigame(Player p){
 		// get current minigame and make winners
 		// get new minigame and tp all to the new one
@@ -488,18 +470,18 @@ public class Main extends JavaPlugin implements Listener {
 		}
 		minigames.get(currentmg).join(p);
 	}*/
-	
+
 	public void win(Player p){
 		p.sendMessage(ChatColor.GOLD + "You won this round!");
 		this.updatePlayerStats(p.getName(), "wins", getPlayerStats(p.getName(), "wins") + 1);
 		Random r = new Random();
 		int reward = r.nextInt(21) + 10; // between 10 and 30
 		this.updatePlayerStats(p.getName(), "credits", getPlayerStats(p.getName(), "credits") + reward);		
-		
+
 		updateScoreboardOUTGAME(p.getName());
 	}
-	
-	
+
+
 	/**
 	 * NEW TIMER PART
 	 */
@@ -512,7 +494,7 @@ public class Main extends JavaPlugin implements Listener {
 	public void secondsTick(){
 		// update scoreboard
 		updateScoreboard(60 - c);
-		
+
 		// stop the whole party after some rounds
 		if(c_ > minigames.size() * 60 - 3){
 			Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable(){
@@ -522,7 +504,7 @@ public class Main extends JavaPlugin implements Listener {
 			}, 30 * 20); // 30 secs
 			t.cancel();
 			started = false;
-			
+
 			ArrayList<String> remove = new ArrayList<String>();
 			for(String pl : players){
 				Player p = Bukkit.getPlayerExact(pl);
@@ -535,29 +517,29 @@ public class Main extends JavaPlugin implements Listener {
 					remove.add(p.getName());
 				}
 			}
-			
+
 			// removes players that aren't online anymore
 			for(String p : remove){
 				players.remove(p);
 			}
-			
+
 			remove.clear();
-			
+
 			currentmg = -1;
 			currentid = null;
-			
+
 			// reset all:
 			ColorMatch.reset(this.getComponentForMinigame("ColorMatch", "spawn"));
 			Spleef.reset(this.getComponentForMinigame("Spleef", "spawn"));
 			MineField.reset(this.getComponentForMinigame("MineField", "spawn"));
-			
+
 			c = 0;
 			c_ = 0;
 			if(currentid != null){
 				currentid.cancel();
 			}
 		}
-		
+
 		// start the next minigame after 60 seconds
 		if(c == 60){
 			c = 0;
@@ -566,7 +548,7 @@ public class Main extends JavaPlugin implements Listener {
 			}
 			currentid = nextMinigame();
 		}
-		
+
 
 		c += 1;
 		c_ += 1;
@@ -594,7 +576,7 @@ public class Main extends JavaPlugin implements Listener {
 			if(p.isOnline()){
 				p.setAllowFlight(false);
 				p.setFlying(false);
-				
+
 				minigames.get(currentmg).join(p);
 			}
 		}
@@ -604,7 +586,7 @@ public class Main extends JavaPlugin implements Listener {
 			return null;
 		}
 	}
-	
+
 	public void startNew(){
 		if(!started){
 			if(players.size() > min_players - 1){
@@ -614,17 +596,17 @@ public class Main extends JavaPlugin implements Listener {
 				}
 				currentmg = -1;
 				currentid = null;
-				
+
 				// start first minigame
 				currentid = nextMinigame();
-				
+
 				// start main timer
 				t = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable(){
 					public void run(){
 						secondsTick();
 					}
 				}, 1, 20);
-				
+
 				started = true;
 			}	
 		}
@@ -632,74 +614,74 @@ public class Main extends JavaPlugin implements Listener {
 	/**
 	 * NEW TIMER PART
 	 */
-	
+
 	public HashMap<Player, Integer> currentscore = new HashMap<Player, Integer>();
-	
+
 	public void updateScoreboard(int c){
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
-	    
+
 		boolean isNeeded = false;
 		if(minigames.get(currentmg).name.equalsIgnoreCase("MineField") || minigames.get(currentmg).name.equalsIgnoreCase("JumpnRun")){
 			isNeeded = true;
 		}
-		
+
 		for(String pl : players){
 			Player p = Bukkit.getPlayerExact(pl);
-	    	Scoreboard board = manager.getNewScoreboard();
-	    	
-	    	Objective objective = board.registerNewObjective("test", "dummy");
-	        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+			Scoreboard board = manager.getNewScoreboard();
 
-	        objective.setDisplayName("[" + Integer.toString(currentmg + 1) + "/" + Integer.toString(minigames.size()) + "] [" + Integer.toString(c) + "]");
+			Objective objective = board.registerNewObjective("test", "dummy");
+			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+			objective.setDisplayName("[" + Integer.toString(currentmg + 1) + "/" + Integer.toString(minigames.size()) + "] [" + Integer.toString(c) + "]");
 
 			for(String pl_ : players){
 				Player p_ = Bukkit.getPlayerExact(pl_);
-	        	if(isNeeded){
-	        		int score = p_.getLocation().getBlockZ() - minigames.get(currentmg).finish.getBlockZ();
-	        		if(currentscore.containsKey(p_)){
-	        			int oldscore = currentscore.get(p_);
-	        			if(score > oldscore){
-	        				currentscore.put(p_, score);
-	        			}else{
-	        				score = oldscore;
-	        			}
-	        		}else{
-	        			currentscore.put(p_, score);
-	        		}
-	        		objective.getScore(p_).setScore(score);
-	        	}else{
-	        		objective.getScore(p_).setScore(0);
-	        	}
-	        }
+				if(isNeeded){
+					int score = p_.getLocation().getBlockZ() - minigames.get(currentmg).finish.getBlockZ();
+					if(currentscore.containsKey(p_)){
+						int oldscore = currentscore.get(p_);
+						if(score > oldscore){
+							currentscore.put(p_, score);
+						}else{
+							score = oldscore;
+						}
+					}else{
+						currentscore.put(p_, score);
+					}
+					objective.getScore(p_).setScore(score);
+				}else{
+					objective.getScore(p_).setScore(0);
+				}
+			}
 
-	        p.setScoreboard(board);
-	    }
+			p.setScoreboard(board);
+		}
 	}
-	
-	
+
+
 	public void updateScoreboardOUTGAME(String player){
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
 
 		Player p = Bukkit.getPlayer(player);
-		
+
 		Scoreboard board = manager.getNewScoreboard();
-    	
-    	Objective objective = board.registerNewObjective("test", "dummy");
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        objective.setDisplayName(ChatColor.GOLD + "MinigamesParty!");
+		Objective objective = board.registerNewObjective("test", "dummy");
+		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        objective.getScore(Bukkit.getOfflinePlayer("Credits")).setScore(this.getPlayerStats(player, "credits"));
+		objective.setDisplayName(ChatColor.GOLD + "MinigamesParty!");
 
-        p.setScoreboard(board);
+		objective.getScore(Bukkit.getOfflinePlayer("Credits")).setScore(this.getPlayerStats(player, "credits"));
+
+		p.setScoreboard(board);
 	}
-	
-	
-	 /*public void start(){
+
+
+	/*public void start(){
 		// if not running -> start
 		// else just join current game
 		//    if no current game, join into waiting lobby
-		
+
 		if(players.size() > min_players - 1){
 			// reset all
 			for(Minigame m : minigames){
@@ -707,7 +689,7 @@ public class Main extends JavaPlugin implements Listener {
 			}
 			currentmg = 0;
 			currentid = 0;
-			
+
 			// every player joins again (or maybe first time)
 			for(Player p : players){
 				minigames.get(0).join(p);
@@ -719,7 +701,7 @@ public class Main extends JavaPlugin implements Listener {
 					Bukkit.getServer().getScheduler().cancelTask(stopid);
 				}
 			}, 1200);
-			
+
 			// main running timer
 			if(!running){
 				final int id__ = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
@@ -735,44 +717,44 @@ public class Main extends JavaPlugin implements Listener {
 								remove.add(p);
 							}
 						}
-						
+
 						for(Player p : remove){
 							players.remove(p);
 						}
-						
+
 						remove.clear();
-						
+
 						if(count < min_players){ // one player left
 							stopFull();
 						}
 					}
 				}, 1200, 1200); // each 60 seconds -> change minigame	
-				
+
 				currentid = id__;
-				
+
 				int id = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 					@Override
 					public void run(){
 						start();
 					}
 				}, minigames.size() * 1200 + 20 * 30); // 20 * 30: wait 30 seconds after all games	
-				
+
 				int id_ = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 					@Override
 					public void run(){
 						stop(id__);
 					}
 				}, minigames.size() * 1200 - 40);
-				
+
 				running = true;
 			}
 		}
 	}*/
-	
+
 	public void stop(BukkitTask id){
 		id.cancel();
 		running = false;
-		
+
 		ArrayList<Player> remove = new ArrayList<Player>();
 		for(String pl : players){
 			Player p = Bukkit.getPlayerExact(pl);
@@ -785,27 +767,27 @@ public class Main extends JavaPlugin implements Listener {
 				remove.add(p);
 			}
 		}
-		
+
 		// removes players that arent online anymore
 		for(Player p : remove){
 			players.remove(p);
 		}
-		
+
 		remove.clear();
-		
+
 		currentmg = 0;
-		
+
 		Bukkit.getScheduler().runTask(this, new Runnable(){
 			public void run(){
 				resetAll();
 			}
 		});
-		
+
 	}
-	
+
 	public void stopFull(){
 		Bukkit.getServer().getScheduler().cancelAllTasks();
-		
+
 		for(String pl : players){
 			Player p = Bukkit.getPlayerExact(pl);
 			if(p.isOnline()){
@@ -813,23 +795,23 @@ public class Main extends JavaPlugin implements Listener {
 				p.sendMessage(ChatColor.DARK_RED + "Stopping minigame.");
 			}
 		}
-		
+
 		running = false;
 		started = false;
 		players.clear();
 		currentmg = 0;
-		
+
 		Bukkit.getScheduler().runTask(this, new Runnable(){
 			public void run(){
 				resetAll();
 			}
 		});
 	}
-	
+
 	public Location getLobby(){
 		return new Location(getServer().getWorld(getConfig().getString("lobby.world")), getConfig().getInt("lobby.location.x"), getConfig().getInt("lobby.location.y"), getConfig().getInt("lobby.location.z"));
 	}
-	
+
 	public Location getComponentForMinigame(String minigame, String component, String count){
 		if(isValidMinigame(minigame)){
 			String base = "minigames." + minigame + "." + component + count;
@@ -837,7 +819,7 @@ public class Main extends JavaPlugin implements Listener {
 		}
 		return null;
 	}
-	
+
 	public Location getComponentForMinigame(String minigame, String component){
 		if(isValidMinigame(minigame)){
 			String base = "minigames." + minigame + "." + component;
@@ -845,7 +827,7 @@ public class Main extends JavaPlugin implements Listener {
 		}
 		return null;
 	}
-	
+
 	public void saveComponentForMinigame(String minigame, String component, Location comploc){
 		String base = "minigames." + minigame + "." + component;
 		getConfig().set(base + ".world", comploc.getWorld().getName());
@@ -854,25 +836,25 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().set(base + ".location.z", comploc.getBlockZ());
 		this.saveConfig();
 	}
-	
+
 	public boolean isValidMinigame(String minigame){
 		if(getConfig().isSet("minigames." + minigame) && getConfig().isSet("minigames." + minigame + ".lobby") && getConfig().isSet("minigames." + minigame + ".spawn") && getConfig().isSet("minigames." + minigame + ".spectatorlobby")){
 			return true;
 		}
 		return false;
 	}
-	
+
 	public void setupAll(Location start){
 		int x = start.getBlockX();
 		int y = start.getBlockY();
 		int z = start.getBlockZ();
-		
+
 		ColorMatch.setup(start, this, "ColorMatch");
 		Spleef.setup(new Location(start.getWorld(), x, y, z + 64 + 20), this, "Spleef");
 		MineField.setup(new Location(start.getWorld(), x, y, z + 64 * 2 + 20 * 2), this, "MineField");
 		JumpnRun.setup(new Location(start.getWorld(), x, y, z + 64 * 3 + 20 * 3), this, "JumpnRun");
 		DeadEnd.setup(new Location(start.getWorld(), x + 64 + 20, y, z), this, "DeadEnd");
-		
+
 		/*
 		 * next minigame locations: (TODO FOR LATER USE)
 		 * 
@@ -893,17 +875,17 @@ public class Main extends JavaPlugin implements Listener {
 		 * 
 		 * IMPORTANT: LOBBY SPAWN MUST BE ABOVE SPAWNS!
 		 */ 
-		
+
 		minigames.clear();
 		minigames.add(new ColorMatch(this, this.getComponentForMinigame("ColorMatch", "spawn"), this.getComponentForMinigame("ColorMatch", "lobby"), this.getComponentForMinigame("ColorMatch", "spectatorlobby")));
 		minigames.add(new Spleef(this, this.getComponentForMinigame("Spleef", "spawn"), this.getComponentForMinigame("Spleef", "lobby"), this.getComponentForMinigame("Spleef", "spectatorlobby")));
 		minigames.add(new MineField(this, this.getComponentForMinigame("MineField", "spawn"), this.getComponentForMinigame("MineField", "lobby"), this.getComponentForMinigame("MineField", "spectatorlobby"), m.getComponentForMinigame("MineField", "finishline")));
 		minigames.add(new JumpnRun(this, this.getComponentForMinigame("JumpnRun", "spawn"), this.getComponentForMinigame("JumpnRun", "lobby"), this.getComponentForMinigame("JumpnRun", "spectatorlobby"), m.getComponentForMinigame("JumpnRun", "finishline")));
 		minigames.add(new DeadEnd(this, this.getComponentForMinigame("DeadEnd", "spawn"), this.getComponentForMinigame("DeadEnd", "lobby"), this.getComponentForMinigame("DeadEnd", "spectatorlobby")));
-		
-		getLogger().info("Finished Setup");
+
+		getLogger().info("[MinigamesParty] Finished Setup");
 	}
-	
+
 	public void resetAll(){
 		ColorMatch.reset(this.getComponentForMinigame("ColorMatch", "spawn"));
 		Spleef.reset(this.getComponentForMinigame("Spleef", "spawn"));
@@ -911,7 +893,7 @@ public class Main extends JavaPlugin implements Listener {
 		MineField.reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
 		DeadEnd.reset(this.getComponentForMinigame("DeadEnd", "spawn"));
 	}
-	
+
 
 	/***
 	 * saves player statistics
@@ -922,7 +904,7 @@ public class Main extends JavaPlugin implements Listener {
 	public void updatePlayerStats(String player, String component, int value){
 		getConfig().set(player + "." + component, value);
 	}
-	
+
 	public int getPlayerStats(String player, String component){
 		int ret = 0;
 		if(getConfig().isSet(player + "." + component)){
@@ -930,7 +912,7 @@ public class Main extends JavaPlugin implements Listener {
 		}
 		return ret;
 	}
-	
-	
+
+
 
 }
