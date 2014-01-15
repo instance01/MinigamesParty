@@ -30,6 +30,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -149,7 +150,7 @@ public class Main extends JavaPlugin implements Listener {
 				if(args[0].equalsIgnoreCase("setup")){
 					// setup all arenas and spawns and lobbies and spectatorlobbies and what not
 					if(p.hasPermission("mp.setup")){
- 						Bukkit.getServer().getScheduler().runTask(this, new Runnable(){
+						Bukkit.getServer().getScheduler().runTask(this, new Runnable(){
 							public void run(){
 								setupAll(p.getLocation());
 							}
@@ -269,7 +270,7 @@ public class Main extends JavaPlugin implements Listener {
 									pinv.put(event.getPlayer().getName(), event.getPlayer().getInventory().getContents());
 									minigames.get(currentmg).join(event.getPlayer());
 								}catch(Exception e){
-
+									event.getPlayer().sendMessage(ChatColor.RED + "An error occured.");
 								}
 							}	
 						}
@@ -329,6 +330,7 @@ public class Main extends JavaPlugin implements Listener {
 									return;
 								}
 								current.lost.add(event.getPlayer());
+								// TODO: If one players is left, end the game!
 								current.spectate(event.getPlayer());
 							}
 						}
@@ -436,23 +438,51 @@ public class Main extends JavaPlugin implements Listener {
 							break;
 						}
 					}
+					try {
+						if (hit.getLocation().getBlockY() < minigames.get(currentmg).spawn.getBlockY() && hit.getType() == Material.SNOW_BLOCK) {
+							hit.setTypeId(0);
 
-					if (hit.getLocation().getBlockY() < minigames.get(currentmg).spawn.getBlockY() && hit.getType() == Material.SNOW_BLOCK) {
-
-						hit.setTypeId(0);
-
-						player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1F, 1F);
-						/*for (Player sp : players) {
+							player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1F, 1F);
+							/*for (Player sp : players) {
 
 	                            sp.getPlayer().playEffect(new Location(hit.getWorld(), hit.getLocation().getBlockX(), hit.getLocation().getBlockY() + 1.0D, hit.getLocation().getBlockZ()), Effect.MOBSPAWNER_FLAMES, 25);
 	                    }*/
 
-					}	
+						}
+					} catch (Exception ex) { 
+						
+					}
 				}
 			}
 		}
 	}
 
+	@EventHandler 
+	public void onPlayerJoin(PlayerJoinEvent e) {
+		Player p = e.getPlayer();
+		if (!getConfig().getBoolean("config.game-on-join")) return;
+
+		if(players.contains(e.getPlayer().getName())){
+			p.sendMessage(ChatColor.RED + "An error occured. (Already in the game!)");
+			return;
+		}
+		players.add(e.getPlayer().getName());
+		e.setJoinMessage(ChatColor.GOLD + p.getName() + " has joined the game!");
+
+		// if its the first player to join, start the whole minigame
+		if(players.size() < min_players + 1){
+			pinv.put(e.getPlayer().getName(), p.getInventory().getContents());
+			startNew();
+			return;
+		}
+
+		try {
+			pinv.put(e.getPlayer().getName(), e.getPlayer().getInventory().getContents());
+			minigames.get(currentmg).join(e.getPlayer());
+		} catch(Exception ex) {
+			e.getPlayer().sendMessage(ChatColor.RED + "An error occured.");
+		}	
+	}
 
 	/*public void nextMinigame(Player p){
 		// get current minigame and make winners
@@ -555,6 +585,7 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	public BukkitTask nextMinigame(){
+
 		if(currentmg > -1){
 			minigames.get(currentmg).getWinner();
 			//TODO: add winners for score based minigames like MineField or JumpnRun
@@ -576,6 +607,7 @@ public class Main extends JavaPlugin implements Listener {
 			if(p.isOnline()){
 				p.setAllowFlight(false);
 				p.setFlying(false);
+				p.getInventory().clear();
 
 				minigames.get(currentmg).join(p);
 			}
