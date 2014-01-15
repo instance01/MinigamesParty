@@ -2,6 +2,7 @@ name: MinigamesParty
 main: com.comze_instancelabs.minigamesparty.Main
 version: 0.2
 author: instancelabs
+softdepend: [Vault]
 permissions:
   mparty.sign:
     description: Gives access to create signs for joining games.
