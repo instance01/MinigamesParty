@@ -286,7 +286,9 @@ public class Main extends JavaPlugin implements Listener {
 
 		try {
 			pinv.put(event.getPlayer().getName(), event.getPlayer().getInventory().getContents());
-			minigames.get(currentmg).join(event.getPlayer());
+			if(currentmg > -1){
+				minigames.get(currentmg).join(event.getPlayer());
+			}
 		} catch(Exception ex) {
 			event.getPlayer().sendMessage(ChatColor.RED + "An error occured.");
 		}	
@@ -313,7 +315,9 @@ public class Main extends JavaPlugin implements Listener {
 							}else{ // else: just join the minigame
 								try{
 									pinv.put(event.getPlayer().getName(), event.getPlayer().getInventory().getContents());
-									minigames.get(currentmg).join(event.getPlayer());
+									if(currentmg > -1){
+										minigames.get(currentmg).join(event.getPlayer());
+									}
 								}catch(Exception e){
 									event.getPlayer().sendMessage(ChatColor.RED + "An error occured.");
 								}
@@ -702,15 +706,15 @@ public class Main extends JavaPlugin implements Listener {
 				Player p_ = Bukkit.getPlayerExact(pl_);
 				if(isNeeded){
 					int score = p_.getLocation().getBlockZ() - minigames.get(currentmg).finish.getBlockZ();
-					if(currentscore.containsKey(pl)){
-						int oldscore = currentscore.get(pl);
+					if(currentscore.containsKey(pl_)){
+						int oldscore = currentscore.get(pl_);
 						if(score > oldscore){
-							currentscore.put(pl, score);
+							currentscore.put(pl_, score);
 						}else{
 							score = oldscore;
 						}
 					}else{
-						currentscore.put(pl, score);
+						currentscore.put(pl_, score);
 					}
 					objective.getScore(p_).setScore(score);
 				}else{
