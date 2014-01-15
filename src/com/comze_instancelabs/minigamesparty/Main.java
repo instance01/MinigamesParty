@@ -191,6 +191,7 @@ public class Main extends JavaPlugin implements Listener {
 							p.teleport(getLobby());
 						}
 					}, 5);
+					updateScoreboardOUTGAME(p.getName());
 					p.getInventory().clear();
 					p.updateInventory();
 					p.getInventory().setContents(pinv.get(p.getName()));
@@ -260,8 +261,11 @@ public class Main extends JavaPlugin implements Listener {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
 				public void run(){
 					p.teleport(getLobby());
+					p.getInventory().setContents(pinv.get(p.getName()));
+					p.updateInventory();
 				}
 			}, 5);
+			players_left.remove(p.getName());
 		}
 
 		if (!getConfig().getBoolean("config.game-on-join")) return;
@@ -949,6 +953,7 @@ public class Main extends JavaPlugin implements Listener {
 	 */
 	public void updatePlayerStats(String player, String component, int value){
 		getConfig().set(player + "." + component, value);
+		this.saveConfig();
 	}
 
 	public int getPlayerStats(String player, String component){
