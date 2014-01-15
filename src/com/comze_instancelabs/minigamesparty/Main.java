@@ -388,6 +388,7 @@ public class Main extends JavaPlugin implements Listener {
 								current.spectate(event.getPlayer());
 								// there's only one man standing
 								if(count < 2){
+									c_ += 60-c;
 									c = 60; // just skips all the remaining seconds and sets to 60, current timer will do the rest
 								}
 							}

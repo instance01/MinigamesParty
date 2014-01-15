@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.comze_instancelabs.minigamesparty.minigames.MinigameUtil;
@@ -67,6 +68,11 @@ public class Minigame {
 				p.teleport(lobby);
 				p.setAllowFlight(false);
 				p.setFlying(false);
+				for (PotionEffect effect : p.getActivePotionEffects()){
+					try{
+						p.removePotionEffect(effect.getType());
+					}catch(Exception e){}
+				}
 			}
 		}, 5);
 	}
