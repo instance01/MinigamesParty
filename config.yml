@@ -1,0 +1,5 @@
+# MinigamesParty Config #
+config:
+  auto_updating: true
+  min_players: 1
+  game-on-join: false

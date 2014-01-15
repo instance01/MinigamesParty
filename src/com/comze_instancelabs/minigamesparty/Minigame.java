@@ -78,6 +78,7 @@ public class Minigame {
 				p.setAllowFlight(true);
 				p.setFlying(true);
 				p.teleport(spectatorlobby);
+				p.getInventory().clear();
 			}
 		}, 5);
 	}
