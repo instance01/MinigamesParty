@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -34,6 +37,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -79,13 +83,20 @@ public class Main extends JavaPlugin implements Listener {
 	 * 
 	 */
 
+	public static Economy econ = null;
+
 	public ArrayList<Minigame> minigames = new ArrayList<Minigame>();
 	public ArrayList<String> players = new ArrayList<String>();
 	public ArrayList<String> players_left = new ArrayList<String>();
 	public HashMap<String, ItemStack[]> pinv = new HashMap<String, ItemStack[]>();
 
-	public int min_players = 1; //TODO: increment to more like 2 or 3
+	public int min_players = 1;
 	public boolean running = false;
+
+	public int minreward = 0;
+	public int maxreward = 0;
+
+	boolean economy = true;
 
 	public Location mainlobby = null;
 
@@ -124,6 +135,17 @@ public class Main extends JavaPlugin implements Listener {
 
 		min_players = getConfig().getInt("config.min_players");
 
+		minreward = getConfig().getInt("config.min_reward");
+		maxreward = getConfig().getInt("config.max_reward");
+
+		if(minreward > maxreward){
+			int temp = maxreward;
+			maxreward = minreward;
+			minreward = temp;
+		}
+
+		economy = getConfig().getBoolean("config.use_economy");
+		
 		try{
 			Metrics metrics = new Metrics(this);
 			metrics.start();
@@ -132,8 +154,28 @@ public class Main extends JavaPlugin implements Listener {
 		if(getConfig().getBoolean("config.auto_updating")){
 			Updater updater = new Updater(this, 71596, this.getFile(), Updater.UpdateType.DEFAULT, false);
 		}
+
+
+		if(economy){
+			if (!setupEconomy()) {
+	            getLogger().severe(String.format("[%s] - No iConomy dependency found! Disabling Economy.", getDescription().getName()));
+	            economy = false;
+	        }
+		}
 	}
 
+
+	private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
+    }
 
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){    	
@@ -540,9 +582,16 @@ public class Main extends JavaPlugin implements Listener {
 		p.sendMessage(ChatColor.GOLD + "You won this round!");
 		this.updatePlayerStats(p.getName(), "wins", getPlayerStats(p.getName(), "wins") + 1);
 		Random r = new Random();
-		int reward = r.nextInt(21) + 10; // between 10 and 30
+		int reward = r.nextInt((maxreward - minreward) + 1) + minreward;
 		this.updatePlayerStats(p.getName(), "credits", getPlayerStats(p.getName(), "credits") + reward);		
 
+		if(economy){
+			EconomyResponse r_ = econ.depositPlayer(p.getName(), reward);
+			if(!r_.transactionSuccess()) {
+				getServer().getPlayer(p.getName()).sendMessage(ChatColor.RED + String.format("An error occured: %s", r_.errorMessage));
+            }
+		}
+		
 		updateScoreboardOUTGAME(p.getName());
 	}
 
