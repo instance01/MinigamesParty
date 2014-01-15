@@ -55,7 +55,6 @@ public class Main extends JavaPlugin implements Listener {
 	//TODO:
 	// [HIGH] add all other minigames
 	// [MEDIUM] add more commands and stats etc.
-	// [LOW] add config support
 
 
 	/* setup pattern:
@@ -77,7 +76,6 @@ public class Main extends JavaPlugin implements Listener {
 	 * 2. /mp setlobby
 	 * 3. go to location somewhere UNDER lobby
 	 * 4. /mp setup
-	 * 5. reload server
 	 * 
 	 */
 
@@ -175,6 +173,9 @@ public class Main extends JavaPlugin implements Listener {
 					sender.sendMessage(ChatColor.DARK_AQUA + "-- " + ChatColor.GOLD + "Statistics " + ChatColor.DARK_AQUA + "--");
 					if(args.length > 1){
 						String player = args[1];
+						sender.sendMessage(ChatColor.GREEN + player + " has " + Integer.toString(this.getPlayerStats(player, "credits")) + " Credits.");
+					}else{
+						String player = p.getName();
 						sender.sendMessage(ChatColor.GREEN + "You have " + Integer.toString(this.getPlayerStats(player, "credits")) + " Credits.");
 					}
 				}else if(args[0].equalsIgnoreCase("list")){
@@ -214,19 +215,22 @@ public class Main extends JavaPlugin implements Listener {
 							try{
 								pinv.put(p.getName(), p.getInventory().getContents());
 								minigames.get(currentmg).join(p);
-							}catch(Exception e){
-
-							}
+							}catch(Exception e){}
 						}	
 					}
 				}else{
-					p.sendMessage(ChatColor.DARK_AQUA + "Help: ");
+					p.sendMessage(ChatColor.DARK_AQUA + "-- Help --");
 					p.sendMessage(ChatColor.DARK_AQUA + "/mp setlobby");
 					p.sendMessage(ChatColor.DARK_AQUA + "/mp setup");
-					p.sendMessage(ChatColor.DARK_AQUA + "/mp stats");
+					p.sendMessage(ChatColor.DARK_AQUA + "/mp stats [player]");
 					p.sendMessage(ChatColor.DARK_AQUA + "/mp list");
 					p.sendMessage(ChatColor.DARK_AQUA + "/mp leave");
-					p.sendMessage(ChatColor.DARK_AQUA + "/mp setcomponent");
+					p.sendMessage(ChatColor.DARK_AQUA + "/mp setcomponent [minigame] [component]");
+					p.sendMessage(ChatColor.GOLD + "To setup the game, do the following: ");
+					p.sendMessage(ChatColor.DARK_AQUA + "1. Build the main lobby");
+					p.sendMessage(ChatColor.DARK_AQUA + "2. /mp setlobby");
+					p.sendMessage(ChatColor.DARK_AQUA + "3. Go far away");
+					p.sendMessage(ChatColor.DARK_AQUA + "4. /mp setup");
 				}
 			}
 			return true;
@@ -427,7 +431,6 @@ public class Main extends JavaPlugin implements Listener {
 	public void onSnowballLand(ProjectileHitEvent e) {   
 		if (e.getEntity().getShooter() instanceof Player) {
 			if (e.getEntity() instanceof Snowball) {
-
 				Player player = (Player) e.getEntity().getShooter();
 				if(players.contains(player.getName())){
 					BlockIterator bi = new BlockIterator(e.getEntity().getWorld(), e.getEntity().getLocation().toVector(), e.getEntity().getVelocity().normalize(), 0.0D, 4);
@@ -543,6 +546,7 @@ public class Main extends JavaPlugin implements Listener {
 					p.sendMessage(ChatColor.GOLD + "Next round in 30 seconds!");
 					p.getInventory().clear();
 					p.updateInventory();
+					updateScoreboardOUTGAME(pl);
 				}else{
 					remove.add(p.getName());
 				}
@@ -561,7 +565,9 @@ public class Main extends JavaPlugin implements Listener {
 			// reset all:
 			ColorMatch.reset(this.getComponentForMinigame("ColorMatch", "spawn"));
 			Spleef.reset(this.getComponentForMinigame("Spleef", "spawn"));
-			MineField.reset(this.getComponentForMinigame("MineField", "spawn"));
+
+			Location t = this.getComponentForMinigame("MineField", "spawn");
+			MineField.reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
 
 			c = 0;
 			c_ = 0;

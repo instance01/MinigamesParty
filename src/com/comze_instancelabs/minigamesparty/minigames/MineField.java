@@ -85,4 +85,9 @@ public class MineField extends Minigame implements Listener{
 			}
 		}
 	}
+	
+	@Override
+	public void getWinner(){
+		
+	}
 }
