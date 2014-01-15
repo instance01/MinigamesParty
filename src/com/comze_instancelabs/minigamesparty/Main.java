@@ -653,7 +653,7 @@ public class Main extends JavaPlugin implements Listener {
 	 * NEW TIMER PART
 	 */
 
-	public HashMap<Player, Integer> currentscore = new HashMap<Player, Integer>();
+	public HashMap<String, Integer> currentscore = new HashMap<String, Integer>();
 
 	public void updateScoreboard(int c){
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
@@ -676,15 +676,15 @@ public class Main extends JavaPlugin implements Listener {
 				Player p_ = Bukkit.getPlayerExact(pl_);
 				if(isNeeded){
 					int score = p_.getLocation().getBlockZ() - minigames.get(currentmg).finish.getBlockZ();
-					if(currentscore.containsKey(p_)){
-						int oldscore = currentscore.get(p_);
+					if(currentscore.containsKey(pl)){
+						int oldscore = currentscore.get(pl);
 						if(score > oldscore){
-							currentscore.put(p_, score);
+							currentscore.put(pl, score);
 						}else{
 							score = oldscore;
 						}
 					}else{
-						currentscore.put(p_, score);
+						currentscore.put(pl, score);
 					}
 					objective.getScore(p_).setScore(score);
 				}else{

@@ -1,5 +1,7 @@
 package com.comze_instancelabs.minigamesparty.minigames;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -14,6 +16,7 @@ import org.bukkit.event.Listener;
 
 import com.comze_instancelabs.minigamesparty.Main;
 import com.comze_instancelabs.minigamesparty.Minigame;
+import com.comze_instancelabs.minigamesparty.PluginUtil;
 
 public class JumpnRun extends Minigame implements Listener{
 	
@@ -76,6 +79,24 @@ public class JumpnRun extends Minigame implements Listener{
 			}
 		}
 
+	}
+	
+	@Override
+	public void getWinner(){
+		HashMap<String, Integer> currentscore_ = m.currentscore;
+		Map<String, Integer> currentscore__ = PluginUtil.sortByValue(currentscore_);
+
+		Map.Entry<String, Integer> max = null;
+		
+		for (Map.Entry<String, Integer> entry : currentscore__.entrySet())
+		{
+		    if (max == null || entry.getValue().compareTo(max.getValue()) > 0)
+		    {
+		    	max = entry;
+		    }
+		}
+		
+		m.win(Bukkit.getPlayerExact(max.getKey()));
 	}
 	
 }

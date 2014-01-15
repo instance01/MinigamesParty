@@ -1,6 +1,10 @@
 package com.comze_instancelabs.minigamesparty.minigames;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -11,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import com.comze_instancelabs.minigamesparty.Main;
+import com.comze_instancelabs.minigamesparty.PluginUtil;
 import com.comze_instancelabs.minigamesparty.Minigame;
 
 public class MineField extends Minigame implements Listener{
@@ -88,6 +93,21 @@ public class MineField extends Minigame implements Listener{
 	
 	@Override
 	public void getWinner(){
+		HashMap<String, Integer> currentscore_ = m.currentscore;
+		Map<String, Integer> currentscore__ = PluginUtil.sortByValue(currentscore_);
+
+		Map.Entry<String, Integer> max = null;
 		
+		for (Map.Entry<String, Integer> entry : currentscore__.entrySet())
+		{
+			if(!lost.contains(Bukkit.getPlayerExact(entry.getKey()))){
+				if (max == null || entry.getValue().compareTo(max.getValue()) > 0)
+			    {
+			    	max = entry;
+			    }	
+			}
+		}
+		
+		m.win(Bukkit.getPlayerExact(max.getKey()));
 	}
 }
