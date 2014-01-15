@@ -108,6 +108,8 @@ public class MineField extends Minigame implements Listener{
 			}
 		}
 		
-		m.win(Bukkit.getPlayerExact(max.getKey()));
+		if(max != null){
+			m.win(Bukkit.getPlayerExact(max.getKey()));
+		}
 	}
 }

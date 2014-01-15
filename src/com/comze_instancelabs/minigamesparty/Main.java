@@ -365,7 +365,7 @@ public class Main extends JavaPlugin implements Listener {
 								}
 							}
 							if(event.getPlayer().getLocation().getBlockY() + 2 < current.spawn.getBlockY()){
-								if(current.name.equalsIgnoreCase("JumpnRun")){
+								if(current.name.equalsIgnoreCase("JumpnRun") || current.name.equalsIgnoreCase("MineField")){
 									final Player p = event.getPlayer();
 									Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
 										public void run(){
@@ -375,8 +375,21 @@ public class Main extends JavaPlugin implements Listener {
 									return;
 								}
 								current.lost.add(event.getPlayer());
-								// TODO: If one players is left, end the game!
+								// TODO: TRY OUT: If one player is left, end the current game
+								int count = 0;
+								for(String pl : m.players){
+									Player p = Bukkit.getPlayerExact(pl);
+									if(p.isOnline()){
+										if(!current.lost.contains(p)){
+											count++;
+										}
+									}
+								}
 								current.spectate(event.getPlayer());
+								// there's only one man standing
+								if(count < 2){
+									c = 60; // just skips all the remaining seconds and sets to 60, current timer will do the rest
+								}
 							}
 						}
 					}else if(current.lost.contains(event.getPlayer())){
@@ -577,12 +590,12 @@ public class Main extends JavaPlugin implements Listener {
 			currentid = null;
 
 			// reset all:
-			ColorMatch.reset(this.getComponentForMinigame("ColorMatch", "spawn"));
-			Spleef.reset(this.getComponentForMinigame("Spleef", "spawn"));
-
-			Location t = this.getComponentForMinigame("MineField", "spawn");
-			MineField.reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
-
+			Bukkit.getScheduler().runTask(this, new Runnable(){
+				public void run(){
+					resetAll();
+				}
+			});
+			
 			c = 0;
 			c_ = 0;
 			if(currentid != null){
@@ -591,7 +604,7 @@ public class Main extends JavaPlugin implements Listener {
 		}
 
 		// start the next minigame after 60 seconds
-		if(c == 60){
+		if(c == 60 || c > 60){
 			c = 0;
 			if(currentid != null){
 				currentid.cancel();
