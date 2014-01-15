@@ -81,6 +81,7 @@ public class Main extends JavaPlugin implements Listener {
 
 	public ArrayList<Minigame> minigames = new ArrayList<Minigame>();
 	public ArrayList<String> players = new ArrayList<String>();
+	public ArrayList<String> players_left = new ArrayList<String>();
 	public HashMap<String, ItemStack[]> pinv = new HashMap<String, ItemStack[]>();
 
 	public int min_players = 1; //TODO: increment to more like 2 or 3
@@ -239,16 +240,52 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 
-	//TODO: player quits and rejoins -> still in arena!
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event){
 		if(players.contains(event.getPlayer().getName())){
 			players.remove(event.getPlayer().getName());
+			players_left.add(event.getPlayer().getName());
 		}
 
 		if(players.size() < min_players){
 			stopFull();
 		}
+	}
+
+	@EventHandler 
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		final Player p = event.getPlayer();
+
+		if(players_left.contains(p.getName())){
+			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
+				public void run(){
+					p.teleport(getLobby());
+				}
+			}, 5);
+		}
+
+		if (!getConfig().getBoolean("config.game-on-join")) return;
+
+		if(players.contains(event.getPlayer().getName())){
+			p.sendMessage(ChatColor.RED + "You are already in the game!");
+			return;
+		}
+		players.add(event.getPlayer().getName());
+		event.setJoinMessage(ChatColor.GOLD + p.getName() + " has joined the game!");
+
+		// if its the first player to join, start the whole minigame
+		if(players.size() < min_players + 1){
+			pinv.put(event.getPlayer().getName(), p.getInventory().getContents());
+			startNew();
+			return;
+		}
+
+		try {
+			pinv.put(event.getPlayer().getName(), event.getPlayer().getInventory().getContents());
+			minigames.get(currentmg).join(event.getPlayer());
+		} catch(Exception ex) {
+			event.getPlayer().sendMessage(ChatColor.RED + "An error occured.");
+		}	
 	}
 
 	@EventHandler
@@ -460,33 +497,6 @@ public class Main extends JavaPlugin implements Listener {
 		}
 	}
 
-	@EventHandler 
-	public void onPlayerJoin(PlayerJoinEvent e) {
-		Player p = e.getPlayer();
-		if (!getConfig().getBoolean("config.game-on-join")) return;
-
-		if(players.contains(e.getPlayer().getName())){
-			p.sendMessage(ChatColor.RED + "An error occured. (Already in the game!)");
-			return;
-		}
-		players.add(e.getPlayer().getName());
-		e.setJoinMessage(ChatColor.GOLD + p.getName() + " has joined the game!");
-
-		// if its the first player to join, start the whole minigame
-		if(players.size() < min_players + 1){
-			pinv.put(e.getPlayer().getName(), p.getInventory().getContents());
-			startNew();
-			return;
-		}
-
-		try {
-			pinv.put(e.getPlayer().getName(), e.getPlayer().getInventory().getContents());
-			minigames.get(currentmg).join(e.getPlayer());
-		} catch(Exception ex) {
-			e.getPlayer().sendMessage(ChatColor.RED + "An error occured.");
-		}	
-	}
-
 	/*public void nextMinigame(Player p){
 		// get current minigame and make winners
 		// get new minigame and tp all to the new one
@@ -594,8 +604,6 @@ public class Main extends JavaPlugin implements Listener {
 
 		if(currentmg > -1){
 			minigames.get(currentmg).getWinner();
-			//TODO: add winners for score based minigames like MineField or JumpnRun
-			// get top three of players who got most far
 		}
 		currentscore.clear();
 		if(currentmg < minigames.size() - 1){
