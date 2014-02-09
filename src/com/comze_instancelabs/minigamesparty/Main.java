@@ -50,6 +50,7 @@ import org.bukkit.util.BlockIterator;
 
 import com.comze_instancelabs.minigamesparty.minigames.ColorMatch;
 import com.comze_instancelabs.minigamesparty.minigames.DeadEnd;
+import com.comze_instancelabs.minigamesparty.minigames.DisIntegration;
 import com.comze_instancelabs.minigamesparty.minigames.JumpnRun;
 import com.comze_instancelabs.minigamesparty.minigames.MineField;
 import com.comze_instancelabs.minigamesparty.minigames.Spleef;
@@ -127,6 +128,9 @@ public class Main extends JavaPlugin implements Listener {
 					DeadEnd de = new DeadEnd(m, m.getComponentForMinigame("DeadEnd", "spawn"), m.getLobby(), m.getComponentForMinigame("DeadEnd", "spectatorlobby"));
 					minigames.add(de);
 					getServer().getPluginManager().registerEvents(de, m);
+					DisIntegration di = new DisIntegration(m, m.getComponentForMinigame("DisIntegration", "spawn"), m.getLobby(), m.getComponentForMinigame("DisIntegration", "spectatorlobby"));
+					minigames.add(di);
+					getServer().getPluginManager().registerEvents(di, m);
 				}
 			}
 		}, 40);
@@ -980,14 +984,16 @@ public class Main extends JavaPlugin implements Listener {
 		MineField.setup(new Location(start.getWorld(), x, y, z + 64 * 2 + 20 * 2), this, "MineField");
 		JumpnRun.setup(new Location(start.getWorld(), x, y, z + 64 * 3 + 20 * 3), this, "JumpnRun");
 		DeadEnd.setup(new Location(start.getWorld(), x + 64 + 20, y, z), this, "DeadEnd");
+		DisIntegration.setup(new Location(start.getWorld(), x + 64 * 2 + 20 * 2, y, z), this, "DisIntegration");
 
+		
 		/*
 		 * next minigame locations: (TODO FOR LATER USE)
 		 * 
 		 * new Location(start.getWorld(), x, y, z + 64 * 2 + 20 * 2) [MINEFIELD]
 		 * new Location(start.getWorld(), x, y, z + 64 * 3 + 20 * 3) [JUMPNRUN]
 		 * new Location(start.getWorld(), x + 64 + 20, y, z) [DEADEND]
-		 * new Location(start.getWorld(), x + 64 * 2 + 20 * 2, y, z)
+		 * new Location(start.getWorld(), x + 64 * 2 + 20 * 2, y, z) [DISINTEGRATION]
 		 * new Location(start.getWorld(), x + 64 * 3 + 20 * 3, y, z)
 		 * 
 		 * would create the following pattern:
@@ -1008,6 +1014,7 @@ public class Main extends JavaPlugin implements Listener {
 		minigames.add(new MineField(this, this.getComponentForMinigame("MineField", "spawn"), this.getComponentForMinigame("MineField", "lobby"), this.getComponentForMinigame("MineField", "spectatorlobby"), m.getComponentForMinigame("MineField", "finishline")));
 		minigames.add(new JumpnRun(this, this.getComponentForMinigame("JumpnRun", "spawn"), this.getComponentForMinigame("JumpnRun", "lobby"), this.getComponentForMinigame("JumpnRun", "spectatorlobby"), m.getComponentForMinigame("JumpnRun", "finishline")));
 		minigames.add(new DeadEnd(this, this.getComponentForMinigame("DeadEnd", "spawn"), this.getComponentForMinigame("DeadEnd", "lobby"), this.getComponentForMinigame("DeadEnd", "spectatorlobby")));
+		minigames.add(new DisIntegration(this, this.getComponentForMinigame("DisIntegration", "spawn"), this.getComponentForMinigame("DisIntegration", "lobby"), this.getComponentForMinigame("DisIntegration", "spectatorlobby")));
 
 		getLogger().info("[MinigamesParty] Finished Setup");
 	}
@@ -1018,6 +1025,7 @@ public class Main extends JavaPlugin implements Listener {
 		Location t = this.getComponentForMinigame("MineField", "spawn");
 		MineField.reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
 		DeadEnd.reset(this.getComponentForMinigame("DeadEnd", "spawn"));
+		DisIntegration.reset(this.getComponentForMinigame("DisIntegration", "spawn"));
 	}
 
 
