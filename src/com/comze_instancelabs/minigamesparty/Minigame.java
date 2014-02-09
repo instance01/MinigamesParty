@@ -3,6 +3,7 @@ package com.comze_instancelabs.minigamesparty;
 import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -42,6 +43,32 @@ public class Minigame {
 		}
 		
 		lost.clear();
+	}
+	
+	int count = 5;
+	BukkitTask cooldown = null;
+	
+	public void startCooldown(){
+		final BukkitTask id__ = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(m, new Runnable() {
+			public void run(){
+				
+				for(String p_ : m.players){
+					Player p = Bukkit.getPlayerExact(p_);
+					if(p.isOnline()){
+						p.sendMessage(ChatColor.GREEN + "Starting in " + ChatColor.GOLD + Integer.toString(count));
+					}
+				}
+				count--;
+				if(count < 0){
+					m.registerMinigameStart(m.minigames.get(m.currentmg).start());
+					m.ingame_started = true;
+					count = 5;
+					cooldown.cancel();
+					cooldown = null;
+				}
+			}
+		}, 20, 20);
+		cooldown = id__;
 	}
 	
 	public BukkitTask start(){

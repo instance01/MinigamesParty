@@ -6,6 +6,7 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -148,7 +149,7 @@ public class DisIntegration extends Minigame implements Listener{
 		int y = start.getBlockY() - 2;
 		int z = start.getBlockZ() - 32;
 		
-		for(int i = 0; i < 78 * 2; i++){
+		for(int i = 0; i < 78 * 4; i++){
 			int ind = r.nextInt(4096);
 			Integer[] f_ = coords.get(ind);
 			int colorcode = ints.get(ind);

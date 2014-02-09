@@ -408,7 +408,7 @@ public class Main extends JavaPlugin implements Listener {
 				if(currentmg > -1){
 					final Minigame current = minigames.get(currentmg);
 					if(!current.lost.contains(event.getPlayer())){
-						if(started){
+						if(started && ingame_started){
 							if(current.name.equalsIgnoreCase("DeadEnd")){
 								World w = event.getPlayer().getWorld();
 								Location under = new Location(w, event.getPlayer().getLocation().getBlockX(), event.getPlayer().getLocation().getBlockY() - 1, event.getPlayer().getLocation().getBlockZ());
@@ -446,7 +446,7 @@ public class Main extends JavaPlugin implements Listener {
 							}
 						}
 					}else if(current.lost.contains(event.getPlayer())){
-						if(started){
+						if(started && ingame_started){
 							if(event.getPlayer().getLocation().getBlockY() < current.spectatorlobby.getBlockY() || event.getPlayer().getLocation().getBlockY() > current.spectatorlobby.getBlockY()){
 								//current.spectate(event.getPlayer());
 								final Player p = event.getPlayer();
@@ -606,7 +606,8 @@ public class Main extends JavaPlugin implements Listener {
 	 * NEW TIMER PART
 	 */
 	int c = 0; // count
-	int c_ = 0;
+	int c_ = 0; 
+	boolean ingame_started = false; //TODO ingame started
 	boolean started = false;
 	BukkitTask t = null;
 	int currentmg = 0;
@@ -624,6 +625,7 @@ public class Main extends JavaPlugin implements Listener {
 			}, 30 * 20); // 30 secs
 			t.cancel();
 			started = false;
+			ingame_started = false;
 
 			ArrayList<String> remove = new ArrayList<String>();
 			for(String pl : players){
@@ -669,7 +671,8 @@ public class Main extends JavaPlugin implements Listener {
 			if(currentid != null){
 				currentid.cancel();
 			}
-			currentid = nextMinigame();
+			//currentid = nextMinigame();
+			nextMinigame();
 		}
 
 
@@ -677,8 +680,10 @@ public class Main extends JavaPlugin implements Listener {
 		c_ += 1;
 	}
 
-	public BukkitTask nextMinigame(){
-
+	//public BukkitTask nextMinigame(){
+	public void nextMinigame(){
+		ingame_started = false;
+		
 		if(currentmg > -1){
 			minigames.get(currentmg).getWinner();
 		}
@@ -704,14 +709,19 @@ public class Main extends JavaPlugin implements Listener {
 			}
 		}
 		if(currentmg > -1){
-			return minigames.get(currentmg).start();
+			//return minigames.get(currentmg).start();
+			minigames.get(currentmg).startCooldown();
 		}else{
-			return null;
+			//return null;
 		}
+	}
+	
+	public void registerMinigameStart(BukkitTask minigame){
+		currentid = minigame;
 	}
 
 	public void startNew(){
-		if(!started){
+		if(!started && !ingame_started){
 			if(players.size() > min_players - 1){
 				// reset all
 				for(Minigame m : minigames){
@@ -721,14 +731,15 @@ public class Main extends JavaPlugin implements Listener {
 				currentid = null;
 
 				// start first minigame
-				currentid = nextMinigame();
+				//currentid = nextMinigame();
+				nextMinigame();
 
 				// start main timer
 				t = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable(){
 					public void run(){
 						secondsTick();
 					}
-				}, 1, 20);
+				}, 120, 20); // TODO try out - that needs to be in sync with cooldown timer
 
 				started = true;
 			}	
@@ -928,6 +939,7 @@ public class Main extends JavaPlugin implements Listener {
 
 		running = false;
 		started = false;
+		ingame_started = false;
 		players.clear();
 		currentmg = 0;
 
