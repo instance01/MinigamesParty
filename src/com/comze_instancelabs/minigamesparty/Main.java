@@ -31,6 +31,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -39,6 +40,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -876,6 +878,13 @@ public class Main extends JavaPlugin implements Listener {
 		for(String pl : players){
 			Player p = Bukkit.getPlayerExact(pl);
 			if(p.isOnline()){
+				for (PotionEffect effect : p.getActivePotionEffects()) {
+					try {
+						p.removePotionEffect(effect.getType());
+					} catch (Exception e) {
+						
+					}
+				}
 				minigames.get(minigames.size() - 1).leave(p);
 				p.sendMessage(ChatColor.GOLD + "Next round in 30 seconds!");
 				p.getInventory().clear();
@@ -1032,5 +1041,17 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 
+	
+	@EventHandler(priority=EventPriority.HIGH)
+	public void onPlayerCommand(PlayerCommandPreprocessEvent event){
+		if(players.contains(event.getPlayer().getName())){
+			if(event.getMessage().startsWith("/mp") || event.getMessage().equalsIgnoreCase("/minigamesparty")){
+				// nothing
+			}else{
+				event.setCancelled(true);
+				event.getPlayer().sendMessage("§3You're in MinigamesParty. Please use §6/mp leave §3to leave the minigame.");
+			}
+		}
+	}
 
 }
