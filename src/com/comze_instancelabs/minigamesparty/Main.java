@@ -661,11 +661,11 @@ public class Main extends JavaPlugin implements Listener {
 			currentid = null;
 
 			// reset all:
-			Bukkit.getScheduler().runTask(this, new Runnable(){
+			Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 				public void run(){
 					resetAll();
 				}
-			});
+			}, 20L);
 			
 			c = 0;
 			c_ = 0;
@@ -744,7 +744,8 @@ public class Main extends JavaPlugin implements Listener {
 				nextMinigame();
 
 				// start main timer
-				t = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable(){
+				//t = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable(){
+				t = Bukkit.getServer().getScheduler().runTaskTimer(this, new Runnable(){
 					public void run(){
 						secondsTick();
 					}

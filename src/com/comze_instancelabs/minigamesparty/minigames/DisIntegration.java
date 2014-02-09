@@ -106,9 +106,9 @@ public class DisIntegration extends Minigame implements Listener{
 	
 	public static void reset(final Location start){
 		try{
-			final MassBlockUpdate mbu = CraftMassBlockUpdate.createMassBlockUpdater(m, start.getWorld());
+			//final MassBlockUpdate mbu = CraftMassBlockUpdate.createMassBlockUpdater(m, start.getWorld());
 
-    		mbu.setRelightingStrategy(MassBlockUpdate.RelightingStrategy.NEVER);
+    		//mbu.setRelightingStrategy(MassBlockUpdate.RelightingStrategy.NEVER);
     		
 			if(ints.size() < 1){
 				getAll(start);
@@ -131,12 +131,17 @@ public class DisIntegration extends Minigame implements Listener{
 					Integer[] f = new Integer[]{i, j};
 					coords.add(f);
 
-					mbu.setBlock(x + i, y, z + j, 35);
-					mbu.setBlock(x + i, y_, z + j, 89);
+					Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x + i, y, z + j));
+
+					//mbu.setBlock(x + i, y, z + j, 35, current);
+					//mbu.setBlock(x + i, y_, z + j, 89);
+					
+					b.setType(Material.WOOL);
+					b.setData((byte)current);
 				}
 			}
 
-			mbu.notifyClients();
+			//mbu.notifyClients();
 			
 		}catch (Exception e){
 			e.printStackTrace();
