@@ -76,6 +76,11 @@ public class Minigame {
 	}
 	
 	public void join(final Player p){
+		for (PotionEffect effect : p.getActivePotionEffects()){
+			try{
+				p.removePotionEffect(effect.getType());
+			}catch(Exception e){}
+		}
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(m, new Runnable() {
 			@Override
 			public void run() {

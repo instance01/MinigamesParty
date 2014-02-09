@@ -501,11 +501,15 @@ public class Main extends JavaPlugin implements Listener {
 	public void onBlockBreak(BlockBreakEvent event){
 		if(players.contains(event.getPlayer().getName())){
 			//SPLEEF
-			if(event.getBlock().getType() == Material.SNOW_BLOCK){
-				event.getPlayer().getInventory().addItem(new ItemStack(Material.SNOW_BALL, 2));
-				event.getPlayer().updateInventory();
-				event.getBlock().setType(Material.AIR);
-				event.setCancelled(true);
+			if(ingame_started){
+				if(event.getBlock().getType() == Material.SNOW_BLOCK){
+					event.getPlayer().getInventory().addItem(new ItemStack(Material.SNOW_BALL, 2));
+					event.getPlayer().updateInventory();
+					event.getBlock().setType(Material.AIR);
+					event.setCancelled(true);
+				}else{
+					event.setCancelled(true);
+				}
 			}else{
 				event.setCancelled(true);
 			}
@@ -613,6 +617,11 @@ public class Main extends JavaPlugin implements Listener {
 	int currentmg = 0;
 	BukkitTask currentid = null;
 	public void secondsTick(){
+		
+		if(!ingame_started){
+			return;
+		}
+		
 		// update scoreboard
 		updateScoreboard(60 - c);
 
@@ -943,11 +952,11 @@ public class Main extends JavaPlugin implements Listener {
 		players.clear();
 		currentmg = 0;
 
-		Bukkit.getScheduler().runTask(this, new Runnable(){
+		Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 			public void run(){
 				resetAll();
 			}
-		});
+		}, 20L);
 	}
 
 	public Location getLobby(){
