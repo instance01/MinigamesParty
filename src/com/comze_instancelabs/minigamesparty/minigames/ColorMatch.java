@@ -50,7 +50,7 @@ public class ColorMatch extends Minigame implements Listener{
 				int z_ = z + j * 4;
 				
 				current = r.nextInt(colors.size());
-				ints.add(current);
+				ints.add((int) colors.get(current).getData());
 				
 				for(int i_ = 0; i_ < 4; i_++){
 					for(int j_ = 0; j_ < 4; j_++){
@@ -166,6 +166,9 @@ public class ColorMatch extends Minigame implements Listener{
 					
 					//current = r.nextInt(colors.size());
 					current = ints.get(count);
+					if (current < 1) {
+						current = (int) colors.get(r.nextInt(colors.size())).getData();
+					}
 					count += 1;
 					
 					for(int i_ = 0; i_ < 4; i_++){
