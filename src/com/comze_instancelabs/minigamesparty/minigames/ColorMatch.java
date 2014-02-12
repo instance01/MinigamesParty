@@ -29,7 +29,7 @@ public class ColorMatch extends Minigame implements Listener{
 		super("ColorMatch", arg2, arg3, arg4, arg5, null);
 	}
 	
-	static ArrayList<DyeColor> colors = new ArrayList<DyeColor>(Arrays.asList(DyeColor.BLUE, DyeColor.RED, DyeColor.CYAN, DyeColor.BLACK, DyeColor.GREEN, DyeColor.YELLOW, DyeColor.ORANGE));
+	static ArrayList<DyeColor> colors = new ArrayList<DyeColor>(Arrays.asList(DyeColor.BLUE, DyeColor.RED, DyeColor.CYAN, DyeColor.BLACK, DyeColor.GREEN, DyeColor.YELLOW, DyeColor.ORANGE, DyeColor.PURPLE));
 	static Random r = new Random();
 	
 	public static void setup(Location start, Main main, String name_){
@@ -77,7 +77,13 @@ public class ColorMatch extends Minigame implements Listener{
 			@Override
 			public void run(){
 				
-				currentw = r.nextInt(colors.size());
+				int temp = r.nextInt(colors.size());
+				if (currentw == temp) {
+					currentw = r.nextInt(colors.size());
+				} else {
+					currentw = temp;
+				}
+
 				for(String pl : m.players){
 					Player p = Bukkit.getPlayerExact(pl);
 					// set inventory and exp bar
