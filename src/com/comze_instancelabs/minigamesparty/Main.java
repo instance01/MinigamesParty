@@ -262,24 +262,30 @@ public class Main extends JavaPlugin implements Listener {
 						sender.sendMessage(ChatColor.DARK_AQUA + m.name);
 					}
 				}else if(args[0].equalsIgnoreCase("leave")){
-					p.teleport(getLobby());
-					Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
-						public void run(){
-							p.teleport(getLobby());
+					if(players.contains(p.getName())){
+						p.teleport(getLobby());
+						Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
+							public void run(){
+								p.teleport(getLobby());
+							}
+						}, 5);
+						updateScoreboardOUTGAME(p.getName());
+						p.getInventory().clear();
+						p.updateInventory();
+						p.getInventory().setContents(pinv.get(p.getName()));
+						p.updateInventory();
+						if(currentmg > -1){
+							minigames.get(currentmg).leave(p);
 						}
-					}, 5);
-					updateScoreboardOUTGAME(p.getName());
-					p.getInventory().clear();
-					p.updateInventory();
-					p.getInventory().setContents(pinv.get(p.getName()));
-					p.updateInventory();
-					if(currentmg > -1){
-						minigames.get(currentmg).leave(p);
-					}
-					players.remove(p.getName());
-					p.sendMessage(ChatColor.RED + "You left the game.");
-					if(players.size() < min_players){
-						stopFull();
+						players.remove(p.getName());
+						p.sendMessage(ChatColor.RED + "You left the game.");
+						if(players.size() < min_players){
+							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+								public void run(){
+									stopFull();
+								}
+							}, 15);
+						}
 					}
 				}else if(args[0].equalsIgnoreCase("join")){
 					if(players.contains(p.getName())){
@@ -643,14 +649,29 @@ public class Main extends JavaPlugin implements Listener {
 	}
 	
 	//TODO test rewards count
-	public HashMap<String, Integer> rewardcount = new HashMap<String, Integer>();
+	public final HashMap<String, Integer> rewardcount = new HashMap<String, Integer>();
 	
-	public void giveItemRewards(Player p){
-		if(!rewardcount.containsKey(p.getName())){
-			return;
+	public void giveItemRewards(final Player p, boolean task){
+		if(task){
+			Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+				@Override
+				public void run(){
+					if(!rewardcount.containsKey(p.getName())){
+						return;
+					}
+					p.getInventory().addItem(new ItemStack(item_id, rewardcount.get(p.getName())));
+					p.updateInventory();
+					rewardcount.remove(p.getName());
+				}
+			}, 10L);
+		}else{
+			if(!rewardcount.containsKey(p.getName())){
+				return;
+			}
+			p.getInventory().addItem(new ItemStack(item_id, rewardcount.get(p.getName())));
+			p.updateInventory();
+			rewardcount.remove(p.getName());
 		}
-		p.getInventory().addItem(new ItemStack(item_id, rewardcount.get(p.getName())));
-		p.updateInventory();
 	}
 
 
@@ -659,7 +680,7 @@ public class Main extends JavaPlugin implements Listener {
 	 */
 	int c = 0; // count
 	int c_ = 0; 
-	boolean ingame_started = false; //TODO ingame started
+	boolean ingame_started = false;
 	boolean started = false;
 	BukkitTask t = null;
 	int currentmg = 0;

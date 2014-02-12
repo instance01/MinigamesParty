@@ -99,6 +99,7 @@ public class Minigame {
 				p.removePotionEffect(effect.getType());
 			}catch(Exception e){}
 		}
+
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(m, new Runnable() {
 			@Override
 			public void run() {
@@ -110,9 +111,11 @@ public class Minigame {
 						p.removePotionEffect(effect.getType());
 					}catch(Exception e){}
 				}
-				m.giveItemRewards(p);
+				
 			}
 		}, 5);
+		
+		m.giveItemRewards(p, true);
 	}
 	
 	public void spectate(final Player p){
