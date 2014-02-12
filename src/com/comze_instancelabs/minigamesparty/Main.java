@@ -243,9 +243,11 @@ public class Main extends JavaPlugin implements Listener {
 					}
 				}else if(args[0].equalsIgnoreCase("setcomponent")){
 					// /mp setcomponent [minigame] [component]
-					if(args.length > 2){
-						this.saveComponentForMinigame(args[1], args[2], p.getLocation());
-						p.sendMessage(ChatColor.GREEN + "Saved component");
+					if(sender.hasPermission("mp.setup")){
+						if(args.length > 2){
+							this.saveComponentForMinigame(args[1], args[2], p.getLocation());
+							p.sendMessage(ChatColor.GREEN + "Saved component");
+						}
 					}
 				}else if(args[0].equalsIgnoreCase("stats")){
 					sender.sendMessage(ChatColor.DARK_AQUA + "-- " + ChatColor.GOLD + "Statistics " + ChatColor.DARK_AQUA + "--");
@@ -304,7 +306,7 @@ public class Main extends JavaPlugin implements Listener {
 						}	
 					}
 				}else{
-					p.sendMessage(ChatColor.DARK_AQUA + "-- Help --");
+					p.sendMessage(ChatColor.GREEN + "-- MinigamesParty Help --");
 					p.sendMessage(ChatColor.DARK_AQUA + "/mp setlobby");
 					p.sendMessage(ChatColor.DARK_AQUA + "/mp setup");
 					p.sendMessage(ChatColor.DARK_AQUA + "/mp stats [player]");
