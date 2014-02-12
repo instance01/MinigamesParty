@@ -98,9 +98,14 @@ public class Main extends JavaPlugin implements Listener {
 
 	public int minreward = 0;
 	public int maxreward = 0;
-
+	public int item_minreward = 0;
+	public int item_maxreward = 0;
+	
+	public int item_id = 264;
+	
 	boolean economy = true;
-
+	boolean item_rewards = true;
+	
 	public Location mainlobby = null;
 
 	Main m;
@@ -136,6 +141,19 @@ public class Main extends JavaPlugin implements Listener {
 		}, 40);
 
 		getConfig().options().header("I recommend you to set auto_updating to true for possible future bugfixes.");
+		
+		// I'm running on windows, just making sure for Linux users:
+		getConfig().addDefault("config.auto_updating", true);
+		getConfig().addDefault("config.min_players", 1);
+		getConfig().addDefault("config.game-on-join", false);
+		getConfig().addDefault("config.max_reward", 30);
+		getConfig().addDefault("config.min_reward", 10);
+		getConfig().addDefault("config.use_economy", false);
+		getConfig().addDefault("config.use_item_rewards", false);
+		getConfig().addDefault("config.item_reward_maxamount", 10);
+		getConfig().addDefault("config.item_reward_minamount", 3);
+		getConfig().addDefault("config.item_reward_id", 264);
+
 		getConfig().options().copyDefaults(true);
 		this.saveConfig();
 
@@ -143,14 +161,25 @@ public class Main extends JavaPlugin implements Listener {
 
 		minreward = getConfig().getInt("config.min_reward");
 		maxreward = getConfig().getInt("config.max_reward");
+		item_minreward = getConfig().getInt("config.item_reward_minamount");
+		item_maxreward = getConfig().getInt("config.item_reward_maxamount");
 
+		item_id = getConfig().getInt("config.item_reward_id"); 
+		
 		if(minreward > maxreward){
 			int temp = maxreward;
 			maxreward = minreward;
 			minreward = temp;
 		}
+		
+		if(item_minreward > item_maxreward){
+			int temp = item_maxreward;
+			item_maxreward = item_minreward;
+			item_minreward = temp;
+		}
 
 		economy = getConfig().getBoolean("config.use_economy");
+		item_rewards = getConfig().getBoolean("config.use_item_rewards");
 		
 		try{
 			Metrics metrics = new Metrics(this);
@@ -427,7 +456,6 @@ public class Main extends JavaPlugin implements Listener {
 									return;
 								}
 								current.lost.add(event.getPlayer());
-								// TODO: TRY OUT: If one player is left, end the current game
 								int count = 0;
 								for(String pl : m.players){
 									Player p = Bukkit.getPlayerExact(pl);
@@ -602,7 +630,27 @@ public class Main extends JavaPlugin implements Listener {
             }
 		}
 		
+		if(item_rewards){
+			int reward_ = r.nextInt((item_maxreward - item_minreward) + 1) + item_minreward;
+			p.sendMessage("§aYou earned " + Integer.toString(reward_) + " Diamonds this round. You'll get them at the end.");
+			if(rewardcount.containsKey(p.getName())){
+				reward_ += rewardcount.get(p.getName());
+			}
+			rewardcount.put(p.getName(), reward_);
+		}
+		
 		updateScoreboardOUTGAME(p.getName());
+	}
+	
+	//TODO test rewards count
+	public HashMap<String, Integer> rewardcount = new HashMap<String, Integer>();
+	
+	public void giveItemRewards(Player p){
+		if(!rewardcount.containsKey(p.getName())){
+			return;
+		}
+		p.getInventory().addItem(new ItemStack(item_id, rewardcount.get(p.getName())));
+		p.updateInventory();
 	}
 
 

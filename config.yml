@@ -9,3 +9,7 @@ config:
   max_reward: 30
   min_reward: 10
   use_economy: false
+  use_item_rewards: false
+  item_reward_maxamount: 10
+  item_reward_minamount: 3
+  item_reward_id: 264

@@ -110,6 +110,7 @@ public class Minigame {
 						p.removePotionEffect(effect.getType());
 					}catch(Exception e){}
 				}
+				m.giveItemRewards(p);
 			}
 		}, 5);
 	}
