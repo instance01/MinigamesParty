@@ -130,4 +130,8 @@ public class Minigame {
 		}, 5);
 	}
 	
+	
+	public void reset(final Location location){
+	}
+	
 }

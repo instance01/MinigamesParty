@@ -698,7 +698,8 @@ public class Main extends JavaPlugin implements Listener {
 
 		// stop the whole party after some rounds
 		if(c_ > minigames.size() * 60 - 3){
-			Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable(){
+			//Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable(){
+			Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 				public void run(){
 					startNew();
 				}
@@ -734,7 +735,7 @@ public class Main extends JavaPlugin implements Listener {
 			// reset all:
 			Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 				public void run(){
-					resetAll();
+					resetAll(false);
 				}
 			}, 20L);
 			
@@ -766,6 +767,15 @@ public class Main extends JavaPlugin implements Listener {
 		
 		if(currentmg > -1){
 			minigames.get(currentmg).getWinner();
+			
+			// reset current minigame
+			//TODO try out
+			if(!minigames.get(currentmg).name.toLowerCase().equalsIgnoreCase("minefield")){
+				minigames.get(currentmg).reset(this.getComponentForMinigame(minigames.get(currentmg).name, "spawn"));
+			}else{
+				Location t = this.getComponentForMinigame("MineField", "spawn");
+				minigames.get(currentmg).reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
+			}
 		}
 		currentscore.clear();
 		if(currentmg < minigames.size() - 1){
@@ -820,7 +830,7 @@ public class Main extends JavaPlugin implements Listener {
 					public void run(){
 						secondsTick();
 					}
-				}, 120, 20); // TODO try out - that needs to be in sync with cooldown timer
+				}, 120, 20);
 
 				started = true;
 			}	
@@ -1001,7 +1011,7 @@ public class Main extends JavaPlugin implements Listener {
 
 		Bukkit.getScheduler().runTask(this, new Runnable(){
 			public void run(){
-				resetAll();
+				resetAll(false);
 			}
 		});
 
@@ -1026,7 +1036,7 @@ public class Main extends JavaPlugin implements Listener {
 
 		Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 			public void run(){
-				resetAll();
+				resetAll(true);
 			}
 		}, 20L);
 	}
@@ -1112,13 +1122,26 @@ public class Main extends JavaPlugin implements Listener {
 		getLogger().info("[MinigamesParty] Finished Setup");
 	}
 
-	public void resetAll(){
-		ColorMatch.reset(this.getComponentForMinigame("ColorMatch", "spawn"));
-		Spleef.reset(this.getComponentForMinigame("Spleef", "spawn"));
-		Location t = this.getComponentForMinigame("MineField", "spawn");
-		MineField.reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
-		DeadEnd.reset(this.getComponentForMinigame("DeadEnd", "spawn"));
-		DisIntegration.reset(this.getComponentForMinigame("DisIntegration", "spawn"));
+	public void resetAll(boolean flag){
+		getLogger().info("Resetting all.");
+		
+		if(flag){
+			for(Minigame m : minigames){
+				if(m.name.toLowerCase().equalsIgnoreCase("minefield")){
+					Location t = this.getComponentForMinigame("MineField", "spawn");
+					m.reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));	
+				}else{
+					m.reset(this.getComponentForMinigame(m.name, "spawn"));
+				}
+				
+			}
+			/*ColorMatch.reset(this.getComponentForMinigame("ColorMatch", "spawn"));
+			Spleef.reset(this.getComponentForMinigame("Spleef", "spawn"));
+			Location t = this.getComponentForMinigame("MineField", "spawn");
+			MineField.reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
+			DeadEnd.reset(this.getComponentForMinigame("DeadEnd", "spawn"));
+			DisIntegration.reset(this.getComponentForMinigame("DisIntegration", "spawn"));*/
+		}
 	}
 
 

@@ -104,7 +104,8 @@ public class DisIntegration extends Minigame implements Listener{
 		}
 	}
 	
-	public static void reset(final Location start){
+	@Override
+	public void reset(final Location start){
 		try{
 			//final MassBlockUpdate mbu = CraftMassBlockUpdate.createMassBlockUpdater(m, start.getWorld());
 

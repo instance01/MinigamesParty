@@ -54,7 +54,8 @@ public class Spleef extends Minigame implements Listener{
 		}
 	}
 	
-	public static void reset(Location start){
+	@Override
+	public void reset(Location start){
 		int x = start.getBlockX() - 32;
 		int y = start.getBlockY() - 2;
 		int z = start.getBlockZ() - 32;
