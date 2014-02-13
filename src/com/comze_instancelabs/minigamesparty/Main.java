@@ -533,7 +533,7 @@ public class Main extends JavaPlugin implements Listener {
 			EntityDamageByEntityEvent event_ = (EntityDamageByEntityEvent) event;
 			if (event_.getDamager() instanceof Arrow) {
 				final Arrow arrow = (Arrow) event_.getDamager();
-				if (arrow.getShooter() instanceof Player) {
+				if (arrow.getShooter() instanceof Player && event.getEntity() instanceof Player) {
 					Player p = (Player) event.getEntity();
 					Player damager = (Player) arrow.getShooter();
 					if(players.contains(p.getName()) && players.contains(damager.getName())){
