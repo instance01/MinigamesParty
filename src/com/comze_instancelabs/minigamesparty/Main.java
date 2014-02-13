@@ -41,6 +41,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -153,7 +154,7 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().addDefault("config.item_reward_maxamount", 10);
 		getConfig().addDefault("config.item_reward_minamount", 3);
 		getConfig().addDefault("config.item_reward_id", 264);
-
+		
 		getConfig().options().copyDefaults(true);
 		this.saveConfig();
 
@@ -844,6 +845,7 @@ public class Main extends JavaPlugin implements Listener {
 	public HashMap<String, Integer> currentscore = new HashMap<String, Integer>();
 
 	public void updateScoreboard(int c){
+
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
 
 		boolean isNeeded = false;
@@ -981,16 +983,25 @@ public class Main extends JavaPlugin implements Listener {
 		id.cancel();
 		running = false;
 
+		for(Minigame mg : minigames){
+			mg.lost.clear();
+		}
+		
 		ArrayList<Player> remove = new ArrayList<Player>();
 		for(String pl : players){
 			Player p = Bukkit.getPlayerExact(pl);
 			if(p.isOnline()){
-				for (PotionEffect effect : p.getActivePotionEffects()) {
-					try {
-						p.removePotionEffect(effect.getType());
-					} catch (Exception e) {
-						
+				/*for (PotionEffect effect : p.getActivePotionEffects()) {
+					if(p.hasPotionEffect(effect.getType())){
+						try {
+							p.removePotionEffect(effect.getType());
+						} catch (Exception e) {
+							
+						}
 					}
+				}*/
+				if(p.hasPotionEffect(PotionEffectType.JUMP)){
+					p.removePotionEffect(PotionEffectType.JUMP);
 				}
 				minigames.get(minigames.size() - 1).leave(p);
 				p.sendMessage(ChatColor.GOLD + "Next round in 30 seconds!");
@@ -1008,7 +1019,7 @@ public class Main extends JavaPlugin implements Listener {
 
 		remove.clear();
 
-		currentmg = 0;
+		currentmg = -1;
 
 		Bukkit.getScheduler().runTask(this, new Runnable(){
 			public void run(){
@@ -1170,11 +1181,13 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event){
 		if(players.contains(event.getPlayer().getName())){
-			if(event.getMessage().startsWith("/mp") || event.getMessage().equalsIgnoreCase("/minigamesparty")){
-				// nothing
-			}else{
-				event.setCancelled(true);
-				event.getPlayer().sendMessage("§3You're in MinigamesParty. Please use §6/mp leave §3to leave the minigame.");
+			if(!event.getPlayer().isOp()){
+				if(event.getMessage().startsWith("/mp") || event.getMessage().equalsIgnoreCase("/minigamesparty")){
+					// nothing
+				}else{
+					event.setCancelled(true);
+					event.getPlayer().sendMessage("§3You're in MinigamesParty. Please use §6/mp leave §3to leave the minigame.");
+				}
 			}
 		}
 	}
