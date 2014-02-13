@@ -782,6 +782,7 @@ public class Main extends JavaPlugin implements Listener {
 			currentmg += 1;
 		}else{
 			if(currentid != null){
+				minigames.get(minigames.size() - 1).reset(this.getComponentForMinigame(minigames.get(minigames.size() - 1).name, "spawn"));
 				stop(currentid);
 			}
 		}
@@ -1123,7 +1124,7 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	public void resetAll(boolean flag){
-		getLogger().info("Resetting all.");
+		getLogger().info("Resetting in ALL mode: " +  Boolean.toString(flag));
 		
 		if(flag){
 			for(Minigame m : minigames){

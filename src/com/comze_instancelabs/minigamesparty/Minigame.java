@@ -49,7 +49,9 @@ public class Minigame {
 	BukkitTask cooldown = null;
 	
 	public void startCooldown(){
-		final BukkitTask id__ = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(m, new Runnable() {
+		//final BukkitTask id__ = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(m, new Runnable() {
+
+		final BukkitTask id__ = Bukkit.getServer().getScheduler().runTaskTimer(m, new Runnable() {
 			public void run(){
 				
 				for(String p_ : m.players){
