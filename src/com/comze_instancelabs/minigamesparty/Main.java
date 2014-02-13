@@ -18,6 +18,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
@@ -27,6 +28,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -40,7 +42,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -53,6 +54,7 @@ import com.comze_instancelabs.minigamesparty.minigames.ColorMatch;
 import com.comze_instancelabs.minigamesparty.minigames.DeadEnd;
 import com.comze_instancelabs.minigamesparty.minigames.DisIntegration;
 import com.comze_instancelabs.minigamesparty.minigames.JumpnRun;
+import com.comze_instancelabs.minigamesparty.minigames.LastArcherStanding;
 import com.comze_instancelabs.minigamesparty.minigames.MineField;
 import com.comze_instancelabs.minigamesparty.minigames.Spleef;
 
@@ -137,6 +139,9 @@ public class Main extends JavaPlugin implements Listener {
 					DisIntegration di = new DisIntegration(m, m.getComponentForMinigame("DisIntegration", "spawn"), m.getLobby(), m.getComponentForMinigame("DisIntegration", "spectatorlobby"));
 					minigames.add(di);
 					getServer().getPluginManager().registerEvents(di, m);
+					LastArcherStanding las = new LastArcherStanding(m, m.getComponentForMinigame("LastArcherStanding", "spawn"), m.getLobby(), m.getComponentForMinigame("LastArcherStanding", "spectatorlobby"));
+					minigames.add(las);
+					getServer().getPluginManager().registerEvents(las, m);
 				}
 			}
 		}, 40);
@@ -522,6 +527,47 @@ public class Main extends JavaPlugin implements Listener {
 				event.setCancelled(true);
 			}
 		}
+		
+		// last archer standing
+		if (event instanceof EntityDamageByEntityEvent) {
+			EntityDamageByEntityEvent event_ = (EntityDamageByEntityEvent) event;
+			if (event_.getDamager() instanceof Arrow) {
+				final Arrow arrow = (Arrow) event_.getDamager();
+				if (arrow.getShooter() instanceof Player) {
+					Player p = (Player) event.getEntity();
+					Player damager = (Player) arrow.getShooter();
+					if(players.contains(p.getName()) && players.contains(damager.getName())){
+						//TODO last archer standing
+						if(currentmg > -1){
+							final Minigame current = minigames.get(currentmg);
+							
+							if(!current.lost.contains(p)){
+								if(started && ingame_started){
+									current.lost.add(p);
+									int count = 0;
+									for(String pl : m.players){
+										Player p_ = Bukkit.getPlayerExact(pl);
+										if(p_.isOnline()){
+											if(!current.lost.contains(p_)){
+												count++;
+											}
+										}
+									}
+									current.spectate(p);
+									// there's only one man standing
+									if(count < 2){
+										c_ += 60-c;
+										c = 60; // just skips all the remaining seconds and sets to 60, current timer will do the rest
+									}
+									
+									damager.sendMessage(ChatColor.GOLD + "You shot " + ChatColor.DARK_PURPLE + p.getName() + ChatColor.GOLD + "!");
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@EventHandler
@@ -607,6 +653,10 @@ public class Main extends JavaPlugin implements Listener {
 			}
 		}
 	}
+	
+
+	
+	
 
 	/*public void nextMinigame(Player p){
 		// get current minigame and make winners
@@ -1012,7 +1062,7 @@ public class Main extends JavaPlugin implements Listener {
 			}
 		}
 
-		// removes players that arent online anymore
+		// removes players that aren't online anymore
 		for(Player p : remove){
 			players.remove(p);
 		}
@@ -1100,6 +1150,7 @@ public class Main extends JavaPlugin implements Listener {
 		JumpnRun.setup(new Location(start.getWorld(), x, y, z + 64 * 3 + 20 * 3), this, "JumpnRun");
 		DeadEnd.setup(new Location(start.getWorld(), x + 64 + 20, y, z), this, "DeadEnd");
 		DisIntegration.setup(new Location(start.getWorld(), x + 64 * 2 + 20 * 2, y, z), this, "DisIntegration");
+		LastArcherStanding.setup(new Location(start.getWorld(), x + 64 * 3 + 20 * 3, y, z), this, "LastArcherStanding");
 
 		
 		/*
@@ -1109,7 +1160,7 @@ public class Main extends JavaPlugin implements Listener {
 		 * new Location(start.getWorld(), x, y, z + 64 * 3 + 20 * 3) [JUMPNRUN]
 		 * new Location(start.getWorld(), x + 64 + 20, y, z) [DEADEND]
 		 * new Location(start.getWorld(), x + 64 * 2 + 20 * 2, y, z) [DISINTEGRATION]
-		 * new Location(start.getWorld(), x + 64 * 3 + 20 * 3, y, z)
+		 * new Location(start.getWorld(), x + 64 * 3 + 20 * 3, y, z) [LASTARCHERSTANDING]
 		 * 
 		 * would create the following pattern:
 		 * 
@@ -1130,6 +1181,7 @@ public class Main extends JavaPlugin implements Listener {
 		minigames.add(new JumpnRun(this, this.getComponentForMinigame("JumpnRun", "spawn"), this.getComponentForMinigame("JumpnRun", "lobby"), this.getComponentForMinigame("JumpnRun", "spectatorlobby"), m.getComponentForMinigame("JumpnRun", "finishline")));
 		minigames.add(new DeadEnd(this, this.getComponentForMinigame("DeadEnd", "spawn"), this.getComponentForMinigame("DeadEnd", "lobby"), this.getComponentForMinigame("DeadEnd", "spectatorlobby")));
 		minigames.add(new DisIntegration(this, this.getComponentForMinigame("DisIntegration", "spawn"), this.getComponentForMinigame("DisIntegration", "lobby"), this.getComponentForMinigame("DisIntegration", "spectatorlobby")));
+		minigames.add(new LastArcherStanding(this, this.getComponentForMinigame("LastArcherStanding", "spawn"), this.getComponentForMinigame("LastArcherStanding", "lobby"), this.getComponentForMinigame("LastArcherStanding", "spectatorlobby")));
 
 		getLogger().info("[MinigamesParty] Finished Setup");
 	}
