@@ -62,10 +62,6 @@ public class Spleef extends Minigame implements Listener{
 		int y = start.getBlockY() - 2;
 		int z = start.getBlockZ() - 32;
 		
-		int current = 0;
-		int temp = 4;
-		boolean cont = false;
-		
 		for(int i = 0; i < 64; i++){
 			for(int j = 0; j < 64; j++){
 				Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x + i, y, z + j));

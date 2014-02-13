@@ -60,34 +60,8 @@ public class LastArcherStanding extends Minigame implements Listener{
 				}else{
 					b.setType(Material.GRASS);
 				}
-				Block b_ = start.getWorld().getBlockAt(new Location(start.getWorld(), x + i, y - 4, z + j));
-				b_.setType(Material.GLOWSTONE);
 			}
 		}
 	}
-	
-	@Override
-	public void reset(Location start){
-		Random r = new Random();
-		int x = start.getBlockX() - 32;
-		int y = start.getBlockY() - 2;
-		int z = start.getBlockZ() - 32;
-		
-		int current = 0;
-		int temp = 4;
-		boolean cont = false;
-		
-		for(int i = 0; i < 64; i++){
-			for(int j = 0; j < 64; j++){
-				Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x + i, y, z + j));
-				boolean c = r.nextBoolean();
-				if(c){
-					b.setType(Material.COBBLESTONE);
-				}else{
-					b.setType(Material.GRASS);
-				}
-			}
-		}
-	}
-	
+
 }
