@@ -21,7 +21,7 @@ import com.comze_instancelabs.minigamesparty.PluginUtil;
 public class JumpnRun extends Minigame implements Listener{
 	
 	public JumpnRun(Main arg2, Location arg3, Location arg4, Location arg5, Location arg6) {
-		super("JumpnRun", arg2, arg3, arg4, arg5, arg6);
+		super("JumpnRun", "Jump to the finish!", arg2, arg3, arg4, arg5, arg6);
 	}
 	
 	@Override

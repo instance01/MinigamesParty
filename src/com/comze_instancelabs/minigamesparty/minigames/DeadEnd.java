@@ -16,7 +16,7 @@ import com.comze_instancelabs.minigamesparty.Minigame;
 public class DeadEnd extends Minigame implements Listener{
 	
 	public DeadEnd(Main arg2, Location arg3, Location arg4, Location arg5) {
-		super("DeadEnd", arg2, arg3, arg4, arg5, null);
+		super("DeadEnd", "Don't fall while the blocks are disappearing behind you!", arg2, arg3, arg4, arg5, null);
 	}
 	
 	@Override

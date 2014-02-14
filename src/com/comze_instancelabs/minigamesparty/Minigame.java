@@ -23,14 +23,16 @@ public class Minigame {
 	public Location lobby;
 	public Location spectatorlobby;
 	public Location finish;
+	public String description;
 	
-	public Minigame(String arg1, Main arg2, Location arg3, Location arg4, Location arg5, Location arg6){
+	public Minigame(String arg1, String arg2, Main arg3, Location arg4, Location arg5, Location arg6, Location arg7){
 		name = arg1;
-		m = arg2;
-		spawn = arg3;
-		lobby = arg4;
-		spectatorlobby = arg5;
-		finish = arg6;
+		description = arg2;
+		m = arg3;
+		spawn = arg4;
+		lobby = arg5;
+		spectatorlobby = arg6;
+		finish = arg7;
 	}
 	
 	public void getWinner(){
@@ -92,6 +94,7 @@ public class Minigame {
 				p.setAllowFlight(false);
 				p.setFlying(false);
 				p.sendMessage(MinigameUtil.nowPlaying(name));
+				p.sendMessage(MinigameUtil.description(m.minigames.get(m.currentmg), description));
 			}
 		}, 5);
 	}

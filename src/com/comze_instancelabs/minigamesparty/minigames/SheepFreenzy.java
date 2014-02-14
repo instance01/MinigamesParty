@@ -7,6 +7,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
 import org.bukkit.event.Listener;
@@ -20,7 +21,7 @@ import com.comze_instancelabs.minigamesparty.Minigame;
 public class SheepFreenzy extends Minigame implements Listener{
 
 	public SheepFreenzy(Main arg2, Location arg3, Location arg4, Location arg5) {
-		super("SheepFreenzy", arg2, arg3, arg4, arg5, null);
+		super("SheepFreenzy", "Shear as many Sheeps as possible! Attention: Some of them explode.", arg2, arg3, arg4, arg5, null);
 	}
 	
 	
@@ -30,14 +31,15 @@ public class SheepFreenzy extends Minigame implements Listener{
 
 		final Random r = new Random();
 		
-		final BukkitTask id__ = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(m, new Runnable() {
+		final BukkitTask id__ = Bukkit.getServer().getScheduler().runTaskTimer(m, new Runnable() {
 			@Override
 			public void run(){
 				int x = r.nextInt(60) - 30;
 				int z = r.nextInt(60) - 30;
 				
-				Location s = new Location(spawn.getWorld(), spawn.getBlockX() + x, spawn.getBlockY(), spawn.getBlockZ() + z);
+				Location s = new Location(spawn.getWorld(), spawn.getBlockX() + x, spawn.getBlockY() + 2, spawn.getBlockZ() + z);
 				spawn.getWorld().spawn(s, Sheep.class);
+				spawn.getWorld().spawnEntity(s, EntityType.SHEEP);
 			}
 		}, 20, 40); // 7 seconds
 		

@@ -21,7 +21,7 @@ import com.comze_instancelabs.minigamesparty.Minigame;
 public class MineField extends Minigame implements Listener{
 	
 	public MineField(Main arg2, Location arg3, Location arg4, Location arg5, Location arg6) {
-		super("MineField", arg2, arg3, arg4, arg5, arg6);
+		super("MineField", "Run to the finish without touching the mines!", arg2, arg3, arg4, arg5, arg6);
 	}
 	
 	@Override
