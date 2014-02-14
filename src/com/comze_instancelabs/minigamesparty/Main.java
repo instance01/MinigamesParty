@@ -39,6 +39,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -56,6 +57,7 @@ import com.comze_instancelabs.minigamesparty.minigames.DisIntegration;
 import com.comze_instancelabs.minigamesparty.minigames.JumpnRun;
 import com.comze_instancelabs.minigamesparty.minigames.LastArcherStanding;
 import com.comze_instancelabs.minigamesparty.minigames.MineField;
+import com.comze_instancelabs.minigamesparty.minigames.SheepFreenzy;
 import com.comze_instancelabs.minigamesparty.minigames.Spleef;
 
 public class Main extends JavaPlugin implements Listener {
@@ -142,6 +144,9 @@ public class Main extends JavaPlugin implements Listener {
 					LastArcherStanding las = new LastArcherStanding(m, m.getComponentForMinigame("LastArcherStanding", "spawn"), m.getLobby(), m.getComponentForMinigame("LastArcherStanding", "spectatorlobby"));
 					minigames.add(las);
 					getServer().getPluginManager().registerEvents(las, m);
+					SheepFreenzy sf = new SheepFreenzy(m, m.getComponentForMinigame("SheepFreenzy", "spawn"), m.getLobby(), m.getComponentForMinigame("SheepFreenzy", "spectatorlobby"));
+					minigames.add(sf);
+					getServer().getPluginManager().registerEvents(sf, m);
 				}
 			}
 		}, 40);
@@ -655,6 +660,24 @@ public class Main extends JavaPlugin implements Listener {
 	}
 	
 
+	Random rand = new Random();
+	@EventHandler
+	public void onPlayerShearSheep(PlayerShearEntityEvent event){
+		if(players.contains(event.getPlayer().getName())){
+			int i = rand.nextInt(100);
+			if(!currentscore.containsKey(event.getPlayer().getName())){
+				currentscore.put(event.getPlayer().getName(), 0);
+			}
+			if(i < 5){
+				currentscore.put(event.getPlayer().getName(), currentscore.get(event.getPlayer().getName()) + 3);
+				event.getPlayer().getLocation().getWorld().createExplosion(event.getEntity().getLocation(), 2F);
+			}else{
+				currentscore.put(event.getPlayer().getName(), currentscore.get(event.getPlayer().getName()) + 1);
+			}
+			event.getEntity().remove();
+		}
+	}
+	
 	
 	
 
@@ -701,7 +724,6 @@ public class Main extends JavaPlugin implements Listener {
 		updateScoreboardOUTGAME(p.getName());
 	}
 	
-	//TODO test rewards count
 	public final HashMap<String, Integer> rewardcount = new HashMap<String, Integer>();
 	
 	public void giveItemRewards(final Player p, boolean task){
@@ -899,10 +921,17 @@ public class Main extends JavaPlugin implements Listener {
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
 
 		boolean isNeeded = false;
-		if(minigames.get(currentmg).name.equalsIgnoreCase("MineField") || minigames.get(currentmg).name.equalsIgnoreCase("JumpnRun")){
+		boolean isSheep = false;
+		
+		if(minigames.get(currentmg).name.equalsIgnoreCase("minefield") || minigames.get(currentmg).name.equalsIgnoreCase("jumpnrun")){
 			isNeeded = true;
 		}
 
+		if(minigames.get(currentmg).name.equalsIgnoreCase("sheepfreenzy")){
+			isNeeded = true;
+			isSheep = true;
+		}
+		
 		for(String pl : players){
 			Player p = Bukkit.getPlayerExact(pl);
 			Scoreboard board = manager.getNewScoreboard();
@@ -915,18 +944,26 @@ public class Main extends JavaPlugin implements Listener {
 			for(String pl_ : players){
 				Player p_ = Bukkit.getPlayerExact(pl_);
 				if(isNeeded){
-					int score = p_.getLocation().getBlockZ() - minigames.get(currentmg).finish.getBlockZ();
-					if(currentscore.containsKey(pl_)){
-						int oldscore = currentscore.get(pl_);
-						if(score > oldscore){
-							currentscore.put(pl_, score);
+					int score = 0;
+					if(!isSheep){
+						score = p_.getLocation().getBlockZ() - minigames.get(currentmg).finish.getBlockZ();
+						if(currentscore.containsKey(pl_)){
+							int oldscore = currentscore.get(pl_);
+							if(score > oldscore){
+								currentscore.put(pl_, score);
+							}else{
+								score = oldscore;
+							}
 						}else{
-							score = oldscore;
+							currentscore.put(pl_, score);
 						}
+						objective.getScore(p_).setScore(score);
 					}else{
-						currentscore.put(pl_, score);
+						if(!currentscore.containsKey(pl_)){
+							currentscore.put(pl_, 0);
+						}
+						objective.getScore(p_).setScore(currentscore.get(pl_));
 					}
-					objective.getScore(p_).setScore(score);
 				}else{
 					objective.getScore(p_).setScore(0);
 				}
@@ -1151,6 +1188,7 @@ public class Main extends JavaPlugin implements Listener {
 		DeadEnd.setup(new Location(start.getWorld(), x + 64 + 20, y, z), this, "DeadEnd");
 		DisIntegration.setup(new Location(start.getWorld(), x + 64 * 2 + 20 * 2, y, z), this, "DisIntegration");
 		LastArcherStanding.setup(new Location(start.getWorld(), x + 64 * 3 + 20 * 3, y, z), this, "LastArcherStanding");
+		SheepFreenzy.setup(new Location(start.getWorld(), x + 64 + 20, y, z + 64 + 20), this, "SheepFreenzy");
 
 		
 		/*
@@ -1182,6 +1220,7 @@ public class Main extends JavaPlugin implements Listener {
 		minigames.add(new DeadEnd(this, this.getComponentForMinigame("DeadEnd", "spawn"), this.getComponentForMinigame("DeadEnd", "lobby"), this.getComponentForMinigame("DeadEnd", "spectatorlobby")));
 		minigames.add(new DisIntegration(this, this.getComponentForMinigame("DisIntegration", "spawn"), this.getComponentForMinigame("DisIntegration", "lobby"), this.getComponentForMinigame("DisIntegration", "spectatorlobby")));
 		minigames.add(new LastArcherStanding(this, this.getComponentForMinigame("LastArcherStanding", "spawn"), this.getComponentForMinigame("LastArcherStanding", "lobby"), this.getComponentForMinigame("LastArcherStanding", "spectatorlobby")));
+		minigames.add(new SheepFreenzy(this, this.getComponentForMinigame("SheepFreenzy", "spawn"), this.getComponentForMinigame("SheepFreenzy", "lobby"), this.getComponentForMinigame("SheepFreenzy", "spectatorlobby")));
 
 		getLogger().info("[MinigamesParty] Finished Setup");
 	}
