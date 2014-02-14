@@ -28,6 +28,7 @@ public class Spleef extends Minigame implements Listener{
 				p.setAllowFlight(false);
 				p.setFlying(false);
 				p.sendMessage(MinigameUtil.nowPlaying(name));
+				p.sendMessage(MinigameUtil.description(m.minigames.get(m.currentmg), description));
 				
 				p.getInventory().clear();
 				p.updateInventory();

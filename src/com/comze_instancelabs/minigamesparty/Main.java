@@ -758,7 +758,7 @@ public class Main extends JavaPlugin implements Listener {
 	boolean ingame_started = false;
 	boolean started = false;
 	BukkitTask t = null;
-	int currentmg = 0;
+	public int currentmg = 0;
 	BukkitTask currentid = null;
 	public void secondsTick(){
 		
