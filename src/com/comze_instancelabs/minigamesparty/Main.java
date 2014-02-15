@@ -1,6 +1,8 @@
 package com.comze_instancelabs.minigamesparty;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -315,6 +317,14 @@ public class Main extends JavaPlugin implements Listener {
 								minigames.get(currentmg).join(p);
 							}catch(Exception e){}
 						}	
+					}
+				}else if(args[0].equalsIgnoreCase("skip")){
+					if(!sender.hasPermission("mp.skip")){
+						return true;
+					}
+					if(currentmg > -1){
+						c_ += 60-c;
+						c = 60;
 					}
 				}else{
 					p.sendMessage(ChatColor.GREEN + "-- MinigamesParty Help --");
@@ -781,6 +791,13 @@ public class Main extends JavaPlugin implements Listener {
 			started = false;
 			ingame_started = false;
 
+			System.out.println(minigames.get(minigames.size() - 1).name);		 
+			minigames.get(minigames.size() - 1).reset(this.getComponentForMinigame(minigames.get(minigames.size() - 1).name, "spawn"));
+			
+			if(currentid != null){
+				currentid.cancel();
+			}
+			
 			ArrayList<String> remove = new ArrayList<String>();
 			for(String pl : players){
 				Player p = Bukkit.getPlayerExact(pl);
@@ -1073,6 +1090,7 @@ public class Main extends JavaPlugin implements Listener {
 		for(Minigame mg : minigames){
 			mg.lost.clear();
 		}
+
 		
 		ArrayList<Player> remove = new ArrayList<Player>();
 		for(String pl : players){

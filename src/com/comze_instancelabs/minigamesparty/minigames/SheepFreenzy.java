@@ -7,6 +7,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
@@ -14,9 +15,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Wool;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 import com.comze_instancelabs.minigamesparty.Main;
 import com.comze_instancelabs.minigamesparty.Minigame;
+import com.comze_instancelabs.minigamesparty.PluginUtil;
 
 public class SheepFreenzy extends Minigame implements Listener{
 
@@ -80,8 +83,35 @@ public class SheepFreenzy extends Minigame implements Listener{
 			for(int j = 0; j < 64; j++){
 				Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x + i, y, z + j));
 				b.setType(Material.WOOL);
+				Block b_ = start.getWorld().getBlockAt(new Location(start.getWorld(), x + i, y - 4, z + j));
+				b_.setType(Material.GLOWSTONE);
 			}
 		}
 	}
+	
+	
+	@Override
+	public void reset(Location start){
+		Random r = new Random();
+		int x = start.getBlockX() - 32;
+		int y = start.getBlockY() - 2;
+		int z = start.getBlockZ() - 32;
 
+		for(int i = 0; i < 64; i++){
+			for(int j = 0; j < 64; j++){
+				Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x + i, y, z + j));
+				b.setType(Material.WOOL);
+				Block b_ = start.getWorld().getBlockAt(new Location(start.getWorld(), x + i, y - 4, z + j));
+				b_.setType(Material.GLOWSTONE);
+			}
+		}
+		
+		for(Entity e : PluginUtil.getNearbyEntities(start, 64)){
+			if(e.getType() == EntityType.SHEEP){
+				e.remove();
+			}
+		}
+		
+	}
+	
 }
