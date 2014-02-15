@@ -790,8 +790,7 @@ public class Main extends JavaPlugin implements Listener {
 			t.cancel();
 			started = false;
 			ingame_started = false;
-
-			System.out.println(minigames.get(minigames.size() - 1).name);		 
+ 
 			minigames.get(minigames.size() - 1).reset(this.getComponentForMinigame(minigames.get(minigames.size() - 1).name, "spawn"));
 			
 			if(currentid != null){
