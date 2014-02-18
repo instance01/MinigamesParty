@@ -29,7 +29,7 @@ public class ColorMatch extends Minigame implements Listener{
 		super("ColorMatch", "Jump to the color corresponding to the wool color in your inventory!", arg2, arg3, arg4, arg5, null);
 	}
 	
-	static ArrayList<DyeColor> colors = new ArrayList<DyeColor>(Arrays.asList(DyeColor.BLUE, DyeColor.RED, DyeColor.CYAN, DyeColor.BLACK, DyeColor.GREEN, DyeColor.YELLOW, DyeColor.ORANGE, DyeColor.PURPLE));
+	static ArrayList<DyeColor> colors = new ArrayList<DyeColor>(Arrays.asList(DyeColor.BLUE, DyeColor.RED, DyeColor.CYAN, DyeColor.BLACK, DyeColor.GREEN, DyeColor.YELLOW, DyeColor.ORANGE, DyeColor.PURPLE, DyeColor.LIME));
 	static Random r = new Random();
 	
 	public static void setup(Location start, Main main, String name_){
@@ -49,7 +49,12 @@ public class ColorMatch extends Minigame implements Listener{
 				int x_ = x + i * 4;
 				int z_ = z + j * 4;
 				
-				current = r.nextInt(colors.size());
+				int newcurrent = r.nextInt(colors.size());
+				if(current == newcurrent){
+					newcurrent = r.nextInt(colors.size());
+				}
+				current = newcurrent;
+				
 				ints.add((int) colors.get(current).getData());
 				
 				for(int i_ = 0; i_ < 4; i_++){
