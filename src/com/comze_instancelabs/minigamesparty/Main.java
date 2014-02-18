@@ -61,6 +61,7 @@ import com.comze_instancelabs.minigamesparty.minigames.LastArcherStanding;
 import com.comze_instancelabs.minigamesparty.minigames.MineField;
 import com.comze_instancelabs.minigamesparty.minigames.SheepFreenzy;
 import com.comze_instancelabs.minigamesparty.minigames.Spleef;
+import com.comze_instancelabs.minigamesparty.sql.MainSQL;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -116,11 +117,13 @@ public class Main extends JavaPlugin implements Listener {
 	public Location mainlobby = null;
 
 	Main m;
+	MainSQL msql;
 
 	@Override
 	public void onEnable(){
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
 		m = this;
+		msql = new MainSQL(this);
 		int id = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			@Override
 			public void run(){
@@ -156,6 +159,11 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().options().header("I recommend you to set auto_updating to true for possible future bugfixes.");
 		
 		// I'm running on windows, just making sure for Linux users:
+		getConfig().addDefault("mysql.enabled", false);
+		getConfig().addDefault("mysql.host", "127.0.0.1");
+		getConfig().addDefault("mysql.database", "bukkit");
+		getConfig().addDefault("mysql.user", "root");
+		getConfig().addDefault("mysql.pw", "toor");
 		getConfig().addDefault("config.auto_updating", true);
 		getConfig().addDefault("config.min_players", 1);
 		getConfig().addDefault("config.game-on-join", false);
@@ -715,6 +723,10 @@ public class Main extends JavaPlugin implements Listener {
 		int reward = r.nextInt((maxreward - minreward) + 1) + minreward;
 		this.updatePlayerStats(p.getName(), "credits", getPlayerStats(p.getName(), "credits") + reward);		
 
+		p.sendMessage("§aYou earned " + Integer.toString(reward) + " Credits this round.");
+
+		msql.updatePlayerStats(p.getName(), reward);
+		
 		if(economy){
 			EconomyResponse r_ = econ.depositPlayer(p.getName(), reward);
 			if(!r_.transactionSuccess()) {
