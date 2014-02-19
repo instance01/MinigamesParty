@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
 
 import com.comze_instancelabs.minigamesparty.Main;
 import com.comze_instancelabs.minigamesparty.Minigame;
@@ -24,6 +25,9 @@ public class Spleef extends Minigame implements Listener{
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(m, new Runnable() {
 			@Override
 			public void run() {
+				if(p.hasPotionEffect(PotionEffectType.JUMP)){
+					p.removePotionEffect(PotionEffectType.JUMP);
+				}
 				p.teleport(spawn);
 				p.setGameMode(GameMode.SURVIVAL);
 				p.setAllowFlight(false);

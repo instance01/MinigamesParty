@@ -89,6 +89,7 @@ public class Shop {
 						p.sendMessage(ChatColor.RED + "You don't have enough money!");
 					}
 				}
+				m.updateScoreboardOUTGAME(p.getName());
 				event.setWillClose(true);
 			}
 		}, m)
