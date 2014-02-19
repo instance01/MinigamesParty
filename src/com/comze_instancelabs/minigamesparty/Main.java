@@ -1,8 +1,6 @@
 package com.comze_instancelabs.minigamesparty;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -21,6 +19,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
@@ -175,8 +174,12 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().addDefault("config.item_reward_minamount", 3);
 		getConfig().addDefault("config.item_reward_id", 264);
 		
+		Shop.initShop(this);
+		
 		getConfig().options().copyDefaults(true);
 		this.saveConfig();
+		
+		Shop.loadPrices(this);
 
 		min_players = getConfig().getInt("config.min_players");
 
@@ -560,7 +563,6 @@ public class Main extends JavaPlugin implements Listener {
 					Player p = (Player) event.getEntity();
 					Player damager = (Player) arrow.getShooter();
 					if(players.contains(p.getName()) && players.contains(damager.getName())){
-						//TODO last archer standing
 						if(currentmg > -1){
 							final Minigame current = minigames.get(currentmg);
 							
@@ -645,7 +647,7 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	@EventHandler
-	public void onSnowballLand(ProjectileHitEvent e) {   
+	public void onProjectileLand(ProjectileHitEvent e) {   
 		if (e.getEntity().getShooter() instanceof Player) {
 			if (e.getEntity() instanceof Snowball) {
 				Player player = (Player) e.getEntity().getShooter();
@@ -663,10 +665,40 @@ public class Main extends JavaPlugin implements Listener {
 							hit.setTypeId(0);
 
 							player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1F, 1F);
-							/*for (Player sp : players) {
+							
+						}
+					} catch (Exception ex) { 
+						
+					}
+				}
+			} else if (e.getEntity() instanceof Egg){
+				Player player = (Player) e.getEntity().getShooter();
+				if(players.contains(player.getName())){
+					BlockIterator bi = new BlockIterator(e.getEntity().getWorld(), e.getEntity().getLocation().toVector(), e.getEntity().getVelocity().normalize(), 0.0D, 4);
+					Block hit = null;
+					while (bi.hasNext()) {
+						hit = bi.next();
+						if (hit.getTypeId() != 0) {
+							break;
+						}
+					}
+					try {
+						Location l = hit.getLocation();
+						if (hit.getLocation().getBlockY() < minigames.get(currentmg).spawn.getBlockY() && hit.getType() == Material.SNOW_BLOCK) {
+							for(int x = 1; x <= 3; x++){
+								for(int z = 1; z <= 3; z++){
+									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 1, l.getBlockY(), l.getBlockZ() + z - 1));
+									b.setTypeId(0);
+								}
+							}
+							hit.setTypeId(0);
 
+							player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1F, 1F);
+							/*for (Player sp : players) {
 	                            sp.getPlayer().playEffect(new Location(hit.getWorld(), hit.getLocation().getBlockX(), hit.getLocation().getBlockY() + 1.0D, hit.getLocation().getBlockZ()), Effect.MOBSPAWNER_FLAMES, 25);
-	                    }*/
+	                    	}*/
+							
+							Shop.removeFromPlayerShopComponent(m, player.getName(), "grenades", 1);
 
 						}
 					} catch (Exception ex) { 
@@ -717,15 +749,17 @@ public class Main extends JavaPlugin implements Listener {
 	}*/
 
 	public void win(Player p){
-		p.sendMessage(ChatColor.GOLD + "You won this round!");
+		//p.sendMessage(ChatColor.GOLD + "You won this round!");
 		this.updatePlayerStats(p.getName(), "wins", getPlayerStats(p.getName(), "wins") + 1);
 		Random r = new Random();
 		int reward = r.nextInt((maxreward - minreward) + 1) + minreward;
 		this.updatePlayerStats(p.getName(), "credits", getPlayerStats(p.getName(), "credits") + reward);		
 
+		getServer().broadcastMessage(ChatColor.GOLD	+ p.getName() + " won this round and earned " + ChatColor.BLUE + Integer.toString(reward) + ChatColor.GOLD + "!");
+
 		p.sendMessage("§aYou earned " + Integer.toString(reward) + " Credits this round.");
 
-		msql.updatePlayerStats(p.getName(), reward);
+		msql.updateWinnerStats(p.getName(), reward);
 		
 		if(economy){
 			EconomyResponse r_ = econ.depositPlayer(p.getName(), reward);
@@ -1301,6 +1335,35 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event){
 		if(players.contains(event.getPlayer().getName())){
+			if(event.getMessage().startsWith("/leave") || event.getMessage().equalsIgnoreCase("/quit")){
+				final Player p = event.getPlayer();
+				p.teleport(getLobby());
+				Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
+					public void run(){
+						p.teleport(getLobby());
+					}
+				}, 5);
+				updateScoreboardOUTGAME(p.getName());
+				p.getInventory().clear();
+				p.updateInventory();
+				p.getInventory().setContents(pinv.get(p.getName()));
+				p.updateInventory();
+				if(currentmg > -1){
+					minigames.get(currentmg).leave(p);
+				}
+				players.remove(p.getName());
+				p.sendMessage(ChatColor.RED + "You left the game.");
+				if(players.size() < min_players){
+					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+						public void run(){
+							stopFull();
+						}
+					}, 15);
+				}
+			}else if(event.getMessage().equalsIgnoreCase("/shop")){
+				Shop.openShop(this, event.getPlayer().getName());
+			}
+			
 			if(!event.getPlayer().isOp()){
 				if(event.getMessage().startsWith("/mp") || event.getMessage().equalsIgnoreCase("/minigamesparty")){
 					// nothing

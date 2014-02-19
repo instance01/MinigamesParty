@@ -6,6 +6,7 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -14,10 +15,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Wool;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.comze_instancelabs.minigamesparty.Main;
 import com.comze_instancelabs.minigamesparty.Minigame;
+import com.comze_instancelabs.minigamesparty.Shop;
 import com.comze_instancelabs.minigamesparty.nms.CraftMassBlockUpdate;
 import com.comze_instancelabs.minigamesparty.nms.MassBlockUpdate;
 
@@ -31,6 +35,33 @@ public class ColorMatch extends Minigame implements Listener{
 	
 	static ArrayList<DyeColor> colors = new ArrayList<DyeColor>(Arrays.asList(DyeColor.BLUE, DyeColor.RED, DyeColor.CYAN, DyeColor.BLACK, DyeColor.GREEN, DyeColor.YELLOW, DyeColor.ORANGE, DyeColor.PURPLE, DyeColor.LIME));
 	static Random r = new Random();
+	
+	
+	@Override
+	public void join(final Player p){
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(m, new Runnable() {
+			@Override
+			public void run() {
+				p.teleport(spawn);
+				p.setGameMode(GameMode.SURVIVAL);
+				p.setAllowFlight(false);
+				p.setFlying(false);
+				p.sendMessage(MinigameUtil.nowPlaying(name));
+				p.sendMessage(MinigameUtil.description(m.minigames.get(m.currentmg), description));
+				
+				p.getInventory().clear();
+				p.updateInventory();
+				
+				int temp = Shop.getPlayerShopComponent(m, p.getName(), "jump_boost");
+				if(temp > 0){
+					p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 60, 2));
+					Shop.removeFromPlayerShopComponent(m, p.getName(), "jump_boost", 1);
+				}
+			}
+		}, 5);
+	}
+	
+	
 	
 	public static void setup(Location start, Main main, String name_){
 		int x = start.getBlockX() - 32;

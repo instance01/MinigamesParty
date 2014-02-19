@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.comze_instancelabs.minigamesparty.Main;
 import com.comze_instancelabs.minigamesparty.Minigame;
+import com.comze_instancelabs.minigamesparty.Shop;
 
 public class Spleef extends Minigame implements Listener{
 	
@@ -34,6 +35,12 @@ public class Spleef extends Minigame implements Listener{
 				p.updateInventory();
 				p.getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE, 1));
 				p.updateInventory();
+				
+				int temp = Shop.getPlayerShopComponent(m, p.getName(), "grenades");
+				if(temp > 0){
+					p.getInventory().addItem(new ItemStack(Material.EGG, temp));
+					p.updateInventory();
+				}
 			}
 		}, 5);
 	}

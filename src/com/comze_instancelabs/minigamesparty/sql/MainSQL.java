@@ -15,7 +15,7 @@ public class MainSQL {
 		this.m = pl;
 	}
 
-	public void updatePlayerStats(String p_, int reward){
+	public void updateWinnerStats(String p_, int reward){
 		if(!m.getConfig().getBoolean("mysql.enabled")){
 			return;
 		}
@@ -32,6 +32,34 @@ public class MainSQL {
 			}
 			res3.next();
 			int credits = res3.getInt("credits") + reward;
+			int wins = res3.getInt("wins") + 1;
+			
+			c.createStatement().executeUpdate("UPDATE mgparty SET credits='" + Integer.toString(credits) + "', wins='" + Integer.toString(wins) + "' WHERE player='" + p_ + "'");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	public void updateShopperStats(String p_, int amount){
+		if(!m.getConfig().getBoolean("mysql.enabled")){
+			return;
+		}
+		MySQL MySQL = new MySQL(m.getConfig().getString("mysql.host"), "3306", m.getConfig().getString("mysql.database"), m.getConfig().getString("mysql.user"), m.getConfig().getString("mysql.pw"));
+    	Connection c = null;
+    	c = MySQL.open();
+		
+		try {
+			ResultSet res3 = c.createStatement().executeQuery("SELECT * FROM mgparty WHERE player='" + p_ + "'");
+			if(!res3.isBeforeFirst()){
+				// there's no such user
+				//c.createStatement().executeUpdate("INSERT INTO mgparty VALUES('0', '" + p_ + "', '" + Integer.toString(amount) + "', '1')");
+				return;
+			}
+			res3.next();
+			int credits = res3.getInt("credits") - amount;
 			int wins = res3.getInt("wins") + 1;
 			
 			c.createStatement().executeUpdate("UPDATE mgparty SET credits='" + Integer.toString(credits) + "', wins='" + Integer.toString(wins) + "' WHERE player='" + p_ + "'");
