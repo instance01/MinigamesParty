@@ -488,8 +488,13 @@ public class Main extends JavaPlugin implements Listener {
 											p.teleport(current.spawn);
 										}
 									}, 5);
+								}else if(p.getLocation().getBlockY() + 2 < current.spawn.getBlockY()){
+									Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
+										public void run(){
+											p.teleport(current.spawn);
+										}
+									}, 5);
 								}
-								return;
 							}
 						}
 						if(started && ingame_started){
@@ -505,8 +510,8 @@ public class Main extends JavaPlugin implements Listener {
 								if(p.getLocation().getBlockZ() > current.finish.getBlockZ()){
 									c_ += 60-c;
 									c = 60; // just skips all the remaining seconds and sets to 60, current timer will do the rest
+									return;
 								}
-								return;
 							}
 							if(event.getPlayer().getLocation().getBlockY() + 2 < current.spawn.getBlockY()){
 								if(current.name.equalsIgnoreCase("JumpnRun") || current.name.equalsIgnoreCase("MineField")){
@@ -710,7 +715,7 @@ public class Main extends JavaPlugin implements Listener {
 						if (hit.getLocation().getBlockY() < minigames.get(currentmg).spawn.getBlockY() && hit.getType() == Material.SNOW_BLOCK) {
 							for(int x = 1; x <= 3; x++){
 								for(int z = 1; z <= 3; z++){
-									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x, l.getBlockY(), l.getBlockZ() + z));
+									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 2, l.getBlockY(), l.getBlockZ() + z - 2));
 									b.setTypeId(0);
 								}
 							}
