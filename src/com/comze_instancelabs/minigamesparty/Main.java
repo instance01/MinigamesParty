@@ -329,6 +329,8 @@ public class Main extends JavaPlugin implements Listener {
 							}catch(Exception e){}
 						}	
 					}
+				}else if(args[0].equalsIgnoreCase("shop")){
+					Shop.openShop(this, p.getName());
 				}else if(args[0].equalsIgnoreCase("skip")){
 					if(!sender.hasPermission("mp.skip")){
 						return true;
@@ -484,6 +486,15 @@ public class Main extends JavaPlugin implements Listener {
 								if(w.getBlockAt(under).getType() == Material.LAPIS_BLOCK){
 									w.getBlockAt(under).setType(Material.AIR);
 								}
+							}
+							if(current.name.equalsIgnoreCase("JumpnRun") || current.name.equalsIgnoreCase("MineField")){
+								final Player p = event.getPlayer();
+								if(p.getLocation().getBlockZ() > current.finish.getBlockZ()){
+									//TODO: try out if player really wins
+									c_ += 60-c;
+									c = 60; // just skips all the remaining seconds and sets to 60, current timer will do the rest
+								}
+								return;
 							}
 							if(event.getPlayer().getLocation().getBlockY() + 2 < current.spawn.getBlockY()){
 								if(current.name.equalsIgnoreCase("JumpnRun") || current.name.equalsIgnoreCase("MineField")){
@@ -755,7 +766,7 @@ public class Main extends JavaPlugin implements Listener {
 		int reward = r.nextInt((maxreward - minreward) + 1) + minreward;
 		this.updatePlayerStats(p.getName(), "credits", getPlayerStats(p.getName(), "credits") + reward);		
 
-		getServer().broadcastMessage(ChatColor.GOLD	+ p.getName() + " won this round and earned " + ChatColor.BLUE + Integer.toString(reward) + ChatColor.GOLD + "!");
+		getServer().broadcastMessage(ChatColor.GOLD	+ p.getName() + " won this round and earned " + ChatColor.BLUE + Integer.toString(reward) + ChatColor.GOLD + " Credits!");
 
 		p.sendMessage("§aYou earned " + Integer.toString(reward) + " Credits this round.");
 
@@ -1360,8 +1371,11 @@ public class Main extends JavaPlugin implements Listener {
 						}
 					}, 15);
 				}
+				event.setCancelled(true);
+				return;
 			}else if(event.getMessage().equalsIgnoreCase("/shop")){
 				Shop.openShop(this, event.getPlayer().getName());
+				event.setCancelled(true);
 			}
 			
 			if(!event.getPlayer().isOp()){
