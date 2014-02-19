@@ -479,6 +479,19 @@ public class Main extends JavaPlugin implements Listener {
 				if(currentmg > -1){
 					final Minigame current = minigames.get(currentmg);
 					if(!current.lost.contains(event.getPlayer())){
+						if(started && !ingame_started){
+							if(current.name.equalsIgnoreCase("JumpnRun") || current.name.equalsIgnoreCase("MineField")){
+								final Player p = event.getPlayer();
+								if(p.getLocation().getBlockZ() > current.spawn.getBlockZ() + 1){
+									Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
+										public void run(){
+											p.teleport(current.spawn);
+										}
+									}, 5);
+								}
+								return;
+							}
+						}
 						if(started && ingame_started){
 							if(current.name.equalsIgnoreCase("DeadEnd")){
 								World w = event.getPlayer().getWorld();
@@ -490,7 +503,6 @@ public class Main extends JavaPlugin implements Listener {
 							if(current.name.equalsIgnoreCase("JumpnRun") || current.name.equalsIgnoreCase("MineField")){
 								final Player p = event.getPlayer();
 								if(p.getLocation().getBlockZ() > current.finish.getBlockZ()){
-									//TODO: try out if player really wins
 									c_ += 60-c;
 									c = 60; // just skips all the remaining seconds and sets to 60, current timer will do the rest
 								}
@@ -698,7 +710,7 @@ public class Main extends JavaPlugin implements Listener {
 						if (hit.getLocation().getBlockY() < minigames.get(currentmg).spawn.getBlockY() && hit.getType() == Material.SNOW_BLOCK) {
 							for(int x = 1; x <= 3; x++){
 								for(int z = 1; z <= 3; z++){
-									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 1, l.getBlockY(), l.getBlockZ() + z - 1));
+									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x, l.getBlockY(), l.getBlockZ() + z));
 									b.setTypeId(0);
 								}
 							}
