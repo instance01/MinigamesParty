@@ -82,7 +82,21 @@ public class ColorMatch extends Minigame implements Listener{
 				
 				int newcurrent = r.nextInt(colors.size());
 				if(current == newcurrent){
-					newcurrent = r.nextInt(colors.size());
+					if(newcurrent > 0){
+						newcurrent -= 1;
+					}else{
+						newcurrent += 2;
+					}
+				}
+				
+				if(ints.size() > 15){
+					if(ints.get(ints.size() - 16) == colors.get(newcurrent).getData()){
+						if(newcurrent > 0){
+							newcurrent -= 1;
+						}else{
+							newcurrent += 2;
+						}
+					}
 				}
 				current = newcurrent;
 				

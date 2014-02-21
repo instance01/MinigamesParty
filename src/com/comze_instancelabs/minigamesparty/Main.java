@@ -798,7 +798,7 @@ public class Main extends JavaPlugin implements Listener {
 		
 		if(item_rewards){
 			int reward_ = r.nextInt((item_maxreward - item_minreward) + 1) + item_minreward;
-			p.sendMessage("§aYou earned " + Integer.toString(reward_) + " Diamonds this round. You'll get them at the end.");
+			p.sendMessage("§aYou earned " + Integer.toString(reward_) + " " + Material.getMaterial(item_id).name() + " this round. You'll get them at the end.");
 			if(rewardcount.containsKey(p.getName())){
 				reward_ += rewardcount.get(p.getName());
 			}
