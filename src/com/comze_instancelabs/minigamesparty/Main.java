@@ -383,7 +383,7 @@ public class Main extends JavaPlugin implements Listener {
 					p.getInventory().setContents(pinv.get(p.getName()));
 					p.updateInventory();
 				}
-			}, 5);
+			}, 4);
 			players_left.remove(p.getName());
 		}
 
@@ -393,24 +393,31 @@ public class Main extends JavaPlugin implements Listener {
 			p.sendMessage(ChatColor.RED + "You are already in the game!");
 			return;
 		}
-		players.add(event.getPlayer().getName());
+		players.add(p.getName());
 		event.setJoinMessage(ChatColor.GOLD + p.getName() + " has joined the game!");
 
-		// if its the first player to join, start the whole minigame
-		if(players.size() < min_players + 1){
-			pinv.put(event.getPlayer().getName(), p.getInventory().getContents());
-			startNew();
-			return;
-		}
 
-		try {
-			pinv.put(event.getPlayer().getName(), event.getPlayer().getInventory().getContents());
-			if(currentmg > -1){
-				minigames.get(currentmg).join(event.getPlayer());
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			public void run() {
+				
+				// if its the first player to join, start the whole minigame
+				if(players.size() < min_players + 1){
+					pinv.put(p.getName(), p.getInventory().getContents());
+					startNew();
+					return;
+				}
+				
+				try {
+					pinv.put(p.getName(), p.getInventory().getContents());
+					if (currentmg > -1) {
+						minigames.get(currentmg).join(p);
+						p.teleport(minigames.get(currentmg).spawn);
+					}
+				} catch (Exception ex) {
+					p.sendMessage(ChatColor.RED + "An error occured.");
+				}
 			}
-		} catch(Exception ex) {
-			event.getPlayer().sendMessage(ChatColor.RED + "An error occured.");
-		}	
+		}, 6);
 	}
 
 	@EventHandler
