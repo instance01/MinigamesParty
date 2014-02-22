@@ -865,11 +865,11 @@ public class Main extends JavaPlugin implements Listener {
 			started = false;
 			ingame_started = false;
  
-			minigames.get(minigames.size() - 1).reset(this.getComponentForMinigame(minigames.get(minigames.size() - 1).name, "spawn"));
-			
 			if(currentid != null){
 				currentid.cancel();
 			}
+			
+			minigames.get(minigames.size() - 1).reset(this.getComponentForMinigame(minigames.get(minigames.size() - 1).name, "spawn"));
 			
 			ArrayList<String> remove = new ArrayList<String>();
 			for(String pl : players){
@@ -927,28 +927,33 @@ public class Main extends JavaPlugin implements Listener {
 	//public BukkitTask nextMinigame(){
 	public void nextMinigame(){
 		ingame_started = false;
+		Minigame cmg = null;
 		
 		if(currentmg > -1){
-			minigames.get(currentmg).getWinner();
-			
-			// reset current minigame
-			//TODO try out
-			if(!minigames.get(currentmg).name.toLowerCase().equalsIgnoreCase("minefield")){
-				minigames.get(currentmg).reset(this.getComponentForMinigame(minigames.get(currentmg).name, "spawn"));
-			}else{
-				Location t = this.getComponentForMinigame("MineField", "spawn");
-				minigames.get(currentmg).reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
-			}
+			cmg = minigames.get(currentmg);
 		}
-		currentscore.clear();
+		
 		if(currentmg < minigames.size() - 1){
 			currentmg += 1;
 		}else{
 			if(currentid != null){
-				minigames.get(minigames.size() - 1).reset(this.getComponentForMinigame(minigames.get(minigames.size() - 1).name, "spawn"));
 				stop(currentid);
+				minigames.get(minigames.size() - 1).reset(this.getComponentForMinigame(minigames.get(minigames.size() - 1).name, "spawn"));
 			}
 		}
+		if(cmg != null){
+			cmg.getWinner();
+			
+			// reset current minigame
+			//TODO try out
+			if(!cmg.name.toLowerCase().equalsIgnoreCase("minefield")){
+				cmg.reset(this.getComponentForMinigame(cmg.name, "spawn"));
+			}else{
+				Location t = this.getComponentForMinigame("MineField", "spawn");
+				cmg.reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
+			}
+		}
+		currentscore.clear();
 		for(Minigame mg : minigames){
 			mg.lost.clear();
 		}
