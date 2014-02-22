@@ -1460,7 +1460,13 @@ public class Main extends JavaPlugin implements Listener {
 		
 		sorted_map.putAll(map);
 		
+		int i = 0;
+		
 		for(String player : sorted_map.keySet()){
+			if(i > 10){
+				return;
+			}
+			i++;
 			p.sendMessage(ChatColor.DARK_PURPLE + player + ChatColor.GOLD + " : " + ChatColor.DARK_PURPLE + getConfig().getInt(player + ".credits"));
 		}
 	}
