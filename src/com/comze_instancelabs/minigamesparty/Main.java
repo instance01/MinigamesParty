@@ -2,8 +2,12 @@ package com.comze_instancelabs.minigamesparty;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
 
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -153,7 +157,7 @@ public class Main extends JavaPlugin implements Listener {
 					getServer().getPluginManager().registerEvents(sf, m);
 				}
 			}
-		}, 40);
+		}, 20);
 
 		getConfig().options().header("I recommend you to set auto_updating to true for possible future bugfixes.");
 		
@@ -173,6 +177,7 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().addDefault("config.item_reward_maxamount", 10);
 		getConfig().addDefault("config.item_reward_minamount", 3);
 		getConfig().addDefault("config.item_reward_id", 264);
+		getConfig().addDefault("config.scoreboardoutgame", true);
 		
 		Shop.initShop(this);
 		
@@ -287,6 +292,9 @@ public class Main extends JavaPlugin implements Listener {
 					for(Minigame m : minigames){
 						sender.sendMessage(ChatColor.DARK_AQUA + m.name);
 					}
+				}else if(args[0].equalsIgnoreCase("leaderboards")){
+					sender.sendMessage(ChatColor.DARK_AQUA + "-- " + ChatColor.GOLD + "Leaderboards: " + ChatColor.DARK_AQUA + "--");
+					outputLeaderboards(p);
 				}else if(args[0].equalsIgnoreCase("leave")){
 					if(players.contains(p.getName())){
 						p.teleport(getLobby());
@@ -931,6 +939,7 @@ public class Main extends JavaPlugin implements Listener {
 		c_ += 1;
 	}
 
+	
 	//public BukkitTask nextMinigame(){
 	public void nextMinigame(){
 		ingame_started = false;
@@ -964,16 +973,25 @@ public class Main extends JavaPlugin implements Listener {
 		for(Minigame mg : minigames){
 			mg.lost.clear();
 		}
+		
 		for(String pl : players){
-			Player p = Bukkit.getPlayerExact(pl);
+			final Player p = Bukkit.getPlayerExact(pl);
 			if(p.isOnline()){
 				p.setAllowFlight(false);
 				p.setFlying(false);
 				p.getInventory().clear();
 
-				minigames.get(currentmg).join(p);
+				if(minigames.size() < 1){
+					if(currentmg < minigames.size() - 1){
+						currentmg += 1;
+					}
+					minigames.get(currentmg).join(p);
+				}else{
+					minigames.get(currentmg).join(p);
+				}
 			}
 		}
+
 		if(currentmg > -1){
 			//return minigames.get(currentmg).start();
 			minigames.get(currentmg).startCooldown();
@@ -1077,6 +1095,11 @@ public class Main extends JavaPlugin implements Listener {
 
 
 	public void updateScoreboardOUTGAME(String player){
+		
+		if(!getConfig().getBoolean("config.scoreboardoutgame")){
+			return;
+		}
+		
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
 
 		Player p = Bukkit.getPlayer(player);
@@ -1416,6 +1439,46 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}
 		}
+	}
+	
+	
+	public void outputLeaderboards(Player p){
+		HashMap<String,Integer> map = new HashMap<String,Integer>();
+        ValueComparator bvc =  new ValueComparator(map);
+        TreeMap<String,Integer> sorted_map = new TreeMap<String,Integer>(bvc);
+        
+		// TODO leaderboards
+		Set<String> keys = getConfig().getKeys(false);
+		keys.remove("mysql");
+		keys.remove("config");
+		keys.remove("shop");
+		keys.remove("minigames");
+		keys.remove("lobby");
+		for(String key : keys){
+			map.put(key, getConfig().getInt(key + ".credits"));
+		}
+		
+		sorted_map.putAll(map);
+		
+		for(String player : sorted_map.keySet()){
+			p.sendMessage(ChatColor.DARK_PURPLE + player + ChatColor.GOLD + " : " + ChatColor.DARK_PURPLE + getConfig().getInt(player + ".credits"));
+		}
+	}
+	
+	class ValueComparator implements Comparator<String> {
+
+	    Map<String, Integer> base;
+	    public ValueComparator(Map<String, Integer> base) {
+	        this.base = base;
+	    }
+
+	    public int compare(String a, String b) {
+	        if (base.get(a) >= base.get(b)) {
+	            return -1;
+	        } else {
+	            return 1;
+	        }
+	    }
 	}
 
 }
