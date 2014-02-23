@@ -243,7 +243,7 @@ public class Main extends JavaPlugin implements Listener {
 
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){    	
-		if(cmd.getName().equalsIgnoreCase("minigamesparty") || cmd.getName().equalsIgnoreCase("mp")){
+		if(cmd.getName().equalsIgnoreCase("minigamesparty") || cmd.getName().equalsIgnoreCase("mp") || cmd.getName().equalsIgnoreCase("mgp")){
 
 			if (!(sender instanceof Player)) {
 				sender.sendMessage("You must be a player to run this command.");

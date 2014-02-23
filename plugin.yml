@@ -10,6 +10,9 @@ commands:
    mp:
       description: Main command
       usage: /mp [name]
+   mgp:
+      description: Main command
+      usage: /mgp [name]
    minigamesparty:
       description: Main command
       usage: /minigamesparty [name]
