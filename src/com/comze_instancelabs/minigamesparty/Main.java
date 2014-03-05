@@ -63,6 +63,7 @@ import com.comze_instancelabs.minigamesparty.minigames.JumpnRun;
 import com.comze_instancelabs.minigamesparty.minigames.LastArcherStanding;
 import com.comze_instancelabs.minigamesparty.minigames.MineField;
 import com.comze_instancelabs.minigamesparty.minigames.SheepFreenzy;
+import com.comze_instancelabs.minigamesparty.minigames.SmokeMonster;
 import com.comze_instancelabs.minigamesparty.minigames.Spleef;
 import com.comze_instancelabs.minigamesparty.sql.MainSQL;
 
@@ -155,6 +156,9 @@ public class Main extends JavaPlugin implements Listener {
 					SheepFreenzy sf = new SheepFreenzy(m, m.getComponentForMinigame("SheepFreenzy", "spawn"), m.getLobby(), m.getComponentForMinigame("SheepFreenzy", "spectatorlobby"));
 					minigames.add(sf);
 					getServer().getPluginManager().registerEvents(sf, m);
+					SmokeMonster sm = new SmokeMonster(m, m.getComponentForMinigame("SmokeMonster", "spawn"), m.getLobby(), m.getComponentForMinigame("SmokeMonster", "spectatorlobby"));
+					minigames.add(sm);
+					getServer().getPluginManager().registerEvents(sm, m);
 				}
 			}
 		}, 20);
@@ -346,6 +350,11 @@ public class Main extends JavaPlugin implements Listener {
 					if(currentmg > -1){
 						c_ += 60-c;
 						c = 60;
+					}
+					if(args.length > 0){
+						String count = args[1];
+						currentmg += Integer.parseInt(count) - 1;
+						minigames.get(currentmg).join(p);
 					}
 				}else{
 					p.sendMessage(ChatColor.GREEN + "-- MinigamesParty Help --");
@@ -1315,6 +1324,7 @@ public class Main extends JavaPlugin implements Listener {
 		DisIntegration.setup(new Location(start.getWorld(), x + 64 * 2 + 20 * 2, y, z), this, "DisIntegration");
 		LastArcherStanding.setup(new Location(start.getWorld(), x + 64 * 3 + 20 * 3, y, z), this, "LastArcherStanding");
 		SheepFreenzy.setup(new Location(start.getWorld(), x + 64 + 20, y, z + 64 + 20), this, "SheepFreenzy");
+		SmokeMonster.setup(new Location(start.getWorld(), x + 64 * 2 + 20 * 2, y, z + 64 + 20), this, "SmokeMonster");
 
 		
 		/*
@@ -1347,6 +1357,7 @@ public class Main extends JavaPlugin implements Listener {
 		minigames.add(new DisIntegration(this, this.getComponentForMinigame("DisIntegration", "spawn"), this.getComponentForMinigame("DisIntegration", "lobby"), this.getComponentForMinigame("DisIntegration", "spectatorlobby")));
 		minigames.add(new LastArcherStanding(this, this.getComponentForMinigame("LastArcherStanding", "spawn"), this.getComponentForMinigame("LastArcherStanding", "lobby"), this.getComponentForMinigame("LastArcherStanding", "spectatorlobby")));
 		minigames.add(new SheepFreenzy(this, this.getComponentForMinigame("SheepFreenzy", "spawn"), this.getComponentForMinigame("SheepFreenzy", "lobby"), this.getComponentForMinigame("SheepFreenzy", "spectatorlobby")));
+		minigames.add(new SmokeMonster(this, this.getComponentForMinigame("SmokeMonster", "spawn"), this.getComponentForMinigame("SmokeMonster", "lobby"), this.getComponentForMinigame("SmokeMonster", "spectatorlobby")));
 
 		getLogger().info("[MinigamesParty] Finished Setup");
 	}
