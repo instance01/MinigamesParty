@@ -22,83 +22,84 @@ import com.comze_instancelabs.minigamesparty.Main;
 import com.comze_instancelabs.minigamesparty.Minigame;
 import com.comze_instancelabs.minigamesparty.Shop;
 
-public class SmokeMonster extends Minigame implements Listener{
+public class SmokeMonster extends Minigame implements Listener {
 
 	public SmokeMonster(Main arg2, Location arg3, Location arg4, Location arg5) {
 		super("SmokeMonster", "Avoid the smoke monster!", arg2, arg3, arg4, arg5, null);
 	}
-	
-	
-	public ArrayList<Location> locs = new ArrayList<Location>();
+
+	public static ArrayList<Location> locs = new ArrayList<Location>();
 	int currentloc = 0;
-	
+
 	int cxz = 0;
-	
+
 	public ArrayList<Integer> x_ = new ArrayList<Integer>();
 	public ArrayList<Integer> z_ = new ArrayList<Integer>();
+
+	Random r = new Random();
+	
+	// possible modes: straight, straightUD
+	String cmode = "straight";
 	
 	@Override
-	public BukkitTask start(){		
-
+	public BukkitTask start() {
 		fillArrayLists();
-		
-		/*int radius = 30;
-		int radiusSquared = radius * radius;
-		 
-		for(int x = -radius; x <= radius; x++) {
-		    for(int z = -radius; z <= radius; z++) {
-		        if( (x*x) + (z*z) <= radiusSquared && (x*x) + (z*z) > radiusSquared - 60) {
-		        	Location l = new Location(spawn.getWorld(), spawn.getX() + x, spawn.getY() + 2, spawn.getZ() + z);
-		            locs.add(l);
-		            spawn.getWorld().getBlockAt(l).setType(Material.WOOD);
-		        }
-		    }
-		}*/
-		
+
 		final Random r = new Random();
 
 		final BukkitTask id__ = Bukkit.getServer().getScheduler().runTaskTimer(m, new Runnable() {
 			@Override
-			public void run(){
-				straightLineMonsterUpDown();
+			public void run() {
+				if(r.nextInt(100) < 3){
+					if(cmode.equalsIgnoreCase("straight")){
+						cmode = "straightUD";
+					}else{
+						cmode = "straight";
+					}
+				}
+				
+				if(cmode.equalsIgnoreCase("straight")){
+					straightLineMonster();
+				}else{
+					straightLineMonsterUpDown();
+				}
+				
 			}
 		}, 5, 5);
-		
+
 		return id__;
 	}
 
-	
 	@Override
-	public void join(final Player p){
+	public void join(final Player p) {
 		super.join(p);
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(m, new Runnable() {
 			@Override
 			public void run() {
-				p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 60, 2));
+				p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 64, 4));
 			}
 		}, 5);
 	}
-	
-	
-	public static void setup(Location start, Main main, String name_){
+
+	public static void setup(Location start, Main main, String name_) {
 		Random r = new Random();
 		int x = start.getBlockX() - 32;
 		int y = start.getBlockY();
 		int z = start.getBlockZ() - 32;
-		
+
 		main.saveComponentForMinigame(name_, "spawn", new Location(start.getWorld(), start.getBlockX(), y + 2, start.getBlockZ()));
 		main.saveComponentForMinigame(name_, "spectatorlobby", new Location(start.getWorld(), start.getBlockX(), y + 30, start.getBlockZ()));
 		main.saveComponentForMinigame(name_, "lobby", main.getLobby());
-		
-		for(int i = 0; i < 64; i++){
-			for(int j = 0; j < 64; j++){
+
+		for (int i = 0; i < 64; i++) {
+			for (int j = 0; j < 64; j++) {
 				Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x + i, y, z + j));
 				b.setType(Material.NETHER_BRICK);
 			}
 		}
 	}
-	
-	public void fillArrayLists(){
+
+	public void fillArrayLists() {
 		for (int i = 0; i < 30; i++) {
 			x_.add(i); // 0 -> 30
 		}
@@ -111,7 +112,7 @@ public class SmokeMonster extends Minigame implements Listener{
 		for (int i = 30; i > 0; i--) {
 			x_.add(-i); // -30 -> 0
 		}
-		
+
 		for (int i = 30; i > 0; i--) {
 			z_.add(i); // 30 -> 0
 		}
@@ -125,10 +126,9 @@ public class SmokeMonster extends Minigame implements Listener{
 			z_.add(i); // 0 -> 30
 		}
 	}
-	
-	
+
 	@Override
-	public void reset(Location start){
+	public void reset(Location start) {
 		z_.clear();
 		x_.clear();
 		currentloc = 0;
@@ -136,17 +136,32 @@ public class SmokeMonster extends Minigame implements Listener{
 		cxz = 0;
 		currentoffset = 0;
 	}
-	
-	
-	public void straightLineMonster(){
+
+	public void straightLineMonster() {
 		Vector v = new Vector(x_.get(cxz), 0, z_.get(cxz));
 
-		if(v.getBlockX() != 0 && v.getBlockZ() != 0){
+		locs.clear();
+
+		if (v.getBlockX() != 0 && v.getBlockZ() != 0) {
 			BlockIterator b = new BlockIterator(spawn.getWorld(), spawn.toVector(), v, 2, 30);
-			
-			while(b.hasNext()){
-				if(b.hasNext()){
+			BlockIterator b_ = new BlockIterator(spawn.getWorld(), spawn.toVector(), v.multiply(-1D), 2, 30);
+
+			while (b.hasNext()) {
+				if (b.hasNext()) {
 					Location l = b.next().getLocation();
+					locs.add(l);
+					l.getWorld().createExplosion(l, 1F);
+					l.getWorld().createExplosion(l.add(0D, -1D, 0D), 1F);
+					l.getWorld().createExplosion(l.add(0D, -2D, 0D), 1F);
+					l.getWorld().createExplosion(l.add(0D, -0.5D, 0D), 1F);
+					l.getWorld().createExplosion(l.add(0D, -1.5D, 0D), 1F);
+				}
+			}
+			
+			while (b_.hasNext()) {
+				if (b_.hasNext()) {
+					Location l = b_.next().getLocation();
+					locs.add(l);
 					l.getWorld().createExplosion(l, 1F);
 					l.getWorld().createExplosion(l.add(0D, -1D, 0D), 1F);
 					l.getWorld().createExplosion(l.add(0D, -2D, 0D), 1F);
@@ -155,48 +170,66 @@ public class SmokeMonster extends Minigame implements Listener{
 				}
 			}
 		}
-		
-		if(currentloc < locs.size() - 1){
+
+		if (currentloc < locs.size() - 1) {
 			currentloc += 1;
 		}
-		
-		if(cxz < 120 - 1){
-			cxz ++;
-		}else{
+
+		if (cxz < 120 - 1) {
+			cxz++;
+		} else {
 			cxz = 0;
 		}
 	}
-	
-	public ArrayList<Integer> w = new ArrayList<Integer>(Arrays.asList(7, 8, 7, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6, 7, 8, 7, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6, 7, 8, 7, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6));
+
+	public ArrayList<Integer> w = new ArrayList<Integer>(Arrays.asList(7, 7, 7, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6));
 	int currentoffset = 0;
 	boolean back = false;
-	
-	public void straightLineMonsterUpDown(){
+
+	public void straightLineMonsterUpDown() {
 		Vector v = new Vector(x_.get(cxz), 0, z_.get(cxz));
 
-		if(v.getBlockX() != 0 && v.getBlockZ() != 0){
+		locs.clear();
+
+		if (v.getBlockX() != 0 && v.getBlockZ() != 0) {
 			BlockIterator b = new BlockIterator(spawn.getWorld(), spawn.toVector(), v, 2, 30);
-			
+			BlockIterator b_ = new BlockIterator(spawn.getWorld(), spawn.toVector(), v.multiply(-1D), 2, 30);
+
 			int c = 0;
-			if(!back){
-				currentoffset ++;
-			}else{
-				currentoffset --;
+			if (!back) {
+				currentoffset++;
+			} else {
+				currentoffset--;
 			}
-			
-			if(currentoffset > 10){
+
+			if (currentoffset > 10) {
 				back = true;
 			}
-			
-			if(currentoffset < 1){
+
+			if (currentoffset < 1) {
 				back = false;
 			}
-			
-			while(b.hasNext()){
-				if(b.hasNext()){
+
+			while (b.hasNext()) {
+				if (b.hasNext()) {
 					int mod = w.get(c + currentoffset);
 					c++;
 					Location l = b.next().getLocation();
+					locs.add(l);
+					l.getWorld().createExplosion(l.add(0D, 0D + (mod / 2), 0D), 1F);
+					l.getWorld().createExplosion(l.add(0D, -1D + (mod / 2), 0D), 1F);
+					l.getWorld().createExplosion(l.add(0D, -2D + (mod / 2), 0D), 1F);
+					l.getWorld().createExplosion(l.add(0D, -0.5D + (mod / 2), 0D), 1F);
+					l.getWorld().createExplosion(l.add(0D, -1.5D + (mod / 2), 0D), 1F);
+				}
+			}
+			
+			while (b_.hasNext()) {
+				if (b_.hasNext()) {
+					int mod = w.get(c + currentoffset);
+					c++;
+					Location l = b.next().getLocation();
+					locs.add(l);
 					l.getWorld().createExplosion(l.add(0D, 0D + (mod / 2), 0D), 1F);
 					l.getWorld().createExplosion(l.add(0D, -1D + (mod / 2), 0D), 1F);
 					l.getWorld().createExplosion(l.add(0D, -2D + (mod / 2), 0D), 1F);
@@ -205,14 +238,14 @@ public class SmokeMonster extends Minigame implements Listener{
 				}
 			}
 		}
-		
-		if(currentloc < locs.size() - 1){
+
+		if (currentloc < locs.size() - 1) {
 			currentloc += 1;
 		}
-		
-		if(cxz < 120 - 1){
-			cxz ++;
-		}else{
+
+		if (cxz < 120 - 1) {
+			cxz++;
+		} else {
 			cxz = 0;
 		}
 	}

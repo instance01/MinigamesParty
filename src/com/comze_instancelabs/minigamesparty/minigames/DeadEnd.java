@@ -34,7 +34,7 @@ public class DeadEnd extends Minigame implements Listener{
 				p.getInventory().clear();
 				p.updateInventory();
 				
-				p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 60, -5));
+				p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 64, -5));
 			}
 		}, 5);
 	}
