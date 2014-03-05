@@ -1,6 +1,7 @@
 package com.comze_instancelabs.minigamesparty.minigames;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -41,7 +42,7 @@ public class SmokeMonster extends Minigame implements Listener{
 
 		fillArrayLists();
 		
-		int radius = 30;
+		/*int radius = 30;
 		int radiusSquared = radius * radius;
 		 
 		for(int x = -radius; x <= radius; x++) {
@@ -52,42 +53,16 @@ public class SmokeMonster extends Minigame implements Listener{
 		            spawn.getWorld().getBlockAt(l).setType(Material.WOOD);
 		        }
 		    }
-		}
+		}*/
 		
 		final Random r = new Random();
-		
-		System.out.println("SIZE" + Integer.toString(locs.size()));
-		
+
 		final BukkitTask id__ = Bukkit.getServer().getScheduler().runTaskTimer(m, new Runnable() {
 			@Override
 			public void run(){
-				Vector v = new Vector(x_.get(cxz), 0, z_.get(cxz));
-				System.out.println(v);
-				
-				if(v.getBlockX() != 0 && v.getBlockZ() != 0){
-					BlockIterator b = new BlockIterator(spawn.getWorld(), spawn.toVector(), v, 2, 30);
-					
-					while(b.hasNext()){
-						if(b.hasNext()){
-							Location l = b.next().getLocation();
-							l.getWorld().createExplosion(l, 1F);
-							l.getWorld().createExplosion(l.add(0D, -1D, 0D), 1F);
-							l.getWorld().createExplosion(l.add(0D, -2D, 0D), 1F);
-						}
-					}
-				}
-				
-				if(currentloc < locs.size() - 1){
-					currentloc += 1;
-				}
-				
-				if(cxz < 120 - 1){
-					cxz ++;
-				}else{
-					cxz = 0;
-				}
+				straightLineMonsterUpDown();
 			}
-		}, 8, 8);
+		}, 5, 5);
 		
 		return id__;
 	}
@@ -158,5 +133,87 @@ public class SmokeMonster extends Minigame implements Listener{
 		x_.clear();
 		currentloc = 0;
 		locs.clear();
+		cxz = 0;
+		currentoffset = 0;
+	}
+	
+	
+	public void straightLineMonster(){
+		Vector v = new Vector(x_.get(cxz), 0, z_.get(cxz));
+
+		if(v.getBlockX() != 0 && v.getBlockZ() != 0){
+			BlockIterator b = new BlockIterator(spawn.getWorld(), spawn.toVector(), v, 2, 30);
+			
+			while(b.hasNext()){
+				if(b.hasNext()){
+					Location l = b.next().getLocation();
+					l.getWorld().createExplosion(l, 1F);
+					l.getWorld().createExplosion(l.add(0D, -1D, 0D), 1F);
+					l.getWorld().createExplosion(l.add(0D, -2D, 0D), 1F);
+					l.getWorld().createExplosion(l.add(0D, -0.5D, 0D), 1F);
+					l.getWorld().createExplosion(l.add(0D, -1.5D, 0D), 1F);
+				}
+			}
+		}
+		
+		if(currentloc < locs.size() - 1){
+			currentloc += 1;
+		}
+		
+		if(cxz < 120 - 1){
+			cxz ++;
+		}else{
+			cxz = 0;
+		}
+	}
+	
+	public ArrayList<Integer> w = new ArrayList<Integer>(Arrays.asList(7, 8, 7, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6, 7, 8, 7, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6, 7, 8, 7, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6));
+	int currentoffset = 0;
+	boolean back = false;
+	
+	public void straightLineMonsterUpDown(){
+		Vector v = new Vector(x_.get(cxz), 0, z_.get(cxz));
+
+		if(v.getBlockX() != 0 && v.getBlockZ() != 0){
+			BlockIterator b = new BlockIterator(spawn.getWorld(), spawn.toVector(), v, 2, 30);
+			
+			int c = 0;
+			if(!back){
+				currentoffset ++;
+			}else{
+				currentoffset --;
+			}
+			
+			if(currentoffset > 10){
+				back = true;
+			}
+			
+			if(currentoffset < 1){
+				back = false;
+			}
+			
+			while(b.hasNext()){
+				if(b.hasNext()){
+					int mod = w.get(c + currentoffset);
+					c++;
+					Location l = b.next().getLocation();
+					l.getWorld().createExplosion(l.add(0D, 0D + (mod / 2), 0D), 1F);
+					l.getWorld().createExplosion(l.add(0D, -1D + (mod / 2), 0D), 1F);
+					l.getWorld().createExplosion(l.add(0D, -2D + (mod / 2), 0D), 1F);
+					l.getWorld().createExplosion(l.add(0D, -0.5D + (mod / 2), 0D), 1F);
+					l.getWorld().createExplosion(l.add(0D, -1.5D + (mod / 2), 0D), 1F);
+				}
+			}
+		}
+		
+		if(currentloc < locs.size() - 1){
+			currentloc += 1;
+		}
+		
+		if(cxz < 120 - 1){
+			cxz ++;
+		}else{
+			cxz = 0;
+		}
 	}
 }
