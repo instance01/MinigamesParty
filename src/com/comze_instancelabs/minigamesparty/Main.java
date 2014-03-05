@@ -529,6 +529,27 @@ public class Main extends JavaPlugin implements Listener {
 									w.getBlockAt(under).setType(Material.AIR);
 								}
 							}
+							if(current.name.equalsIgnoreCase("SmokeMonster")){
+								for(Location l : SmokeMonster.locs){
+									if(event.getPlayer().getLocation().distance(l) < 2){
+										current.lost.add(event.getPlayer());
+										int count = 0;
+										for(String pl : m.players){
+											Player p = Bukkit.getPlayerExact(pl);
+											if(p.isOnline()){
+												if(!current.lost.contains(p)){
+													count++;
+												}
+											}
+										}
+										current.spectate(event.getPlayer());
+										if(count < 2){
+											c_ += 60-c;
+											c = 60; 
+										}
+									}
+								}
+							}
 							if(current.name.equalsIgnoreCase("JumpnRun") || current.name.equalsIgnoreCase("MineField")){
 								final Player p = event.getPlayer();
 								if(p.getLocation().getBlockZ() > current.finish.getBlockZ()){
