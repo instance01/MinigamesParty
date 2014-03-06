@@ -531,7 +531,7 @@ public class Main extends JavaPlugin implements Listener {
 							}
 							if(current.name.equalsIgnoreCase("SmokeMonster")){
 								for(Location l : SmokeMonster.locs){
-									if(event.getPlayer().getLocation().distance(l) < 2){
+									if(event.getPlayer().getLocation().distance(l) < 3 || event.getPlayer().getLocation().distance(l.add(0D, -1.5D, 0D))  < 3){
 										current.lost.add(event.getPlayer());
 										int count = 0;
 										for(String pl : m.players){

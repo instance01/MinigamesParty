@@ -65,7 +65,7 @@ public class SmokeMonster extends Minigame implements Listener {
 				}
 				
 			}
-		}, 5, 5);
+		}, 2, 2);
 
 		return id__;
 	}
@@ -196,13 +196,14 @@ public class SmokeMonster extends Minigame implements Listener {
 			BlockIterator b_ = new BlockIterator(spawn.getWorld(), spawn.toVector(), v.multiply(-1D), 2, 30);
 
 			int c = 0;
+			int c_ = 0;
 			if (!back) {
 				currentoffset++;
 			} else {
 				currentoffset--;
 			}
 
-			if (currentoffset > 10) {
+			if (currentoffset > 11) {
 				back = true;
 			}
 
@@ -226,9 +227,9 @@ public class SmokeMonster extends Minigame implements Listener {
 			
 			while (b_.hasNext()) {
 				if (b_.hasNext()) {
-					int mod = w.get(c + currentoffset);
-					c++;
-					Location l = b.next().getLocation();
+					int mod = w.get(c_ + currentoffset);
+					c_++;
+					Location l = b_.next().getLocation();
 					locs.add(l);
 					l.getWorld().createExplosion(l.add(0D, 0D + (mod / 2), 0D), 1F);
 					l.getWorld().createExplosion(l.add(0D, -1D + (mod / 2), 0D), 1F);
