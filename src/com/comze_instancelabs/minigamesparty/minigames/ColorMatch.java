@@ -199,9 +199,9 @@ public class ColorMatch extends Minigame implements Listener{
 	@Override
 	public void reset(final Location start){
 		try{
-			//final MassBlockUpdate mbu = CraftMassBlockUpdate.createMassBlockUpdater(m, start.getWorld());
+			final MassBlockUpdate mbu = CraftMassBlockUpdate.createMassBlockUpdater(m, start.getWorld());
    		 
-    		//mbu.setRelightingStrategy(MassBlockUpdate.RelightingStrategy.NEVER);
+    		mbu.setRelightingStrategy(MassBlockUpdate.RelightingStrategy.NEVER);
     		
 			if(ints.size() < 1){
 				getAll(start);
@@ -233,17 +233,17 @@ public class ColorMatch extends Minigame implements Listener{
 						for(int j_ = 0; j_ < 4; j_++){
 							Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x_ + i_, y, z_ + j_));
 
-							//mbu.setBlock(x_ + i_, y, z_ + j_, 35, current);
+							mbu.setBlock(x_ + i_, y, z_ + j_, 35, current);
 							//mbu.setBlock(x_ + i_, y_, z_ + j_, 89);
 							
-							b.setType(Material.WOOL);
-							b.setData((byte)current);
+							//b.setType(Material.WOOL);
+							//b.setData((byte)current);
 						}
 					}
 				}
 			}
 			
-			//mbu.notifyClients();
+			mbu.notifyClients();
 			
 		}catch (Exception e){
 			e.printStackTrace();
