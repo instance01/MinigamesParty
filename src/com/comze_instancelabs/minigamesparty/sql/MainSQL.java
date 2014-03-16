@@ -42,6 +42,45 @@ public class MainSQL {
 	}
 	
 	
+	public int getCredits(String p_){
+		if(!m.getConfig().getBoolean("mysql.enabled")){
+			return -1;
+		}
+		MySQL MySQL = new MySQL(m.getConfig().getString("mysql.host"), "3306", m.getConfig().getString("mysql.database"), m.getConfig().getString("mysql.user"), m.getConfig().getString("mysql.pw"));
+    	Connection c = null;
+    	c = MySQL.open();
+		
+		try {
+			ResultSet res3 = c.createStatement().executeQuery("SELECT * FROM mgparty WHERE player='" + p_ + "'");
+
+			res3.next();
+			int credits = res3.getInt("credits");
+			return credits;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public int getWins(String p_){
+		if(!m.getConfig().getBoolean("mysql.enabled")){
+			return -1;
+		}
+		MySQL MySQL = new MySQL(m.getConfig().getString("mysql.host"), "3306", m.getConfig().getString("mysql.database"), m.getConfig().getString("mysql.user"), m.getConfig().getString("mysql.pw"));
+    	Connection c = null;
+    	c = MySQL.open();
+		
+		try {
+			ResultSet res3 = c.createStatement().executeQuery("SELECT * FROM mgparty WHERE player='" + p_ + "'");
+
+			res3.next();
+			int wins = res3.getInt("wins");
+			return wins;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
 	
 	public void updateShopperStats(String p_, int amount){
 		if(!m.getConfig().getBoolean("mysql.enabled")){

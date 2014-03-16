@@ -392,6 +392,16 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler 
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player p = event.getPlayer();
+		
+		// update credits from mysql
+		try{
+			if(msql.getCredits(p.getName()) > -1){
+				this.updatePlayerStats(p.getName(), "wins", msql.getWins(p.getName()));
+				this.updatePlayerStats(p.getName(), "credits", msql.getCredits(p.getName()));		
+			}
+		}catch(Exception e){
+			getLogger().warning("An error occurred while syncing credits and wins for player " + p.getName());
+		}
 
 		if(players_left.contains(p.getName())){
 			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
@@ -1429,7 +1439,7 @@ public class Main extends JavaPlugin implements Listener {
 	
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event){
-		if(players.contains(event.getPlayer().getName())){
+		if(players.contains(event.getPlayer().getName()) || !event.getPlayer().isOp()){
 			if(event.getMessage().startsWith("/leave") || event.getMessage().equalsIgnoreCase("/quit")){
 				final Player p = event.getPlayer();
 				p.teleport(getLobby());
