@@ -135,6 +135,7 @@ public class SmokeMonster extends Minigame implements Listener {
 		locs.clear();
 		cxz = 0;
 		currentoffset = 0;
+		errorcount = 0;
 	}
 
 	public void straightLineMonster() {
@@ -186,6 +187,8 @@ public class SmokeMonster extends Minigame implements Listener {
 	int currentoffset = 0;
 	boolean back = false;
 
+	int errorcount = 0;
+	
 	public void straightLineMonsterUpDown() {
 		Vector v = new Vector(x_.get(cxz), 0, z_.get(cxz));
 
@@ -213,7 +216,16 @@ public class SmokeMonster extends Minigame implements Listener {
 
 			while (b.hasNext()) {
 				if (b.hasNext()) {
-					int mod = w.get(c + currentoffset);
+					int mod = 0;
+					if(c + currentoffset > w.size()){
+						if(errorcount < 10){
+							m.getLogger().info("The offset was higher than expected.");
+						}
+						errorcount++;
+						mod = w.size() - 1;
+					}else{
+						mod = w.get(c + currentoffset);
+					}
 					c++;
 					Location l = b.next().getLocation();
 					locs.add(l);
@@ -227,7 +239,16 @@ public class SmokeMonster extends Minigame implements Listener {
 			
 			while (b_.hasNext()) {
 				if (b_.hasNext()) {
-					int mod = w.get(c_ + currentoffset);
+					int mod = 0;
+					if(c_ + currentoffset > w.size()){
+						if(errorcount < 10){
+							m.getLogger().info("The offset was higher than expected.");
+						}
+						errorcount++;
+						mod = w.size() - 1;
+					}else{
+						mod = w.get(c_ + currentoffset);
+					}
 					c_++;
 					Location l = b_.next().getLocation();
 					locs.add(l);

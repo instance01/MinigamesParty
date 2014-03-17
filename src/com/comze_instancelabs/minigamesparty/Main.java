@@ -351,7 +351,7 @@ public class Main extends JavaPlugin implements Listener {
 						c_ += 60-c;
 						c = 60;
 					}
-					if(args.length > 0){
+					if(args.length > 1){
 						String count = args[1];
 						currentmg += Integer.parseInt(count) - 1;
 						minigames.get(currentmg).join(p);
@@ -370,6 +370,19 @@ public class Main extends JavaPlugin implements Listener {
 					p.sendMessage(ChatColor.DARK_AQUA + "3. Go far away");
 					p.sendMessage(ChatColor.DARK_AQUA + "4. /mp setup");
 				}
+			}else{
+				p.sendMessage(ChatColor.GREEN + "-- MinigamesParty Help --");
+				p.sendMessage(ChatColor.DARK_AQUA + "/mp setlobby");
+				p.sendMessage(ChatColor.DARK_AQUA + "/mp setup");
+				p.sendMessage(ChatColor.DARK_AQUA + "/mp stats [player]");
+				p.sendMessage(ChatColor.DARK_AQUA + "/mp list");
+				p.sendMessage(ChatColor.DARK_AQUA + "/mp leave");
+				p.sendMessage(ChatColor.DARK_AQUA + "/mp setcomponent [minigame] [component]");
+				p.sendMessage(ChatColor.GOLD + "To setup the game, do the following: ");
+				p.sendMessage(ChatColor.DARK_AQUA + "1. Build the main lobby");
+				p.sendMessage(ChatColor.DARK_AQUA + "2. /mp setlobby");
+				p.sendMessage(ChatColor.DARK_AQUA + "3. Go far away");
+				p.sendMessage(ChatColor.DARK_AQUA + "4. /mp setup");
 			}
 			return true;
 		}
@@ -1002,8 +1015,13 @@ public class Main extends JavaPlugin implements Listener {
 			
 			// reset current minigame
 			//TODO try out
+			final Minigame cmg_ = cmg;
 			if(!cmg.name.toLowerCase().equalsIgnoreCase("minefield")){
-				cmg.reset(this.getComponentForMinigame(cmg.name, "spawn"));
+				Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+					public void run(){
+						cmg_.reset(m.getComponentForMinigame(cmg_.name, "spawn"));
+					}
+				}, 20L);
 			}else{
 				Location t = this.getComponentForMinigame("MineField", "spawn");
 				cmg.reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
