@@ -1457,7 +1457,7 @@ public class Main extends JavaPlugin implements Listener {
 	
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event){
-		if(players.contains(event.getPlayer().getName()) || !event.getPlayer().isOp()){
+		if(players.contains(event.getPlayer().getName()) && !event.getPlayer().isOp()){
 			if(event.getMessage().startsWith("/leave") || event.getMessage().equalsIgnoreCase("/quit")){
 				final Player p = event.getPlayer();
 				p.teleport(getLobby());
