@@ -183,7 +183,7 @@ public class SmokeMonster extends Minigame implements Listener {
 		}
 	}
 
-	public ArrayList<Integer> w = new ArrayList<Integer>(Arrays.asList(7, 7, 7, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6));
+	public ArrayList<Integer> w = new ArrayList<Integer>(Arrays.asList(7, 7, 7, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3));
 	int currentoffset = 0;
 	boolean back = false;
 
@@ -217,7 +217,7 @@ public class SmokeMonster extends Minigame implements Listener {
 			while (b.hasNext()) {
 				if (b.hasNext()) {
 					int mod = 0;
-					if(c + currentoffset > w.size()){
+					if(c + currentoffset > w.size() - 1){
 						if(errorcount < 10){
 							m.getLogger().info("The offset was higher than expected.");
 						}
@@ -240,7 +240,7 @@ public class SmokeMonster extends Minigame implements Listener {
 			while (b_.hasNext()) {
 				if (b_.hasNext()) {
 					int mod = 0;
-					if(c_ + currentoffset > w.size()){
+					if(c_ + currentoffset > w.size() - 1){
 						if(errorcount < 10){
 							m.getLogger().info("The offset was higher than expected.");
 						}

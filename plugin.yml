@@ -1,6 +1,6 @@
 name: MinigamesParty
 main: com.comze_instancelabs.minigamesparty.Main
-version: 1.2.2
+version: 1.2.3
 author: instancelabs
 softdepend: [Vault]
 permissions:
