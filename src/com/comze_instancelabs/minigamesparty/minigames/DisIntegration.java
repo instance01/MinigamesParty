@@ -28,7 +28,7 @@ public class DisIntegration extends Minigame implements Listener{
 	static ArrayList<Integer[]> coords = new ArrayList<Integer[]>();
 	
 	public DisIntegration(Main arg2, Location arg3, Location arg4, Location arg5) {
-		super("DisIntegration", "Don't fall while the floor is disappearing!", arg2, arg3, arg4, arg5, null);
+		super("DisIntegration", MinigameUtil.getDescription(arg2, "DisIntegration"), arg2, arg3, arg4, arg5, null);
 	}
 	
 	static Random r = new Random();

@@ -17,7 +17,7 @@ import com.comze_instancelabs.minigamesparty.Shop;
 public class Spleef extends Minigame implements Listener{
 	
 	public Spleef(Main arg2, Location arg3, Location arg4, Location arg5) {
-		super("Spleef", "Destroy the floor under your opponents to make them fall and lose!", arg2, arg3, arg4, arg5, null);
+		super("Spleef", MinigameUtil.getDescription(arg2, "Spleef"), arg2, arg3, arg4, arg5, null);
 	}
 	
 	@Override

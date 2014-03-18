@@ -30,7 +30,7 @@ public class ColorMatch extends Minigame implements Listener{
 	static ArrayList<Integer> ints = new ArrayList<Integer>();
 	
 	public ColorMatch(Main arg2, Location arg3, Location arg4, Location arg5) {
-		super("ColorMatch", "Jump to the color corresponding to the wool color in your inventory!", arg2, arg3, arg4, arg5, null);
+		super("ColorMatch", MinigameUtil.getDescription(arg2, "ColorMatch"), arg2, arg3, arg4, arg5, null);
 	}
 	
 	static ArrayList<DyeColor> colors = new ArrayList<DyeColor>(Arrays.asList(DyeColor.BLUE, DyeColor.RED, DyeColor.CYAN, DyeColor.BLACK, DyeColor.GREEN, DyeColor.YELLOW, DyeColor.ORANGE, DyeColor.PURPLE, DyeColor.LIME));

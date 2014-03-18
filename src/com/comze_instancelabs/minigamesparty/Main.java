@@ -183,6 +183,21 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().addDefault("config.item_reward_id", 264);
 		getConfig().addDefault("config.scoreboardoutgame", true);
 		
+		
+		getConfig().addDefault("strings.you_left", "You left the game.");
+		getConfig().addDefault("strings.next_round_30_seconds", "Next round in 30 seconds!");
+		
+		getConfig().addDefault("strings.description.colormatch", "Jump to the color corresponding to the wool color in your inventory!");
+		getConfig().addDefault("strings.description.deadend", "Don't fall while the blocks are disappearing behind you!");
+		getConfig().addDefault("strings.description.disintegration", "Don't fall while the floor is disappearing!");
+		getConfig().addDefault("strings.description.jumpnrun", "Jump to the finish!");
+		getConfig().addDefault("strings.description.lastarcherstanding", "Shoot the others with the bow!");
+		getConfig().addDefault("strings.description.minefield", "Run to the finish without touching the mines!");
+		getConfig().addDefault("strings.description.sheepfreenzy", "Shear as many Sheeps as possible! Attention: Some of them explode.");
+		getConfig().addDefault("strings.description.smokemonster", "Avoid the smoke monster!");
+		getConfig().addDefault("strings.description.spleef", "Destroy the floor under your opponents to make them fall and lose!");
+		
+		
 		Shop.initShop(this);
 		
 		getConfig().options().copyDefaults(true);
@@ -316,7 +331,7 @@ public class Main extends JavaPlugin implements Listener {
 							minigames.get(currentmg).leave(p);
 						}
 						players.remove(p.getName());
-						p.sendMessage(ChatColor.RED + "You left the game.");
+						p.sendMessage(ChatColor.RED + getConfig().getString("strings.you_left"));
 						if(players.size() < min_players){
 							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 								public void run(){
@@ -944,7 +959,7 @@ public class Main extends JavaPlugin implements Listener {
 				Player p = Bukkit.getPlayerExact(pl);
 				if(p.isOnline()){
 					minigames.get(minigames.size() - 1).leave(p);
-					p.sendMessage(ChatColor.GOLD + "Next round in 30 seconds!");
+					p.sendMessage(ChatColor.GOLD + getConfig().getString("strings.next_round_30_seconds"));
 					p.getInventory().clear();
 					p.updateInventory();
 					updateScoreboardOUTGAME(pl);
@@ -1275,7 +1290,7 @@ public class Main extends JavaPlugin implements Listener {
 					p.removePotionEffect(PotionEffectType.JUMP);
 				}
 				minigames.get(minigames.size() - 1).leave(p);
-				p.sendMessage(ChatColor.GOLD + "Next round in 30 seconds!");
+				p.sendMessage(ChatColor.GOLD + getConfig().getString("strings.next_round_30_seconds"));
 				p.getInventory().clear();
 				p.updateInventory();
 			}else{
@@ -1475,7 +1490,7 @@ public class Main extends JavaPlugin implements Listener {
 					minigames.get(currentmg).leave(p);
 				}
 				players.remove(p.getName());
-				p.sendMessage(ChatColor.RED + "You left the game.");
+				p.sendMessage(ChatColor.RED + getConfig().getString("strings.you_left"));
 				if(players.size() < min_players){
 					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 						public void run(){
