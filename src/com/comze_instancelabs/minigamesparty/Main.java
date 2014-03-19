@@ -182,7 +182,7 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().addDefault("config.item_reward_minamount", 3);
 		getConfig().addDefault("config.item_reward_id", 264);
 		getConfig().addDefault("config.scoreboardoutgame", true);
-		
+		getConfig().addDefault("config.announcements", true);
 		
 		getConfig().addDefault("strings.you_left", "You left the game.");
 		getConfig().addDefault("strings.next_round_30_seconds", "Next round in 30 seconds!");
@@ -866,7 +866,9 @@ public class Main extends JavaPlugin implements Listener {
 		int reward = r.nextInt((maxreward - minreward) + 1) + minreward;
 		this.updatePlayerStats(p.getName(), "credits", getPlayerStats(p.getName(), "credits") + reward);		
 
-		getServer().broadcastMessage(ChatColor.GOLD	+ p.getName() + " won this round and earned " + ChatColor.BLUE + Integer.toString(reward) + ChatColor.GOLD + " Credits!");
+		if(getConfig().getBoolean("config.announcements")){
+			getServer().broadcastMessage(ChatColor.GOLD	+ p.getName() + " won this round and earned " + ChatColor.BLUE + Integer.toString(reward) + ChatColor.GOLD + " Credits!");
+		}
 
 		p.sendMessage("§aYou earned " + Integer.toString(reward) + " Credits this round.");
 
