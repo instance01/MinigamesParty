@@ -1,18 +1,15 @@
 name: MinigamesParty
 main: com.comze_instancelabs.minigamesparty.Main
-version: 1.2.3
-author: instancelabs
+version: 1.2.4
+author: InstanceLabs
 softdepend: [Vault]
-permissions:
-  mparty.sign:
-    description: Gives access to create signs for joining games.
 commands:
    mp:
       description: Main command
-      usage: /mp [name]
+      usage: /cm [action]
    mgp:
       description: Main command
-      usage: /mgp [name]
+      usage: /cm [action]
    minigamesparty:
       description: Main command
-      usage: /minigamesparty [name]
+      usage: /colormatch [action]

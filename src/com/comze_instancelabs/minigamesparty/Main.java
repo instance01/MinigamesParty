@@ -69,13 +69,6 @@ import com.comze_instancelabs.minigamesparty.sql.MainSQL;
 
 public class Main extends JavaPlugin implements Listener {
 
-	// ATTENTION: VERY RESOURCE INTENSIVE PLUGIN
-
-	//TODO:
-	// [HIGH] add all other minigames
-	// [MEDIUM] add more commands and stats etc.
-
-
 	/* setup pattern:
 	 * 
 	 * # - - -
@@ -1524,7 +1517,6 @@ public class Main extends JavaPlugin implements Listener {
         ValueComparator bvc =  new ValueComparator(map);
         TreeMap<String,Integer> sorted_map = new TreeMap<String,Integer>(bvc);
         
-		// TODO leaderboards
 		Set<String> keys = getConfig().getKeys(false);
 		keys.remove("mysql");
 		keys.remove("config");
