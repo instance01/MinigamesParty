@@ -189,6 +189,7 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().addDefault("strings.description.sheepfreenzy", "Shear as many Sheeps as possible! Attention: Some of them explode.");
 		getConfig().addDefault("strings.description.smokemonster", "Avoid the smoke monster!");
 		getConfig().addDefault("strings.description.spleef", "Destroy the floor under your opponents to make them fall and lose!");
+		getConfig().addDefault("strings.your_place", "You are <place> place.");
 		
 		
 		Shop.initShop(this);
@@ -577,6 +578,7 @@ public class Main extends JavaPlugin implements Listener {
 												}
 											}
 										}
+										sendPlace(count, event.getPlayer());
 										current.spectate(event.getPlayer());
 										if(count < 2){
 											c_ += 60-c;
@@ -613,6 +615,7 @@ public class Main extends JavaPlugin implements Listener {
 										}
 									}
 								}
+								sendPlace(count, event.getPlayer());
 								current.spectate(event.getPlayer());
 								// there's only one man standing
 								if(count < 2){
@@ -652,6 +655,8 @@ public class Main extends JavaPlugin implements Listener {
 		}
 
 	}
+	
+
 
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event){
@@ -686,6 +691,7 @@ public class Main extends JavaPlugin implements Listener {
 											}
 										}
 									}
+									sendPlace(count, p);
 									current.spectate(p);
 									// there's only one man standing
 									if(count < 2){
@@ -1471,7 +1477,7 @@ public class Main extends JavaPlugin implements Listener {
 	
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event){
-		if(players.contains(event.getPlayer().getName()) && !event.getPlayer().isOp()){
+		if(players.contains(event.getPlayer().getName())){
 			if(event.getMessage().startsWith("/leave") || event.getMessage().equalsIgnoreCase("/quit")){
 				final Player p = event.getPlayer();
 				p.teleport(getLobby());
@@ -1560,4 +1566,18 @@ public class Main extends JavaPlugin implements Listener {
 	    }
 	}
 
+	
+	
+	public void sendPlace(int count, Player p){
+		String place = Integer.toString(count + 1) + "th";
+		if(count == 1){
+			place = Integer.toString(count + 1) + "st";
+		}else if(count == 2){
+			place = Integer.toString(count + 1) + "nd";
+		}else if(count == 3){
+			place = Integer.toString(count + 1) + "rd";
+		}
+		p.sendMessage(ChatColor.BLUE + getConfig().getString("strings.your_place").replaceAll("<place>", place));
+	}
+	
 }
