@@ -403,11 +403,15 @@ public class Main extends JavaPlugin implements Listener {
 		if(players.contains(event.getPlayer().getName())){
 			players.remove(event.getPlayer().getName());
 			players_left.add(event.getPlayer().getName());
+			
+			if(players.size() < min_players){
+				stopFull();
+			}
 		}
 
-		if(players.size() < min_players){
+		/*if(players.size() < min_players){
 			stopFull();
-		}
+		}*/
 	}
 
 	@EventHandler 

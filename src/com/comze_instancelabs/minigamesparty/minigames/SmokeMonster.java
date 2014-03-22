@@ -20,6 +20,7 @@ import org.bukkit.util.Vector;
 
 import com.comze_instancelabs.minigamesparty.Main;
 import com.comze_instancelabs.minigamesparty.Minigame;
+import com.comze_instancelabs.minigamesparty.ParticleEffectNew;
 import com.comze_instancelabs.minigamesparty.Shop;
 
 public class SmokeMonster extends Minigame implements Listener {
@@ -83,20 +84,32 @@ public class SmokeMonster extends Minigame implements Listener {
 
 	public static void setup(Location start, Main main, String name_) {
 		Random r = new Random();
-		int x = start.getBlockX() - 32;
+		int x = start.getBlockX();// - 32;
 		int y = start.getBlockY();
-		int z = start.getBlockZ() - 32;
+		int z = start.getBlockZ();// - 32;
 
 		main.saveComponentForMinigame(name_, "spawn", new Location(start.getWorld(), start.getBlockX(), y + 2, start.getBlockZ()));
 		main.saveComponentForMinigame(name_, "spectatorlobby", new Location(start.getWorld(), start.getBlockX(), y + 30, start.getBlockZ()));
 		main.saveComponentForMinigame(name_, "lobby", main.getLobby());
 
-		for (int i = 0; i < 64; i++) {
+		int radius = 30;
+		int radiusSquared = radius * radius;
+		 
+		for(int x_ = -radius; x_ <= radius; x_++) {
+		    for(int z_ = -radius; z_ <= radius; z_++) {
+		        if( (x_*x_) + (z_*z_) <= radiusSquared) {
+		        	Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x - x_, y, z - z_));
+					b.setType(Material.NETHER_BRICK);
+		        }
+		    }
+		}
+		
+		/*for (int i = 0; i < 64; i++) {
 			for (int j = 0; j < 64; j++) {
 				Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x + i, y, z + j));
 				b.setType(Material.NETHER_BRICK);
 			}
-		}
+		}*/
 	}
 
 	public void fillArrayLists() {
@@ -151,11 +164,13 @@ public class SmokeMonster extends Minigame implements Listener {
 				if (b.hasNext()) {
 					Location l = b.next().getLocation();
 					locs.add(l);
-					l.getWorld().createExplosion(l, 1F);
-					l.getWorld().createExplosion(l.add(0D, -1D, 0D), 1F);
-					l.getWorld().createExplosion(l.add(0D, -2D, 0D), 1F);
-					l.getWorld().createExplosion(l.add(0D, -0.5D, 0D), 1F);
-					l.getWorld().createExplosion(l.add(0D, -1.5D, 0D), 1F);
+					/*l.getWorld().createExplosion(l, -1F);
+					l.getWorld().createExplosion(l.add(0D, -1D, 0D), -1F);
+					l.getWorld().createExplosion(l.add(0D, -2D, 0D), -1F);
+					l.getWorld().createExplosion(l.add(0D, -0.5D, 0D), -1F);
+					l.getWorld().createExplosion(l.add(0D, -1.5D, 0D), -1F);*/
+					ParticleEffectNew explosion = ParticleEffectNew.HUGE_EXPLOSION;
+					explosion.animateAtLocation(l, 1, 1);
 				}
 			}
 			
@@ -163,11 +178,13 @@ public class SmokeMonster extends Minigame implements Listener {
 				if (b_.hasNext()) {
 					Location l = b_.next().getLocation();
 					locs.add(l);
-					l.getWorld().createExplosion(l, 1F);
-					l.getWorld().createExplosion(l.add(0D, -1D, 0D), 1F);
-					l.getWorld().createExplosion(l.add(0D, -2D, 0D), 1F);
-					l.getWorld().createExplosion(l.add(0D, -0.5D, 0D), 1F);
-					l.getWorld().createExplosion(l.add(0D, -1.5D, 0D), 1F);
+					/*l.getWorld().createExplosion(l, -1F);
+					l.getWorld().createExplosion(l.add(0D, -1D, 0D), -1F);
+					l.getWorld().createExplosion(l.add(0D, -2D, 0D), -1F);
+					l.getWorld().createExplosion(l.add(0D, -0.5D, 0D), -1F);
+					l.getWorld().createExplosion(l.add(0D, -1.5D, 0D), -1F);*/
+					ParticleEffectNew explosion = ParticleEffectNew.HUGE_EXPLOSION;
+					explosion.animateAtLocation(l, 1, 1);
 				}
 			}
 		}
@@ -229,11 +246,13 @@ public class SmokeMonster extends Minigame implements Listener {
 					c++;
 					Location l = b.next().getLocation();
 					locs.add(l);
-					l.getWorld().createExplosion(l.add(0D, 0D + (mod / 2), 0D), 1F);
-					l.getWorld().createExplosion(l.add(0D, -1D + (mod / 2), 0D), 1F);
-					l.getWorld().createExplosion(l.add(0D, -2D + (mod / 2), 0D), 1F);
-					l.getWorld().createExplosion(l.add(0D, -0.5D + (mod / 2), 0D), 1F);
-					l.getWorld().createExplosion(l.add(0D, -1.5D + (mod / 2), 0D), 1F);
+					/*l.getWorld().createExplosion(l.add(0D, 0D + (mod / 2), 0D), -1F);
+					l.getWorld().createExplosion(l.add(0D, -1D + (mod / 2), 0D), -1F);
+					l.getWorld().createExplosion(l.add(0D, -2D + (mod / 2), 0D), -1F);
+					l.getWorld().createExplosion(l.add(0D, -0.5D + (mod / 2), 0D), -1F);
+					l.getWorld().createExplosion(l.add(0D, -1.5D + (mod / 2), 0D), -1F);*/
+					ParticleEffectNew explosion = ParticleEffectNew.HUGE_EXPLOSION;
+					explosion.animateAtLocation(l.add(0D, (mod / 2), 0D), 1, 1);
 				}
 			}
 			
@@ -252,11 +271,13 @@ public class SmokeMonster extends Minigame implements Listener {
 					c_++;
 					Location l = b_.next().getLocation();
 					locs.add(l);
-					l.getWorld().createExplosion(l.add(0D, 0D + (mod / 2), 0D), 1F);
-					l.getWorld().createExplosion(l.add(0D, -1D + (mod / 2), 0D), 1F);
-					l.getWorld().createExplosion(l.add(0D, -2D + (mod / 2), 0D), 1F);
-					l.getWorld().createExplosion(l.add(0D, -0.5D + (mod / 2), 0D), 1F);
-					l.getWorld().createExplosion(l.add(0D, -1.5D + (mod / 2), 0D), 1F);
+					/*l.getWorld().createExplosion(l.add(0D, 0D + (mod / 2), 0D), -1F);
+					l.getWorld().createExplosion(l.add(0D, -1D + (mod / 2), 0D), -1F);
+					l.getWorld().createExplosion(l.add(0D, -2D + (mod / 2), 0D), -1F);
+					l.getWorld().createExplosion(l.add(0D, -0.5D + (mod / 2), 0D), -1F);
+					l.getWorld().createExplosion(l.add(0D, -1.5D + (mod / 2), 0D), -1F);*/
+					ParticleEffectNew explosion = ParticleEffectNew.HUGE_EXPLOSION;
+					explosion.animateAtLocation(l.add(0D, (mod / 2), 0D), 1, 1);
 				}
 			}
 		}
