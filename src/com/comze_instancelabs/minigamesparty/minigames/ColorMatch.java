@@ -150,19 +150,27 @@ public class ColorMatch extends Minigame implements Listener{
 					p.updateInventory();
 				}
 				// remove all wools except current one
-				Bukkit.getServer().getScheduler().runTaskLater(m, new Runnable(){
+				Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(m, new Runnable(){
 				//Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(m, new Runnable(){
 					public void run(){
-						removeAllExceptOne(spawn, currentw);
+						Bukkit.getScheduler().runTask(m, new Runnable(){
+							public void run(){
+								removeAllExceptOne(spawn, currentw);
+							}
+						});
 					}
 				}, 40L - n);
 				
 				
 				//BukkitTask id = Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(m, new Runnable() {
-				BukkitTask id = Bukkit.getServer().getScheduler().runTaskLater(m, new Runnable() {
+				BukkitTask id = Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(m, new Runnable() {
 					@Override
 					public void run(){
-						reset(spawn);
+						Bukkit.getScheduler().runTask(m, new Runnable(){
+							public void run(){
+								reset(spawn);
+							}
+						});
 					}
 				}, 120);
 				// update count
@@ -278,8 +286,7 @@ public class ColorMatch extends Minigame implements Listener{
 				}	
 			}
 		});
-		
-		
+
 	}
 	
 	
