@@ -1570,11 +1570,11 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public void sendPlace(int count, Player p){
 		String place = Integer.toString(count + 1) + "th";
-		if(count == 1){
+		if(count == 0){
 			place = Integer.toString(count + 1) + "st";
-		}else if(count == 2){
+		}else if(count == 1){
 			place = Integer.toString(count + 1) + "nd";
-		}else if(count == 3){
+		}else if(count == 2){
 			place = Integer.toString(count + 1) + "rd";
 		}
 		p.sendMessage(ChatColor.BLUE + getConfig().getString("strings.your_place").replaceAll("<place>", place));
