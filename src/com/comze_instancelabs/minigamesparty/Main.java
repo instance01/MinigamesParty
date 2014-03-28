@@ -319,8 +319,12 @@ public class Main extends JavaPlugin implements Listener {
 						updateScoreboardOUTGAME(p.getName());
 						p.getInventory().clear();
 						p.updateInventory();
-						p.getInventory().setContents(pinv.get(p.getName()));
-						p.updateInventory();
+						Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+							public void run(){
+								p.getInventory().setContents(pinv.get(p.getName()));
+								p.updateInventory();
+							}
+						}, 10L);
 						if(currentmg > -1){
 							minigames.get(currentmg).leave(p);
 						}
@@ -1489,8 +1493,12 @@ public class Main extends JavaPlugin implements Listener {
 				updateScoreboardOUTGAME(p.getName());
 				p.getInventory().clear();
 				p.updateInventory();
-				p.getInventory().setContents(pinv.get(p.getName()));
-				p.updateInventory();
+				Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+					public void run(){
+						p.getInventory().setContents(pinv.get(p.getName()));
+						p.updateInventory();
+					}
+				}, 10L);
 				if(currentmg > -1){
 					minigames.get(currentmg).leave(p);
 				}

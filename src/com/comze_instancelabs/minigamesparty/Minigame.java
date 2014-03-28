@@ -116,15 +116,6 @@ public class Minigame {
 				p.teleport(lobby);
 				p.setAllowFlight(false);
 				p.setFlying(false);
-				/*for (PotionEffect effect : p.getActivePotionEffects()) {
-					if(p.hasPotionEffect(effect.getType())){
-						try {
-							p.removePotionEffect(effect.getType());
-						} catch (Exception e) {
-							
-						}
-					}
-				}*/
 				if(p.hasPotionEffect(PotionEffectType.JUMP)){
 					p.removePotionEffect(PotionEffectType.JUMP);
 				}
@@ -132,7 +123,12 @@ public class Minigame {
 			}
 		}, 5);
 		
-		m.giveItemRewards(p, true);
+		Bukkit.getScheduler().runTaskLater(m, new Runnable(){
+			public void run(){
+				m.giveItemRewards(p, true);
+			}
+		}, 15L);
+		
 	}
 	
 	public void spectate(final Player p){
