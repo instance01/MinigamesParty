@@ -2,7 +2,6 @@ package com.comze_instancelabs.minigamesparty;
 
 import java.lang.reflect.Field;
 
-
 import net.minecraft.server.v1_7_R1.PacketPlayOutWorldParticles;
 
 import org.bukkit.Location;
@@ -10,7 +9,7 @@ import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-public enum ParticleEffectNew {
+public enum ParticleEffect172 {
 	/**
 	 * Each ParticleEffect has the packet name, and the environment in witch it will be succesfully displayed.
 	 */
@@ -64,7 +63,7 @@ public enum ParticleEffectNew {
      * @param packetName
      * @param environment
      */
-    ParticleEffectNew (String packetName, Environment environment) {
+    ParticleEffect172 (String packetName, Environment environment) {
     	this.packetName = packetName;
     	this.environment = environment;
     }
@@ -196,4 +195,5 @@ public enum ParticleEffectNew {
 		field.setAccessible(true);
 		field.set(instance, value);
 	}
+
 }

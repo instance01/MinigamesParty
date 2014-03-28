@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
-import com.comze_instancelabs.minigamesparty.nms.*;
-
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
@@ -33,11 +31,23 @@ public class CraftMassBlockUpdate implements MassBlockUpdate, Runnable {
 
 	public CraftMassBlockUpdate(Plugin plugin, org.bukkit.World world) {
 		this.plugin = plugin;
-		this.world = world; 
-		this.nms = new NMSHandler();
+		this.world = world;
+		int version = getServerVersion();
+		this.nms = VersionManager.getNMSHandler(version);
 		if (nms == null) {
 			throw new IllegalStateException("NMS abstraction API is not available");
 		}
+	}
+	
+	public int getServerVersion(){
+		if (Bukkit.getVersion().contains("1.6.4") || Bukkit.getVersion().contains("1.6.2")) {
+			return 164;
+		}else if(Bukkit.getVersion().contains("1.7.2")){
+			return 172;
+		}else if(Bukkit.getVersion().contains("1.7.5")){
+			return 175;
+		}
+		return 172;
 	}
 
 	public boolean setBlock(int x, int y, int z, int blockId) {

@@ -1,7 +1,5 @@
 package com.comze_instancelabs.minigamesparty;
 
-import net.milkbowl.vault.economy.EconomyResponse;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

@@ -1,10 +1,8 @@
 package com.comze_instancelabs.minigamesparty.minigames;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -15,8 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import com.comze_instancelabs.minigamesparty.Main;
-import com.comze_instancelabs.minigamesparty.PluginUtil;
 import com.comze_instancelabs.minigamesparty.Minigame;
+import com.comze_instancelabs.minigamesparty.PluginUtil;
 
 public class MineField extends Minigame implements Listener{
 	

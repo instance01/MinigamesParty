@@ -5,13 +5,11 @@ import java.util.Arrays;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
@@ -20,8 +18,7 @@ import org.bukkit.util.Vector;
 
 import com.comze_instancelabs.minigamesparty.Main;
 import com.comze_instancelabs.minigamesparty.Minigame;
-import com.comze_instancelabs.minigamesparty.ParticleEffectNew;
-import com.comze_instancelabs.minigamesparty.Shop;
+import com.comze_instancelabs.minigamesparty.ParticleManager;
 
 public class SmokeMonster extends Minigame implements Listener {
 
@@ -169,8 +166,7 @@ public class SmokeMonster extends Minigame implements Listener {
 					l.getWorld().createExplosion(l.add(0D, -2D, 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -0.5D, 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -1.5D, 0D), -1F);*/
-					ParticleEffectNew explosion = ParticleEffectNew.HUGE_EXPLOSION;
-					explosion.animateAtLocation(l, 1, 1);
+					ParticleManager.runManager(l, 1, 1);
 				}
 			}
 			
@@ -183,8 +179,7 @@ public class SmokeMonster extends Minigame implements Listener {
 					l.getWorld().createExplosion(l.add(0D, -2D, 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -0.5D, 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -1.5D, 0D), -1F);*/
-					ParticleEffectNew explosion = ParticleEffectNew.HUGE_EXPLOSION;
-					explosion.animateAtLocation(l, 1, 1);
+					ParticleManager.runManager(l, 1, 1);
 				}
 			}
 		}
@@ -251,8 +246,7 @@ public class SmokeMonster extends Minigame implements Listener {
 					l.getWorld().createExplosion(l.add(0D, -2D + (mod / 2), 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -0.5D + (mod / 2), 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -1.5D + (mod / 2), 0D), -1F);*/
-					ParticleEffectNew explosion = ParticleEffectNew.HUGE_EXPLOSION;
-					explosion.animateAtLocation(l.add(0D, (mod / 2), 0D), 1, 1);
+					ParticleManager.runManager(l.add(0D, (mod / 2), 0D), 1, 1);
 				}
 			}
 			
@@ -276,8 +270,7 @@ public class SmokeMonster extends Minigame implements Listener {
 					l.getWorld().createExplosion(l.add(0D, -2D + (mod / 2), 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -0.5D + (mod / 2), 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -1.5D + (mod / 2), 0D), -1F);*/
-					ParticleEffectNew explosion = ParticleEffectNew.HUGE_EXPLOSION;
-					explosion.animateAtLocation(l.add(0D, (mod / 2), 0D), 1, 1);
+					ParticleManager.runManager(l.add(0D, (mod / 2), 0D), 1, 1);
 				}
 			}
 		}

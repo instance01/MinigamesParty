@@ -1,7 +1,7 @@
 package com.comze_instancelabs.minigamesparty.sql; // replace this with yours 
   
   
-import java.sql.Connection; 
+import java.sql.Connection;
   
   
 public abstract class Database 
