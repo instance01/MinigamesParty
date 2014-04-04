@@ -95,6 +95,7 @@ public class Main extends JavaPlugin implements Listener {
 
 	public ArrayList<Minigame> minigames = new ArrayList<Minigame>();
 	public ArrayList<String> players = new ArrayList<String>();
+	public ArrayList<String> players_outgame = new ArrayList<String>();
 	public ArrayList<String> players_left = new ArrayList<String>();
 	public HashMap<String, ItemStack[]> pinv = new HashMap<String, ItemStack[]>();
 
@@ -178,7 +179,7 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().addDefault("config.announcements", true);
 		
 		getConfig().addDefault("strings.you_left", "You left the game.");
-		getConfig().addDefault("strings.next_round_30_seconds", "Next round in 30 seconds!");
+		getConfig().addDefault("strings.next_round_30_seconds", "Next round in 30 seconds! You can leave with /mp leave.");
 		
 		getConfig().addDefault("strings.description.colormatch", "Jump to the color corresponding to the wool color in your inventory!");
 		getConfig().addDefault("strings.description.deadend", "Don't fall while the blocks are disappearing behind you!");
@@ -307,7 +308,17 @@ public class Main extends JavaPlugin implements Listener {
 					}
 				}else if(args[0].equalsIgnoreCase("leaderboards")){
 					sender.sendMessage(ChatColor.DARK_AQUA + "-- " + ChatColor.GOLD + "Leaderboards: " + ChatColor.DARK_AQUA + "--");
-					outputLeaderboards(p);
+					if(args.length > 1){
+						if(args[1].startsWith("credit")){
+							outputLeaderboardsByCredits(p);
+						}else if(args[1].startsWith("win")){
+							outputLeaderboardsByWins(p);
+						}else{
+							sender.sendMessage(ChatColor.GREEN + "/mp leaderboards [credits/wins].");
+						}
+					}else{
+						outputLeaderboardsByCredits(p);
+					}
 				}else if(args[0].equalsIgnoreCase("leave")){
 					if(players.contains(p.getName())){
 						p.teleport(getLobby());
@@ -1176,7 +1187,7 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 
-	public void updateScoreboardOUTGAME(String player){
+	public void updateScoreboardOUTGAME(final String player){
 		
 		if(!getConfig().getBoolean("config.scoreboardoutgame")){
 			return;
@@ -1196,6 +1207,14 @@ public class Main extends JavaPlugin implements Listener {
 		objective.getScore(Bukkit.getOfflinePlayer("Credits")).setScore(this.getPlayerStats(player, "credits"));
 
 		p.setScoreboard(board);
+
+		Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+			public void run(){
+				Player p = Bukkit.getPlayer(player);
+				p.setScoreboard(null);
+			}
+		}, 20 * 10); // 10 seconds
+		
 	}
 
 
@@ -1309,7 +1328,7 @@ public class Main extends JavaPlugin implements Listener {
 
 		// removes players that aren't online anymore
 		for(Player p : remove){
-			players.remove(p);
+			players.remove(p.getName());
 		}
 
 		remove.clear();
@@ -1530,9 +1549,9 @@ public class Main extends JavaPlugin implements Listener {
 	}
 	
 	
-	public void outputLeaderboards(Player p){
+	public void outputLeaderboardsByCredits(Player p){
 		HashMap<String,Integer> map = new HashMap<String,Integer>();
-        ValueComparator bvc =  new ValueComparator(map);
+        ValueComparator bvc = new ValueComparator(map);
         TreeMap<String,Integer> sorted_map = new TreeMap<String,Integer>(bvc);
         
 		Set<String> keys = getConfig().getKeys(false);
@@ -1555,6 +1574,34 @@ public class Main extends JavaPlugin implements Listener {
 			}
 			i++;
 			p.sendMessage(ChatColor.DARK_PURPLE + player + ChatColor.GOLD + " : " + ChatColor.DARK_PURPLE + getConfig().getInt(player + ".credits"));
+		}
+	}
+	
+	public void outputLeaderboardsByWins(Player p){
+		HashMap<String,Integer> map = new HashMap<String,Integer>();
+        ValueComparator bvc = new ValueComparator(map);
+        TreeMap<String,Integer> sorted_map = new TreeMap<String,Integer>(bvc);
+        
+		Set<String> keys = getConfig().getKeys(false);
+		keys.remove("mysql");
+		keys.remove("config");
+		keys.remove("shop");
+		keys.remove("minigames");
+		keys.remove("lobby");
+		for(String key : keys){
+			map.put(key, getConfig().getInt(key + ".wins"));
+		}
+		
+		sorted_map.putAll(map);
+		
+		int i = 0;
+		
+		for(String player : sorted_map.keySet()){
+			if(i > 10){
+				return;
+			}
+			i++;
+			p.sendMessage(ChatColor.DARK_PURPLE + player + ChatColor.GOLD + " : " + ChatColor.DARK_PURPLE + getConfig().getInt(player + ".wins"));
 		}
 	}
 	

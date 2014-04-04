@@ -62,7 +62,7 @@ public class Shop {
 	}
 
 	public static void openShop(final Main m, String p) {
-		IconMenu iconm = new IconMenu("Shop", 9, new IconMenu.OptionClickEventHandler() {
+		IconMenu iconm = new IconMenu("Shop - Credits: " + Integer.toString(m.getPlayerStats(p, "credits")), 9, new IconMenu.OptionClickEventHandler() {
 			@Override
 			public void onOptionClick(IconMenu.OptionClickEvent event) {
 				String d = event.getName();
