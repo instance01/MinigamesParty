@@ -2,6 +2,7 @@ package com.comze_instancelabs.minigamesparty.minigames;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -115,7 +116,9 @@ public class ColorMatch extends Minigame implements Listener{
 		}
 	}
 	
-	
+	public static HashMap<Player, Integer> xpsecp = new HashMap<Player, Integer>();
+	public static ArrayList<BukkitTask> tasks = new ArrayList<BukkitTask>(); // arena -> task/ task
+
 	long n = 0;
 	int currentw = 0;
 	@Override
@@ -135,12 +138,28 @@ public class ColorMatch extends Minigame implements Listener{
 				}
 
 				for(String pl : m.players){
-					Player p = Bukkit.getPlayerExact(pl);
+					final Player p = Bukkit.getPlayerExact(pl);
 					// set inventory and exp bar
 					p.getInventory().clear();
 					p.updateInventory();
 					Wool w = new Wool();
 					w.setColor(colors.get(currentw));
+					
+					p.setExp(0.97F);
+					if (!xpsecp.containsKey(p)) {
+						xpsecp.put(p, 1);
+					}
+					tasks.add(Bukkit.getServer().getScheduler().runTaskTimer(m, new Runnable() {
+						public void run() {
+							if (!xpsecp.containsKey(p)) {
+								xpsecp.put(p, 1);
+							}
+							int xpsec = xpsecp.get(p);
+							p.setExp(1 - (0.083F * xpsec));
+							xpsecp.put(p, xpsec + 1);
+						}
+					}, (40L - n) / 12, (40L - n) / 12));
+
 					
 					ItemStack wool = new ItemStack(Material.WOOL, 1, colors.get(currentw).getData());
 					//p.getInventory().all(wool);
@@ -156,6 +175,9 @@ public class ColorMatch extends Minigame implements Listener{
 						Bukkit.getScheduler().runTask(m, new Runnable(){
 							public void run(){
 								removeAllExceptOne(spawn, currentw);
+								for (BukkitTask t : tasks) {
+									t.cancel();
+								}
 							}
 						});
 					}
