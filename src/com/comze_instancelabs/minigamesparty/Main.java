@@ -306,6 +306,9 @@ public class Main extends JavaPlugin implements Listener {
 					for(Minigame m : minigames){
 						sender.sendMessage(ChatColor.DARK_AQUA + m.name);
 					}
+				}else if(args[0].equalsIgnoreCase("reloadconfig")){
+					this.reloadConfig();
+					sender.sendMessage(ChatColor.GREEN + "Successfully reloaded config.");
 				}else if(args[0].equalsIgnoreCase("leaderboards")){
 					sender.sendMessage(ChatColor.DARK_AQUA + "-- " + ChatColor.GOLD + "Leaderboards: " + ChatColor.DARK_AQUA + "--");
 					if(args.length > 1){
