@@ -1069,10 +1069,10 @@ public class Main extends JavaPlugin implements Listener {
 			if(currentid != null){
 				stop(currentid);
 				minigames.get(minigames.size() - 1).reset(this.getComponentForMinigame(minigames.get(minigames.size() - 1).name, "spawn"));
+				return;
 			}
 		}
 		if(cmg != null){
-			cmg.getWinner();
 			
 			// reset current minigame
 			final Minigame cmg_ = cmg;
@@ -1086,18 +1086,25 @@ public class Main extends JavaPlugin implements Listener {
 				Location t = this.getComponentForMinigame("MineField", "spawn");
 				cmg.reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
 			}
+			
+			if(currentmg > -1){
+				if(!minigames.get(currentmg).isEnabled()){
+					currentscore.clear();
+					for(Minigame mg : minigames){
+						mg.lost.clear();
+					}
+					nextMinigame();
+					return;
+				}
+			}
+
+			cmg.getWinner();
 		}
 		currentscore.clear();
 		for(Minigame mg : minigames){
 			mg.lost.clear();
 		}
-		
-		//TODO try out
-		if(!minigames.get(currentmg).isEnabled()){
-			nextMinigame();
-			return;
-		}
-		
+
 		for(String pl : players){
 			final Player p = Bukkit.getPlayerExact(pl);
 			if(p.isOnline()){
@@ -1360,7 +1367,14 @@ public class Main extends JavaPlugin implements Listener {
 				if(p.hasPotionEffect(PotionEffectType.JUMP)){
 					p.removePotionEffect(PotionEffectType.JUMP);
 				}
-				minigames.get(minigames.size() - 1).leave(p);
+				try{
+					minigames.get(minigames.size() - 1).leave(p);
+				}catch(Exception e){
+					if(currentmg > -1 && currentmg < minigames.size()){
+						minigames.get(currentmg).leave(p);
+					}
+				}
+				
 				p.sendMessage(ChatColor.GOLD + getConfig().getString("strings.next_round_30_seconds"));
 				p.getInventory().clear();
 				p.updateInventory();
