@@ -403,11 +403,13 @@ public class Main extends JavaPlugin implements Listener {
 						minigames.get(currentmg).join(p);
 					}
 				}else{
-					p.sendMessage(ChatColor.GREEN + "-- MinigamesParty Help --");
+					p.sendMessage(ChatColor.GREEN + "-- " + ChatColor.GOLD + "MinigamesParty Help" + ChatColor.GREEN + " --");
 					p.sendMessage(ChatColor.DARK_AQUA + "/mp setlobby");
 					p.sendMessage(ChatColor.DARK_AQUA + "/mp setup");
+					p.sendMessage(ChatColor.DARK_AQUA + "/mp disable/enable [minigame]");
 					p.sendMessage(ChatColor.DARK_AQUA + "/mp stats [player]");
 					p.sendMessage(ChatColor.DARK_AQUA + "/mp list");
+					p.sendMessage(ChatColor.DARK_AQUA + "/mp leaderboards [wins|credits]");
 					p.sendMessage(ChatColor.DARK_AQUA + "/mp leave");
 					p.sendMessage(ChatColor.DARK_AQUA + "/mp setcomponent [minigame] [component]");
 					p.sendMessage(ChatColor.GOLD + "To setup the game, do the following: ");
@@ -417,11 +419,13 @@ public class Main extends JavaPlugin implements Listener {
 					p.sendMessage(ChatColor.DARK_AQUA + "4. /mp setup");
 				}
 			}else{
-				p.sendMessage(ChatColor.GREEN + "-- MinigamesParty Help --");
+				p.sendMessage(ChatColor.GREEN + "-- " + ChatColor.GOLD + "MinigamesParty Help" + ChatColor.GREEN + " --");
 				p.sendMessage(ChatColor.DARK_AQUA + "/mp setlobby");
 				p.sendMessage(ChatColor.DARK_AQUA + "/mp setup");
+				p.sendMessage(ChatColor.DARK_AQUA + "/mp disable/enable [minigame]");
 				p.sendMessage(ChatColor.DARK_AQUA + "/mp stats [player]");
 				p.sendMessage(ChatColor.DARK_AQUA + "/mp list");
+				p.sendMessage(ChatColor.DARK_AQUA + "/mp leaderboards [wins|credits]");
 				p.sendMessage(ChatColor.DARK_AQUA + "/mp leave");
 				p.sendMessage(ChatColor.DARK_AQUA + "/mp setcomponent [minigame] [component]");
 				p.sendMessage(ChatColor.GOLD + "To setup the game, do the following: ");
