@@ -37,6 +37,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -739,7 +740,16 @@ public class Main extends JavaPlugin implements Listener {
 		if(event.getEntity() instanceof Player){
 			Player p = (Player)event.getEntity();
 			if(players.contains(p.getName())){
-				event.setCancelled(true);
+				if(currentmg > -1 && currentmg < minigames.size()){
+					if(!minigames.get(currentmg).name.equalsIgnoreCase("slapfight")){
+						event.setCancelled(true);
+					}else{
+						if(event.getCause() == DamageCause.FALL){
+							event.setCancelled(true);
+						}
+						p.setHealth(20D);
+					}
+				}
 			}
 		}
 		
