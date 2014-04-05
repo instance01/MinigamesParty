@@ -276,20 +276,27 @@ public class Main extends JavaPlugin implements Listener {
 						});
 					}
 				}else if(args[0].equalsIgnoreCase("setupasync")){
-					Runnable r = new Runnable() {
-				        public void run() {
-				        	setupAll(p.getLocation());
-				        }
-				    };
-				    new Thread(r).start();
+					if(p.hasPermission("mp.setup")){
+						Runnable r = new Runnable() {
+					        public void run() {
+					        	setupAll(p.getLocation());
+					        }
+					    };
+					    new Thread(r).start();
+					}
 				}else if(args[0].equalsIgnoreCase("setuppoint")){
-					final Location l = this.getComponentForMinigame("colormatch", "spawn");
-					if(l != null){
-						Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-							public void run(){
-								p.teleport(l);
-							}
-						}, 5L);
+					if(p.hasPermission("mp.setup")){
+						final Location l = this.getComponentForMinigame("ColorMatch", "spawn");
+						if(l != null){
+							l.add(0.5, -2, 0.5);
+							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+								public void run(){
+									p.setAllowFlight(true);
+									p.setFlying(true);
+									p.teleport(l);
+								}
+							}, 5L);
+						}
 					}
 				}else if(args[0].equalsIgnoreCase("setlobby")){
 					if(sender.hasPermission("mp.setlobby")){
