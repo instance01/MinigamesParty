@@ -14,11 +14,13 @@ import net.milkbowl.vault.economy.EconomyResponse;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -46,6 +48,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -56,6 +59,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.util.BlockIterator;
+import org.bukkit.util.Vector;
 
 import com.comze_instancelabs.minigamesparty.minigames.ColorMatch;
 import com.comze_instancelabs.minigamesparty.minigames.DeadEnd;
@@ -97,6 +101,7 @@ public class Main extends JavaPlugin implements Listener {
 
 	public ArrayList<Minigame> minigames = new ArrayList<Minigame>();
 	public ArrayList<String> players = new ArrayList<String>();
+	public ArrayList<String> players_doublejumped = new ArrayList<String>();
 	public ArrayList<String> players_outgame = new ArrayList<String>();
 	public ArrayList<String> players_left = new ArrayList<String>();
 	public HashMap<String, ItemStack[]> pinv = new HashMap<String, ItemStack[]>();
@@ -195,7 +200,7 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().addDefault("strings.description.sheepfreenzy", "Shear as many Sheeps as possible! Attention: Some of them explode.");
 		getConfig().addDefault("strings.description.smokemonster", "Avoid the smoke monster!");
 		getConfig().addDefault("strings.description.spleef", "Destroy the floor under your opponents to make them fall and lose!");
-		getConfig().addDefault("strings.description.slapfight", "Slap the other players to fall!");
+		getConfig().addDefault("strings.description.slapfight", "Slap the other players to fall! You can use Double Jump in case you fall, too.");
 
 		getConfig().addDefault("strings.your_place", "You are <place> place.");
 		
@@ -600,6 +605,13 @@ public class Main extends JavaPlugin implements Listener {
 	public void onMove(PlayerMoveEvent event){
 		try{
 			if(players.contains(event.getPlayer().getName())){
+				if(event.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() != Material.AIR){
+					if(currentmg > -1 && currentmg < minigames.size()){
+						if(m.minigames.get(currentmg).name.equalsIgnoreCase("slapfight")){
+							event.getPlayer().setAllowFlight(true);
+						}	
+					}
+				}
 				if(currentmg > -1){
 					final Minigame current = minigames.get(currentmg);
 					if(!current.lost.contains(event.getPlayer())){
@@ -1117,6 +1129,7 @@ public class Main extends JavaPlugin implements Listener {
 						mg.lost.clear();
 					}
 					nextMinigame();
+					c_ += 60;
 					return;
 				}
 			}
@@ -1372,7 +1385,7 @@ public class Main extends JavaPlugin implements Listener {
 		for(Minigame mg : minigames){
 			mg.lost.clear();
 		}
-
+		players_doublejumped.clear();
 		
 		ArrayList<Player> remove = new ArrayList<Player>();
 		for(String pl : players){
@@ -1438,6 +1451,7 @@ public class Main extends JavaPlugin implements Listener {
 		started = false;
 		ingame_started = false;
 		players.clear();
+		players_doublejumped.clear();
 		currentmg = 0;
 
 		Bukkit.getScheduler().runTaskLater(this, new Runnable(){
@@ -1782,5 +1796,32 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}
 		}
+	}
+	
+	
+	@EventHandler
+	public void onFlightAttempt(PlayerToggleFlightEvent event) {
+		final Player p = event.getPlayer();
+	    if(p.getGameMode() != GameMode.CREATIVE) {
+	    	if(players.contains(p.getName()) && m.minigames.get(currentmg).name.equalsIgnoreCase("slapfight")){
+	    		if(!players_doublejumped.contains(p.getName())){
+		    		event.getPlayer().setAllowFlight(false);
+			        event.getPlayer().setFlying(false);
+			        event.setCancelled(true);
+		    		event.getPlayer().setVelocity(p.getVelocity().setY(1.4F)); // add(new Vector(0,0.7,0)
+			        players_doublejumped.add(p.getName());
+			        Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+			        	public void run(){
+			        		players_doublejumped.remove(p.getName());
+			        	}
+			        }, 20 * 10);
+	    		}else{
+	    			p.sendMessage(ChatColor.RED + "You can only use Double Jump after a cooldown of 10 seconds.");
+	    			p.setAllowFlight(false);
+			        p.setFlying(false);
+			        event.setCancelled(true);
+	    		}
+	    	}
+	    }
 	}
 }

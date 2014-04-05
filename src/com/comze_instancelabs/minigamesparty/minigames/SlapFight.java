@@ -43,7 +43,7 @@ public class SlapFight extends Minigame implements Listener{
 				p.updateInventory();
 				ItemStack item = new ItemStack(Material.STICK);
 				ItemMeta meta = item.getItemMeta();
-				meta.addEnchant(Enchantment.KNOCKBACK, 1, true);
+				meta.addEnchant(Enchantment.KNOCKBACK, 2, true);
 				meta.setDisplayName(ChatColor.RED + "SLAPPER");
 				item.setItemMeta(meta);
 				p.getInventory().addItem(item);
