@@ -35,6 +35,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -63,6 +64,7 @@ import com.comze_instancelabs.minigamesparty.minigames.JumpnRun;
 import com.comze_instancelabs.minigamesparty.minigames.LastArcherStanding;
 import com.comze_instancelabs.minigamesparty.minigames.MineField;
 import com.comze_instancelabs.minigamesparty.minigames.SheepFreenzy;
+import com.comze_instancelabs.minigamesparty.minigames.SlapFight;
 import com.comze_instancelabs.minigamesparty.minigames.SmokeMonster;
 import com.comze_instancelabs.minigamesparty.minigames.Spleef;
 import com.comze_instancelabs.minigamesparty.sql.MainSQL;
@@ -153,6 +155,9 @@ public class Main extends JavaPlugin implements Listener {
 					SmokeMonster sm = new SmokeMonster(m, m.getComponentForMinigame("SmokeMonster", "spawn"), m.getLobby(), m.getComponentForMinigame("SmokeMonster", "spectatorlobby"));
 					minigames.add(sm);
 					getServer().getPluginManager().registerEvents(sm, m);
+					SlapFight slf = new SlapFight(m, m.getComponentForMinigame("SlapFight", "spawn"), m.getLobby(), m.getComponentForMinigame("SlapFight", "spectatorlobby"));
+					minigames.add(slf);
+					getServer().getPluginManager().registerEvents(slf, m);
 				}
 			}
 		}, 20);
@@ -190,6 +195,8 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().addDefault("strings.description.sheepfreenzy", "Shear as many Sheeps as possible! Attention: Some of them explode.");
 		getConfig().addDefault("strings.description.smokemonster", "Avoid the smoke monster!");
 		getConfig().addDefault("strings.description.spleef", "Destroy the floor under your opponents to make them fall and lose!");
+		getConfig().addDefault("strings.description.slapfight", "Slap the other players to fall!");
+
 		getConfig().addDefault("strings.your_place", "You are <place> place.");
 		
 		
@@ -1495,6 +1502,7 @@ public class Main extends JavaPlugin implements Listener {
 		LastArcherStanding.setup(new Location(start.getWorld(), x + 64 * 3 + 20 * 3, y, z), this, "LastArcherStanding");
 		SheepFreenzy.setup(new Location(start.getWorld(), x + 64 + 20, y, z + 64 + 20), this, "SheepFreenzy");
 		SmokeMonster.setup(new Location(start.getWorld(), x + 64 * 2 + 20 * 2, y, z + 64 + 20), this, "SmokeMonster");
+		SlapFight.setup(new Location(start.getWorld(), x + 64 * 3 + 20 * 3, y, z + 64 + 20), this, "SlapFight");
 
 		
 		/*
@@ -1528,6 +1536,7 @@ public class Main extends JavaPlugin implements Listener {
 		minigames.add(new LastArcherStanding(this, this.getComponentForMinigame("LastArcherStanding", "spawn"), this.getComponentForMinigame("LastArcherStanding", "lobby"), this.getComponentForMinigame("LastArcherStanding", "spectatorlobby")));
 		minigames.add(new SheepFreenzy(this, this.getComponentForMinigame("SheepFreenzy", "spawn"), this.getComponentForMinigame("SheepFreenzy", "lobby"), this.getComponentForMinigame("SheepFreenzy", "spectatorlobby")));
 		minigames.add(new SmokeMonster(this, this.getComponentForMinigame("SmokeMonster", "spawn"), this.getComponentForMinigame("SmokeMonster", "lobby"), this.getComponentForMinigame("SmokeMonster", "spectatorlobby")));
+		minigames.add(new SlapFight(this, this.getComponentForMinigame("SlapFight", "spawn"), this.getComponentForMinigame("SlapFight", "lobby"), this.getComponentForMinigame("SlapFight", "spectatorlobby")));
 
 		getLogger().info("[MinigamesParty] Finished Setup");
 	}
@@ -1746,4 +1755,32 @@ public class Main extends JavaPlugin implements Listener {
 		}
 	}
 	
+	@EventHandler
+	public void onPlayerPortalEnter(EntityPortalEnterEvent event){
+		if(event.getEntity() instanceof Player){
+			final Player p = (Player) event.getEntity();
+			if(players.contains(p.getName())){
+				p.getInventory().clear();
+				p.updateInventory();
+				Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+					public void run(){
+						p.getInventory().setContents(pinv.get(p.getName()));
+						p.updateInventory();
+					}
+				}, 10L);
+				if(currentmg > -1){
+					minigames.get(currentmg).leave(p);
+				}
+				players.remove(p.getName());
+				p.sendMessage(ChatColor.RED + getConfig().getString("strings.you_left"));
+				if(players.size() < min_players){
+					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+						public void run(){
+							stopFull(p);
+						}
+					}, 15);
+				}
+			}
+		}
+	}
 }
