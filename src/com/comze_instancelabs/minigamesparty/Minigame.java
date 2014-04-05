@@ -23,6 +23,7 @@ public class Minigame {
 	public Location spectatorlobby;
 	public Location finish;
 	public String description;
+	public boolean enabled;
 	
 	public Minigame(String arg1, String arg2, Main arg3, Location arg4, Location arg5, Location arg6, Location arg7){
 		name = arg1;
@@ -145,6 +146,21 @@ public class Minigame {
 	
 	
 	public void reset(final Location location){
+	}
+	
+	public void setEnabled(boolean f){
+		enabled = f;
+		m.getConfig().set("minigames." + name + ".enabled", f);
+		m.saveConfig();
+	}
+	
+	public boolean isEnabled(){
+		if(!m.getConfig().isSet("minigames." + name + ".enabled")){
+			setEnabled(true);
+			return true;
+		}else{
+			return m.getConfig().getBoolean("minigames." + name + ".enabled");
+		}
 	}
 	
 }

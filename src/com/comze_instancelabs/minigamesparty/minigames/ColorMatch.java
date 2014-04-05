@@ -178,6 +178,9 @@ public class ColorMatch extends Minigame implements Listener{
 								for (BukkitTask t : tasks) {
 									t.cancel();
 								}
+								for (Player p : xpsecp.keySet()) {
+									xpsecp.put(p, 1);
+								}
 							}
 						});
 					}

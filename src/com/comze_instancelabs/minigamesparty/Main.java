@@ -275,6 +275,13 @@ public class Main extends JavaPlugin implements Listener {
 							}
 						});
 					}
+				}else if(args[0].equalsIgnoreCase("setupasync")){
+					Runnable r = new Runnable() {
+				        public void run() {
+				        	setupAll(p.getLocation());
+				        }
+				    };
+				    new Thread(r).start();
 				}else if(args[0].equalsIgnoreCase("setlobby")){
 					if(sender.hasPermission("mp.setlobby")){
 						getConfig().set("lobby.world", p.getLocation().getWorld().getName());
@@ -309,6 +316,18 @@ public class Main extends JavaPlugin implements Listener {
 				}else if(args[0].equalsIgnoreCase("reloadconfig")){
 					this.reloadConfig();
 					sender.sendMessage(ChatColor.GREEN + "Successfully reloaded config.");
+				}else if(args[0].equalsIgnoreCase("enable")){
+					if(args.length > 1){
+						if(sender.hasPermission("mp.enable")){
+							this.enableMinigame(sender, args[1]);
+						}
+					}
+				}else if(args[0].equalsIgnoreCase("disable")){
+					if(args.length > 1){
+						if(sender.hasPermission("mp.disable")){
+							this.disableMinigame(sender, args[1]);
+						}
+					}
 				}else if(args[0].equalsIgnoreCase("leaderboards")){
 					sender.sendMessage(ChatColor.DARK_AQUA + "-- " + ChatColor.GOLD + "Leaderboards: " + ChatColor.DARK_AQUA + "--");
 					if(args.length > 1){
@@ -347,7 +366,7 @@ public class Main extends JavaPlugin implements Listener {
 						if(players.size() < min_players){
 							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 								public void run(){
-									stopFull();
+									stopFull(p);
 								}
 							}, 15);
 						}
@@ -1052,7 +1071,6 @@ public class Main extends JavaPlugin implements Listener {
 			cmg.getWinner();
 			
 			// reset current minigame
-			//TODO try out
 			final Minigame cmg_ = cmg;
 			if(!cmg.name.toLowerCase().equalsIgnoreCase("minefield")){
 				Bukkit.getScheduler().runTaskLater(this, new Runnable(){
@@ -1070,6 +1088,12 @@ public class Main extends JavaPlugin implements Listener {
 			mg.lost.clear();
 		}
 		
+		//TODO try out
+		if(!minigames.get(currentmg).isEnabled()){
+			nextMinigame();
+			return;
+		}
+		
 		for(String pl : players){
 			final Player p = Bukkit.getPlayerExact(pl);
 			if(p.isOnline()){
@@ -1077,7 +1101,7 @@ public class Main extends JavaPlugin implements Listener {
 				p.setFlying(false);
 				p.getInventory().clear();
 
-				if(minigames.size() < 1){
+				if(minigames.size() < 1){ // that looks like bs, I should fix that
 					if(currentmg < minigames.size() - 1){
 						currentmg += 1;
 					}
@@ -1088,7 +1112,7 @@ public class Main extends JavaPlugin implements Listener {
 			}
 		}
 
-		if(currentmg > -1){
+		if(currentmg > -1 && currentmg < minigames.size()){
 			//return minigames.get(currentmg).start();
 			minigames.get(currentmg).startCooldown();
 		}else{
@@ -1198,7 +1222,7 @@ public class Main extends JavaPlugin implements Listener {
 		
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
 
-		Player p = Bukkit.getPlayer(player);
+		final Player p = Bukkit.getPlayer(player);
 
 		Scoreboard board = manager.getNewScoreboard();
 
@@ -1211,15 +1235,27 @@ public class Main extends JavaPlugin implements Listener {
 
 		p.setScoreboard(board);
 
-		Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-			public void run(){
-				Player p = Bukkit.getPlayer(player);
-				p.setScoreboard(null);
-			}
-		}, 20 * 10); // 10 seconds
-		
+		Runnable r = new Runnable() {
+	        public void run() {
+	        	m.removeScoreboard(p);
+	        }
+	    };
+	    
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, r, 20 * 10);
+
 	}
 
+	public void removeScoreboard(Player p) {
+		try {
+			ScoreboardManager manager = Bukkit.getScoreboardManager();
+			Scoreboard sc = manager.getNewScoreboard();
+			
+			sc.clearSlot(DisplaySlot.SIDEBAR);
+			p.setScoreboard(sc);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	/*public void start(){
 		// if not running -> start
@@ -1347,8 +1383,8 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	public void stopFull(){
-		Bukkit.getServer().getScheduler().cancelAllTasks();
-
+		Bukkit.getServer().getScheduler().cancelTasks(this);
+		
 		for(String pl : players){
 			Player p = Bukkit.getPlayerExact(pl);
 			if(p.isOnline()){
@@ -1368,6 +1404,11 @@ public class Main extends JavaPlugin implements Listener {
 				resetAll(true);
 			}
 		}, 20L);
+	}
+	
+	public void stopFull(Player p_){
+		stopFull();
+		updateScoreboardOUTGAME(p_.getName());
 	}
 
 	public Location getLobby(){
@@ -1529,7 +1570,7 @@ public class Main extends JavaPlugin implements Listener {
 				if(players.size() < min_players){
 					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 						public void run(){
-							stopFull();
+							stopFull(p);
 						}
 					}, 15);
 				}
@@ -1563,6 +1604,7 @@ public class Main extends JavaPlugin implements Listener {
 		keys.remove("shop");
 		keys.remove("minigames");
 		keys.remove("lobby");
+		keys.remove("strings");
 		for(String key : keys){
 			map.put(key, getConfig().getInt(key + ".credits"));
 		}
@@ -1591,6 +1633,7 @@ public class Main extends JavaPlugin implements Listener {
 		keys.remove("shop");
 		keys.remove("minigames");
 		keys.remove("lobby");
+		keys.remove("strings");
 		for(String key : keys){
 			map.put(key, getConfig().getInt(key + ".wins"));
 		}
@@ -1636,6 +1679,37 @@ public class Main extends JavaPlugin implements Listener {
 			place = Integer.toString(count + 1) + "rd";
 		}
 		p.sendMessage(ChatColor.BLUE + getConfig().getString("strings.your_place").replaceAll("<place>", place));
+	}
+	
+	
+	public void disableMinigame(CommandSender sender, String minigame){
+		if(!running){
+			for(Minigame mg : minigames){
+				if(mg.name.toLowerCase().equalsIgnoreCase(minigame)){
+					mg.setEnabled(false);
+					sender.sendMessage(ChatColor.RED + "Disabled " + mg.name + ".");
+					return;
+				}
+			}
+			sender.sendMessage(ChatColor.RED + "Could not find given Minigame.");
+		}else{
+			sender.sendMessage(ChatColor.RED + "You cannot change the state of a minigame while a game is running.");
+		}
+	}
+	
+	public void enableMinigame(CommandSender sender, String minigame){
+		if(!running){
+			for(Minigame mg : minigames){
+				if(mg.name.toLowerCase().equalsIgnoreCase(minigame)){
+					mg.setEnabled(true);
+					sender.sendMessage(ChatColor.GREEN + "Enabled " + mg.name + ".");
+					return;
+				}
+			}
+			sender.sendMessage(ChatColor.RED + "Could not find given Minigame.");
+		}else{
+			sender.sendMessage(ChatColor.RED + "You cannot change the state of a minigame while a game is running.");
+		}
 	}
 	
 }
