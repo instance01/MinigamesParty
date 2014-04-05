@@ -282,6 +282,15 @@ public class Main extends JavaPlugin implements Listener {
 				        }
 				    };
 				    new Thread(r).start();
+				}else if(args[0].equalsIgnoreCase("setuppoint")){
+					final Location l = this.getComponentForMinigame("colormatch", "spawn");
+					if(l != null){
+						Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+							public void run(){
+								p.teleport(l);
+							}
+						}, 5L);
+					}
 				}else if(args[0].equalsIgnoreCase("setlobby")){
 					if(sender.hasPermission("mp.setlobby")){
 						getConfig().set("lobby.world", p.getLocation().getWorld().getName());
