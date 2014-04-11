@@ -1051,7 +1051,7 @@ public class Main extends JavaPlugin implements Listener {
 			t.cancel();
 			started = false;
 			ingame_started = false;
- 
+
 			if(currentid != null){
 				currentid.cancel();
 			}
@@ -1145,6 +1145,10 @@ public class Main extends JavaPlugin implements Listener {
 				cmg.reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
 			}
 			
+			if(cmg.isEnabled()){
+				cmg.getWinner();
+			}
+			
 			if(currentmg > -1){
 				if(!minigames.get(currentmg).isEnabled()){
 					currentscore.clear();
@@ -1157,7 +1161,6 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}
 
-			cmg.getWinner();
 		}
 		currentscore.clear();
 		for(Minigame mg : minigames){

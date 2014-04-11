@@ -105,7 +105,7 @@ public class Shop {
 		}, m)
 		.setOption(0, new ItemStack(Material.EGG, 1), "Grenades", "Use Grenades in Spleef to destroy 3x3 fields! Cost: " + Integer.toString(grenades_price))
 		.setOption(1, new ItemStack(Material.POTION, 1), "Jump Boost", "Jump Boost for ColorMatch! Cost: " + Integer.toString(jumpboost_price))
-		.setOption(2, new ItemStack(Material.POTION, 2), "Speed Boost", "Speed Boost for DeadEnd! Cost: " + Integer.toString(jumpboost_price));
+		.setOption(2, new ItemStack(Material.POTION, 1), "Speed Boost", "Speed Boost for DeadEnd! Cost: " + Integer.toString(deadendboost_price));
 
 		iconm.open(Bukkit.getPlayerExact(p));
 	}
