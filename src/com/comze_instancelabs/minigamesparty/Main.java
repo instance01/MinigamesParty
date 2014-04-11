@@ -409,11 +409,15 @@ public class Main extends JavaPlugin implements Listener {
 						if(players.size() < min_players + 1){
 							pinv.put(p.getName(), p.getInventory().getContents());
 							startNew();
+							if(min_players > 1){
+								p.sendMessage(ChatColor.GREEN + "You joined the queue. There are " + ChatColor.GOLD + Integer.toString(min_players) + ChatColor.GREEN + " players needed to start.");
+							}
 						}else{ // else: just join the minigame
 							try{
 								pinv.put(p.getName(), p.getInventory().getContents());
 								minigames.get(currentmg).join(p);
 							}catch(Exception e){}
+							p.sendMessage(ChatColor.GREEN + "You joined the queue. There are " + ChatColor.GOLD + Integer.toString(min_players) + ChatColor.GREEN + " players needed to start.");
 						}	
 					}
 				}else if(args[0].equalsIgnoreCase("shop")){
@@ -561,6 +565,9 @@ public class Main extends JavaPlugin implements Listener {
 							if(players.size() < min_players + 1){
 								pinv.put(event.getPlayer().getName(), event.getPlayer().getInventory().getContents());
 								startNew();
+								if(min_players > 1){
+									event.getPlayer().sendMessage(ChatColor.GREEN + "You joined the queue. There are " + ChatColor.GOLD + Integer.toString(min_players) + ChatColor.GREEN + " players needed to start.");
+								}
 							}else{ // else: just join the minigame
 								try{
 									pinv.put(event.getPlayer().getName(), event.getPlayer().getInventory().getContents());
@@ -570,7 +577,7 @@ public class Main extends JavaPlugin implements Listener {
 								}catch(Exception e){
 									event.getPlayer().sendMessage(ChatColor.RED + "An error occured.");
 								}
-							}	
+							}
 						}
 					}
 				}	
