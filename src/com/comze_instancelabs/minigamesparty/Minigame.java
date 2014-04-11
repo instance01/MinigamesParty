@@ -84,6 +84,9 @@ public class Minigame {
 		if(p.hasPotionEffect(PotionEffectType.JUMP)){
 			p.removePotionEffect(PotionEffectType.JUMP);
 		}
+		if(p.hasPotionEffect(PotionEffectType.SPEED)){
+			p.removePotionEffect(PotionEffectType.SPEED);
+		}
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(m, new Runnable() {
 			@Override
 			public void run() {
@@ -110,6 +113,9 @@ public class Minigame {
 		if(p.hasPotionEffect(PotionEffectType.JUMP)){
 			p.removePotionEffect(PotionEffectType.JUMP);
 		}
+		if(p.hasPotionEffect(PotionEffectType.SPEED)){
+			p.removePotionEffect(PotionEffectType.SPEED);
+		}
 
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(m, new Runnable() {
 			@Override
@@ -119,6 +125,9 @@ public class Minigame {
 				p.setFlying(false);
 				if(p.hasPotionEffect(PotionEffectType.JUMP)){
 					p.removePotionEffect(PotionEffectType.JUMP);
+				}
+				if(p.hasPotionEffect(PotionEffectType.SPEED)){
+					p.removePotionEffect(PotionEffectType.SPEED);
 				}
 				
 			}

@@ -340,7 +340,11 @@ public class Main extends JavaPlugin implements Listener {
 				}else if(args[0].equalsIgnoreCase("list")){
 					sender.sendMessage(ChatColor.DARK_AQUA + "-- " + ChatColor.GOLD + "Minigames: " + ChatColor.DARK_AQUA + "--");
 					for(Minigame m : minigames){
-						sender.sendMessage(ChatColor.DARK_AQUA + m.name);
+						if(m.isEnabled()){
+							sender.sendMessage(ChatColor.GREEN + m.name);
+						}else{
+							sender.sendMessage(ChatColor.RED + m.name);
+						}
 					}
 				}else if(args[0].equalsIgnoreCase("reloadconfig")){
 					this.reloadConfig();
@@ -1160,7 +1164,6 @@ public class Main extends JavaPlugin implements Listener {
 					return;
 				}
 			}
-
 		}
 		currentscore.clear();
 		for(Minigame mg : minigames){
