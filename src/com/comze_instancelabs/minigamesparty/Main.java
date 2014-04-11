@@ -751,10 +751,16 @@ public class Main extends JavaPlugin implements Listener {
 					if(!minigames.get(currentmg).name.equalsIgnoreCase("slapfight")){
 						event.setCancelled(true);
 					}else{
-						if(event.getCause() == DamageCause.FALL){
+						// current minigame is SlapFight, enable all damage (except for fall damage)
+						if(ingame_started){
+							// enable damage only when cooldown finished
+							if(event.getCause() == DamageCause.FALL){
+								event.setCancelled(true);
+							}
+							p.setHealth(20D);
+						}else{
 							event.setCancelled(true);
 						}
-						p.setHealth(20D);
 					}
 				}
 			}

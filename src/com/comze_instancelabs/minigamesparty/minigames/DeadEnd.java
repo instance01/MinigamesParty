@@ -12,6 +12,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.comze_instancelabs.minigamesparty.Main;
 import com.comze_instancelabs.minigamesparty.Minigame;
+import com.comze_instancelabs.minigamesparty.Shop;
 
 public class DeadEnd extends Minigame implements Listener{
 	
@@ -35,6 +36,12 @@ public class DeadEnd extends Minigame implements Listener{
 				p.updateInventory();
 				
 				p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 64, -5));
+				
+				int temp = Shop.getPlayerShopComponent(m, p.getName(), "speed_boost");
+				if(temp > 0){
+					p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 60, 2));
+					Shop.removeFromPlayerShopComponent(m, p.getName(), "speed_boost", 1);
+				}
 			}
 		}, 5);
 	}
