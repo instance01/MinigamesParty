@@ -15,6 +15,9 @@ public class ParticleManager {
 		}else if(Bukkit.getVersion().contains("MC: 1.7.5")){
 			ParticleEffect175 explosion = ParticleEffect175.HUGE_EXPLOSION;
 			explosion.animateAtLocation(l, i, j);
+		}else if(Bukkit.getVersion().contains("MC: 1.7.8")){
+			ParticleEffect178 explosion = ParticleEffect178.HUGE_EXPLOSION;
+			explosion.animateAtLocation(l, i, j);
 		}else{
 			//fallback
 			ParticleEffect172 explosion = ParticleEffect172.HUGE_EXPLOSION;

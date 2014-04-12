@@ -9,6 +9,8 @@ public class VersionManager {
 			return new NMSHandler164();
 		}else if(version == 175){
 			return new NMSHandler175();
+		}else if(version == 178){
+			return new NMSHandler178();
 		}
 		return null;
 	}

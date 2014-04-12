@@ -47,6 +47,8 @@ public class CraftMassBlockUpdate implements MassBlockUpdate, Runnable {
 			return 172;
 		}else if(Bukkit.getVersion().contains("MC: 1.7.5")){
 			return 175;
+		}else if(Bukkit.getVersion().contains("MC: 1.7.8")){
+			return 178;
 		}
 		return 172;
 	}
