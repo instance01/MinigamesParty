@@ -25,7 +25,9 @@ import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Egg;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
@@ -60,8 +62,8 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.util.BlockIterator;
-import org.bukkit.util.Vector;
 
+import com.comze_instancelabs.minigamesparty.minigames.ChickenTag;
 import com.comze_instancelabs.minigamesparty.minigames.ColorMatch;
 import com.comze_instancelabs.minigamesparty.minigames.DeadEnd;
 import com.comze_instancelabs.minigamesparty.minigames.DisIntegration;
@@ -106,6 +108,7 @@ public class Main extends JavaPlugin implements Listener {
 	public ArrayList<String> players_outgame = new ArrayList<String>();
 	public ArrayList<String> players_left = new ArrayList<String>();
 	public HashMap<String, ItemStack[]> pinv = new HashMap<String, ItemStack[]>();
+	public static HashMap<String, Boolean> hasChicken = new HashMap<String, Boolean>();
 
 	public int min_players = 1;
 	public boolean running = false;
@@ -166,6 +169,9 @@ public class Main extends JavaPlugin implements Listener {
 					SlapFight slf = new SlapFight(m, m.getComponentForMinigame("SlapFight", "spawn"), m.getLobby(), m.getComponentForMinigame("SlapFight", "spectatorlobby"));
 					minigames.add(slf);
 					getServer().getPluginManager().registerEvents(slf, m);
+					ChickenTag ct = new ChickenTag(m, m.getComponentForMinigame("ChickenTag", "spawn"), m.getLobby(), m.getComponentForMinigame("ChickenTag", "spectatorlobby"));
+					minigames.add(ct);
+					getServer().getPluginManager().registerEvents(ct, m);
 				}
 			}
 		}, 20);
@@ -753,12 +759,10 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event){
 		if(event.getEntity() instanceof Player){
-			Player p = (Player)event.getEntity();
+			final Player p = (Player)event.getEntity();
 			if(players.contains(p.getName())){
 				if(currentmg > -1 && currentmg < minigames.size()){
-					if(!minigames.get(currentmg).name.equalsIgnoreCase("slapfight")){
-						event.setCancelled(true);
-					}else{
+					if(minigames.get(currentmg).name.equalsIgnoreCase("slapfight")){
 						// current minigame is SlapFight, enable all damage (except for fall damage)
 						if(ingame_started){
 							// enable damage only when cooldown finished
@@ -769,6 +773,39 @@ public class Main extends JavaPlugin implements Listener {
 						}else{
 							event.setCancelled(true);
 						}
+					}else if(minigames.get(currentmg).name.equalsIgnoreCase("chickentag")){
+						// current minigame is chickentag, enable all damage again
+						if(ingame_started){
+							// enable damage only when cooldown finished
+							if(event.getCause() == DamageCause.FALL){
+								event.setCancelled(true);
+							}
+							// TODO pass the chicken
+							if(event instanceof EntityDamageByEntityEvent){
+								EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
+								if(e.getDamager() instanceof Player){
+									Player p2 = (Player) e.getDamager();
+									if(hasChicken.containsKey(p2.getName())){
+										hasChicken.put(p2.getName(), false);
+										p2.setPassenger(null);
+									}
+									p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + p2.getName() + " passed his Chicken to you! Try to get rid of it!");
+								}
+							}
+							hasChicken.put(p.getName(), true);
+							final Chicken c = (Chicken) p.getWorld().spawnEntity(p.getLocation(), EntityType.CHICKEN);
+							Bukkit.getScheduler().runTaskLater(m, new Runnable(){
+								public void run(){
+									p.setPassenger(c);
+								}
+							}, 5L);
+							p.setHealth(20D);
+							
+						}else{
+							event.setCancelled(true);
+						}
+					}else{
+						event.setCancelled(true);
 					}
 				}
 			}
@@ -1032,8 +1069,8 @@ public class Main extends JavaPlugin implements Listener {
 	/**
 	 * NEW TIMER PART
 	 */
-	int c = 0; // count
-	int c_ = 0; 
+	public int c = 0; // count
+	public int c_ = 0; 
 	boolean ingame_started = false;
 	boolean started = false;
 	BukkitTask t = null;
@@ -1550,6 +1587,7 @@ public class Main extends JavaPlugin implements Listener {
 		SheepFreenzy.setup(new Location(start.getWorld(), x + 64 + 20, y, z + 64 + 20), this, "SheepFreenzy");
 		SmokeMonster.setup(new Location(start.getWorld(), x + 64 * 2 + 20 * 2, y, z + 64 + 20), this, "SmokeMonster");
 		SlapFight.setup(new Location(start.getWorld(), x + 64 * 3 + 20 * 3, y, z + 64 + 20), this, "SlapFight");
+		ChickenTag.setup(new Location(start.getWorld(), x + 64 + 20, y, z + 64 * 2 + 20 * 2), this, "ChickenTag");
 
 		
 		/*
@@ -1584,8 +1622,9 @@ public class Main extends JavaPlugin implements Listener {
 		minigames.add(new SheepFreenzy(this, this.getComponentForMinigame("SheepFreenzy", "spawn"), this.getComponentForMinigame("SheepFreenzy", "lobby"), this.getComponentForMinigame("SheepFreenzy", "spectatorlobby")));
 		minigames.add(new SmokeMonster(this, this.getComponentForMinigame("SmokeMonster", "spawn"), this.getComponentForMinigame("SmokeMonster", "lobby"), this.getComponentForMinigame("SmokeMonster", "spectatorlobby")));
 		minigames.add(new SlapFight(this, this.getComponentForMinigame("SlapFight", "spawn"), this.getComponentForMinigame("SlapFight", "lobby"), this.getComponentForMinigame("SlapFight", "spectatorlobby")));
+		minigames.add(new ChickenTag(this, this.getComponentForMinigame("ChickenTag", "spawn"), this.getComponentForMinigame("ChickenTag", "lobby"), this.getComponentForMinigame("ChickenTag", "spectatorlobby")));
 
-		getLogger().info("[MinigamesParty] Finished Setup");
+		getLogger().info("[MinigamesParty] Finished Setup.");
 	}
 
 	public void resetAll(boolean flag){
