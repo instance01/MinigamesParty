@@ -122,6 +122,8 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public Location mainlobby = null;
 
+	public int seconds = 60;
+	
 	Main m;
 	MainSQL msql;
 
@@ -188,6 +190,7 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().addDefault("config.item_reward_id", 264);
 		getConfig().addDefault("config.scoreboardoutgame", true);
 		getConfig().addDefault("config.announcements", true);
+		getConfig().addDefault("config.seconds_for_each_minigame", 60); // ô.ô
 		
 		getConfig().addDefault("strings.you_left", "You left the game.");
 		getConfig().addDefault("strings.next_round_30_seconds", "Next round in 30 seconds! You can leave with /mp leave.");
@@ -221,6 +224,7 @@ public class Main extends JavaPlugin implements Listener {
 		item_maxreward = getConfig().getInt("config.item_reward_maxamount");
 
 		item_id = getConfig().getInt("config.item_reward_id"); 
+		seconds = getConfig().getInt("config.seconds_for_each_minigame");
 		
 		if(minreward > maxreward){
 			int temp = maxreward;
@@ -431,8 +435,8 @@ public class Main extends JavaPlugin implements Listener {
 						return true;
 					}
 					if(currentmg > -1){
-						c_ += 60-c;
-						c = 60;
+						c_ += seconds-c;
+						c = seconds;
 					}
 					if(args.length > 1){
 						String count = args[1];
@@ -669,8 +673,8 @@ public class Main extends JavaPlugin implements Listener {
 										sendPlace(count, event.getPlayer());
 										current.spectate(event.getPlayer());
 										if(count < 2){
-											c_ += 60-c;
-											c = 60; 
+											c_ += seconds-c;
+											c = seconds; 
 										}
 									}
 								}
@@ -678,8 +682,8 @@ public class Main extends JavaPlugin implements Listener {
 							if(current.name.equalsIgnoreCase("JumpnRun") || current.name.equalsIgnoreCase("MineField")){
 								final Player p = event.getPlayer();
 								if(p.getLocation().getBlockZ() > current.finish.getBlockZ()){
-									c_ += 60-c;
-									c = 60; // just skips all the remaining seconds and sets to 60, current timer will do the rest
+									c_ += seconds-c;
+									c = seconds; // just skips all the remaining seconds and sets to 60, current timer will do the rest
 									return;
 								}
 							}
@@ -707,8 +711,8 @@ public class Main extends JavaPlugin implements Listener {
 								current.spectate(event.getPlayer());
 								// there's only one man standing
 								if(count < 2){
-									c_ += 60-c;
-									c = 60; // just skips all the remaining seconds and sets to 60, current timer will do the rest
+									c_ += seconds-c;
+									c = seconds; // just skips all the remaining seconds and sets to 60, current timer will do the rest
 								}
 							}
 						}
@@ -798,8 +802,8 @@ public class Main extends JavaPlugin implements Listener {
 									current.spectate(p);
 									// there's only one man standing
 									if(count < 2){
-										c_ += 60-c;
-										c = 60; // just skips all the remaining seconds and sets to 60, current timer will do the rest
+										c_ += seconds-c;
+										c = seconds; // just skips all the remaining seconds and sets to 60, current timer will do the rest
 									}
 									
 									damager.sendMessage(ChatColor.GOLD + "You shot " + ChatColor.DARK_PURPLE + p.getName() + ChatColor.GOLD + "!");
@@ -1042,10 +1046,10 @@ public class Main extends JavaPlugin implements Listener {
 		}
 		
 		// update scoreboard
-		updateScoreboard(60 - c);
+		updateScoreboard(seconds - c);
 
 		// stop the whole party after some rounds
-		if(c_ > minigames.size() * 60 - 3){
+		if(c_ > minigames.size() * seconds - 3){
 			//Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable(){
 			Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 				public void run(){
@@ -1101,7 +1105,7 @@ public class Main extends JavaPlugin implements Listener {
 		}
 
 		// start the next minigame after 60 seconds
-		if(c == 60 || c > 60){
+		if(c == seconds || c > seconds){
 			c = 0;
 			if(currentid != null){
 				currentid.cancel();
@@ -1160,7 +1164,7 @@ public class Main extends JavaPlugin implements Listener {
 						mg.lost.clear();
 					}
 					nextMinigame();
-					c_ += 60;
+					c_ += seconds;
 					return;
 				}
 			}
