@@ -53,11 +53,18 @@ public class MainSQL {
 		try {
 			ResultSet res3 = c.createStatement().executeQuery("SELECT * FROM mgparty WHERE player='" + p_ + "'");
 
+			/*if(res3.next()){
+				int credits = res3.getInt("credits");
+				return credits;
+			}
+			return -1;*/
+			
 			res3.next();
 			int credits = res3.getInt("credits");
 			return credits;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.out.println("New User detected.");
 		}
 		return -1;
 	}
