@@ -22,19 +22,10 @@ public class Spleef extends Minigame implements Listener{
 	
 	@Override
 	public void join(final Player p){
+		super.join(p);
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(m, new Runnable() {
 			@Override
 			public void run() {
-				if(p.hasPotionEffect(PotionEffectType.JUMP)){
-					p.removePotionEffect(PotionEffectType.JUMP);
-				}
-				p.teleport(spawn);
-				p.setGameMode(GameMode.SURVIVAL);
-				p.setAllowFlight(false);
-				p.setFlying(false);
-				p.sendMessage(MinigameUtil.nowPlaying(name));
-				p.sendMessage(MinigameUtil.description(m.minigames.get(m.currentmg), description));
-				
 				p.getInventory().clear();
 				p.updateInventory();
 				p.getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE, 1));
@@ -48,7 +39,7 @@ public class Spleef extends Minigame implements Listener{
 				
 				int temp_ = Shop.getPlayerShopComponent(m, p.getName(), "megagrenades");
 				if(temp_ > 0){
-					p.getInventory().addItem(Shop.enchantedItemStack(new ItemStack(Material.EGG, temp_)));
+					p.getInventory().addItem(Shop.enchantedItemStack(new ItemStack(Material.EGG, temp_), "MegaGrenade"));
 					p.updateInventory();
 				}
 			}

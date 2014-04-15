@@ -49,16 +49,10 @@ public class SheepFreenzy extends Minigame implements Listener{
 	
 	@Override
 	public void join(final Player p){
+		super.join(p);
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(m, new Runnable() {
 			@Override
 			public void run() {
-				p.teleport(spawn);
-				p.setGameMode(GameMode.SURVIVAL);
-				p.setAllowFlight(false);
-				p.setFlying(false);
-				p.sendMessage(MinigameUtil.nowPlaying(name));
-				p.sendMessage(MinigameUtil.description(m.minigames.get(m.currentmg), description));
-				
 				p.getInventory().clear();
 				p.updateInventory();
 				p.getInventory().addItem(new ItemStack(Material.SHEARS, 1));

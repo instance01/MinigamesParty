@@ -46,7 +46,7 @@ public class NMSManager {
 			}
 		}catch(Exception e){
 			System.out.println("Your Bukkit build appears to be invalid! Please post a comment with the following string on the project page: " + Bukkit.getVersion());
-			return null;
+			return item;
 		}
 	}
 }

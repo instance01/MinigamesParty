@@ -215,6 +215,7 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().addDefault("strings.description.smokemonster", "Avoid the smoke monster!");
 		getConfig().addDefault("strings.description.spleef", "Destroy the floor under your opponents to make them fall and lose!");
 		getConfig().addDefault("strings.description.slapfight", "Slap the other players to fall! You can use Double Jump in case you fall, too.");
+		getConfig().addDefault("strings.description.chickentag", "Pass the chicken to others or you'll lose!");
 
 		getConfig().addDefault("strings.your_place", "You are <place> place.");
 		
@@ -599,13 +600,6 @@ public class Main extends JavaPlugin implements Listener {
 						}
 					}
 				}	
-			}else if(event.hasItem()){
-				if(event.getItem() != null){
-					if(event.getItem().containsEnchantment(Enchantment.LUCK)){
-						Egg egg = event.getPlayer().launchProjectile(Egg.class);
-						egg.setMetadata("mega", new FixedMetadataValue(m, "mega"));
-					}
-				}
 			}
 		}else if(event.getAction().equals(Action.PHYSICAL)){
 			if(event.getClickedBlock().getType() == Material.STONE_PLATE){
@@ -618,6 +612,24 @@ public class Main extends JavaPlugin implements Listener {
 						}
 					}, 5);
 					event.getClickedBlock().setType(Material.AIR);
+				}
+			}
+		}
+		
+		if(event.hasItem()){
+			if(event.getItem() != null){
+				if(event.getItem().getItemMeta().getDisplayName() != null){
+					if(event.getItem().getItemMeta().getDisplayName().equalsIgnoreCase("megagrenade")){
+						if(players.contains(event.getPlayer().getName())){
+							Egg egg = event.getPlayer().launchProjectile(Egg.class);
+							egg.setMetadata("mega", new FixedMetadataValue(m, "mega"));
+							event.getPlayer().getInventory().remove(Material.EGG);
+							event.getPlayer().updateInventory();
+							event.setCancelled(true);
+							event.getPlayer().getInventory().addItem(Shop.enchantedItemStack(new ItemStack(Material.EGG, Shop.getPlayerShopComponent(m, event.getPlayer().getName(), "megagrenades") - 1), "MegaGrenade"));
+							event.getPlayer().updateInventory();
+						}
+					}
 				}
 			}
 		}

@@ -115,7 +115,7 @@ public class Shop {
 				}else if (d.equalsIgnoreCase("smokemonster boost")) {
 					Shop.t(m, p, smokemonsterboost_price, "smokemonster_boost", "You bought a SmokeMonster boost!");
 				}else if (d.equalsIgnoreCase("jumpnrun boost")) {
-					Shop.t(m, p, jumpnrunboost_price, "jumpnrun_boost", "You bought a ChickenTag boost!");
+					Shop.t(m, p, jumpnrunboost_price, "jumpnrun_boost", "You bought a JumpnRun boost!");
 				}else if (d.equalsIgnoreCase("explosion immunity")) {
 					Shop.t(m, p, sheepfreenzyimmunity_price, "sheepfreenzy_explosion_immunity", "You bought a Explosion Immunity for SheepFreenzy!");
 				}else if (d.equalsIgnoreCase("megagrenades")) {
@@ -129,11 +129,11 @@ public class Shop {
 		.setOption(1, new ItemStack(Material.POTION, 1), "Jump Boost", false, "Jump Boost for ColorMatch!", "Cost: " + Integer.toString(jumpboost_price))
 		.setOption(2, new ItemStack(Material.POTION, 1), "Speed Boost", false, "Speed Boost for DeadEnd!", "Cost: " + Integer.toString(deadendboost_price))
 		.setOption(9, getCustomHead("MHF_Chicken"), "ChickenTag Boost", false, "Gives you a speed boost in ChickenTag!", "Cost: " + Integer.toString(chickentagboost_price))
-		.setOption(10, enchantedItemStack(new ItemStack(Material.STICK, 1)), "Knockback", true, "Enchants your stick with a higher level in SlapFight!", "Cost: " + Integer.toString(slapfight_knockback_price))
+		.setOption(10, new ItemStack(Material.STICK, 1), "Knockback", true, "Enchants your stick with a higher level in SlapFight!", "Cost: " + Integer.toString(slapfight_knockback_price))
 		.setOption(11, new ItemStack(Material.POTION, 1), "SmokeMonster Boost", false, "Gives you a speed boost in SmokeMonster!", "Cost: " + Integer.toString(smokemonsterboost_price))
 		.setOption(12, new ItemStack(Material.POTION, 1), "Jumpnrun Boost", false, "Gives you a speed boost in JumpnRun!", "Cost: " + Integer.toString(jumpnrunboost_price))
 		.setOption(13, getCustomHead("MHF_Sheep"), "Explosion Immunity", false, "Saves your from one explosion in SheepFreenzy!", "Cost: " + Integer.toString(sheepfreenzyimmunity_price))
-		.setOption(14, enchantedItemStack(new ItemStack(Material.EGG, 1)), "MegaGrenades", true, "Use MegaGrenades in Spleef to destroy 5x5 fields!", "Cost: " + Integer.toString(megagrenades_price));
+		.setOption(14, new ItemStack(Material.EGG, 1), "MegaGrenades", true, "Use MegaGrenades in Spleef to destroy 5x5 fields!", "Cost: " + Integer.toString(megagrenades_price));
 
 		iconm.open(Bukkit.getPlayerExact(p));
 	}
@@ -146,8 +146,9 @@ public class Shop {
 		return item;
 	}
 	
-	public static ItemStack enchantedItemStack(ItemStack item){
+	public static ItemStack enchantedItemStack(ItemStack item, String name){
 		ItemMeta im = item.getItemMeta();
+		im.setDisplayName(name);
         item.setItemMeta(im);
         item.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 10);
         return NMSManager.fakeGlow(item);
