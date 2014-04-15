@@ -2,14 +2,18 @@ package com.comze_instancelabs.minigamesparty;
 
 import java.lang.reflect.Field;
 
-import net.minecraft.server.v1_7_R2.PacketPlayOutWorldParticles;
+import net.minecraft.server.v1_6_R3.Packet63WorldParticles;
+import net.minecraft.server.v1_6_R3.NBTTagCompound;
+import net.minecraft.server.v1_6_R3.NBTTagList;
 
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_6_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
-public enum ParticleEffect175 {
+public enum NMSFunctions164 {
 	/**
 	 * Each ParticleEffect has the packet name, and the environment in witch it will be succesfully displayed.
 	 */
@@ -63,7 +67,7 @@ public enum ParticleEffect175 {
      * @param packetName
      * @param environment
      */
-    ParticleEffect175 (String packetName, Environment environment) {
+    NMSFunctions164 (String packetName, Environment environment) {
     	this.packetName = packetName;
     	this.environment = environment;
     }
@@ -169,8 +173,8 @@ public enum ParticleEffect175 {
      * @return
      * @throws Exception
      */
-	private PacketPlayOutWorldParticles getParticle (Location location, float offsetX, float offsetY, float offsetZ, float speed, int count) throws Exception {
-		PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles();
+	private Packet63WorldParticles getParticle (Location location, float offsetX, float offsetY, float offsetZ, float speed, int count) throws Exception {
+		Packet63WorldParticles packet = new Packet63WorldParticles();
 		setValue(packet, "a", packetName.replace("%id%", ""+_id).replace("%data%", ""+_data));
 		setValue(packet, "b", (float) location.getX());
 		setValue(packet, "c", (float) location.getY());
@@ -194,6 +198,22 @@ public enum ParticleEffect175 {
 		Field field = instance.getClass().getDeclaredField(fieldName);
 		field.setAccessible(true);
 		field.set(instance, value);
+	}
+	
+	
+	public static ItemStack addGlow(ItemStack item) {
+		net.minecraft.server.v1_6_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+		NBTTagCompound tag = null;
+		if (!nmsStack.hasTag()) {
+			tag = new NBTTagCompound();
+			nmsStack.setTag(tag);
+		}
+		if (tag == null)
+			tag = nmsStack.getTag();
+		NBTTagList ench = new NBTTagList();
+		tag.set("ench", ench);
+		nmsStack.setTag(tag);
+		return CraftItemStack.asCraftMirror(nmsStack);
 	}
 
 }

@@ -24,6 +24,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Egg;
@@ -43,6 +44,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -53,6 +55,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
@@ -595,6 +599,13 @@ public class Main extends JavaPlugin implements Listener {
 						}
 					}
 				}	
+			}else if(event.hasItem()){
+				if(event.getItem() != null){
+					if(event.getItem().containsEnchantment(Enchantment.LUCK)){
+						Egg egg = event.getPlayer().launchProjectile(Egg.class);
+						egg.setMetadata("mega", new FixedMetadataValue(m, "mega"));
+					}
+				}
 			}
 		}else if(event.getAction().equals(Action.PHYSICAL)){
 			if(event.getClickedBlock().getType() == Material.STONE_PLATE){
@@ -903,7 +914,7 @@ public class Main extends JavaPlugin implements Listener {
 			event.setCancelled(true);
 		}
 	}
-
+	
 	@EventHandler
 	public void onProjectileLand(ProjectileHitEvent e) {   
 		if (e.getEntity().getShooter() instanceof Player) {
@@ -943,11 +954,22 @@ public class Main extends JavaPlugin implements Listener {
 					try {
 						Location l = hit.getLocation();
 						if (hit.getLocation().getBlockY() < minigames.get(currentmg).spawn.getBlockY() && hit.getType() == Material.SNOW_BLOCK) {
-							for(int x = 1; x <= 3; x++){
-								for(int z = 1; z <= 3; z++){
-									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 2, l.getBlockY(), l.getBlockZ() + z - 2));
-									b.setTypeId(0);
+							if(e.getEntity().hasMetadata("mega")){
+								for(int x = 1; x <= 5; x++){
+									for(int z = 1; z <= 5; z++){
+										Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 3, l.getBlockY(), l.getBlockZ() + z - 3));
+										b.setTypeId(0);
+									}
 								}
+								Shop.removeFromPlayerShopComponent(m, player.getName(), "megagrenades", 1);
+							}else{
+								for(int x = 1; x <= 3; x++){
+									for(int z = 1; z <= 3; z++){
+										Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 2, l.getBlockY(), l.getBlockZ() + z - 2));
+										b.setTypeId(0);
+									}
+								}
+								Shop.removeFromPlayerShopComponent(m, player.getName(), "grenades", 1);
 							}
 							hit.setTypeId(0);
 
@@ -955,9 +977,6 @@ public class Main extends JavaPlugin implements Listener {
 							/*for (Player sp : players) {
 	                            sp.getPlayer().playEffect(new Location(hit.getWorld(), hit.getLocation().getBlockX(), hit.getLocation().getBlockY() + 1.0D, hit.getLocation().getBlockZ()), Effect.MOBSPAWNER_FLAMES, 25);
 	                    	}*/
-							
-							Shop.removeFromPlayerShopComponent(m, player.getName(), "grenades", 1);
-
 						}
 					} catch (Exception ex) { 
 						
@@ -978,7 +997,11 @@ public class Main extends JavaPlugin implements Listener {
 			}
 			if(i < 5){
 				currentscore.put(event.getPlayer().getName(), currentscore.get(event.getPlayer().getName()) + 3);
-				event.getPlayer().getLocation().getWorld().createExplosion(event.getEntity().getLocation(), 2F);
+				int temp = Shop.getPlayerShopComponent(m, event.getPlayer().getName(), "sheepfreenzy_explosion_immunity");
+				if(temp < 1){
+					Shop.removeFromPlayerShopComponent(m, event.getPlayer().getName(), "sheepfreenzy_explosion_immunity", 1);
+					event.getPlayer().getLocation().getWorld().createExplosion(event.getEntity().getLocation(), 2F);
+				}
 			}else{
 				currentscore.put(event.getPlayer().getName(), currentscore.get(event.getPlayer().getName()) + 1);
 			}
@@ -1885,6 +1908,9 @@ public class Main extends JavaPlugin implements Listener {
 	public void onFlightAttempt(PlayerToggleFlightEvent event) {
 		final Player p = event.getPlayer();
 	    if(p.getGameMode() != GameMode.CREATIVE) {
+	    	if(currentmg < 0 || currentmg > minigames.size() - 1 || !players.contains(p.getName())){
+	    		return;
+	    	}
 	    	if(players.contains(p.getName()) && m.minigames.get(currentmg).name.equalsIgnoreCase("slapfight")){
 	    		if(!players_doublejumped.contains(p.getName())){
 		    		event.getPlayer().setAllowFlight(false);

@@ -45,6 +45,12 @@ public class Spleef extends Minigame implements Listener{
 					p.getInventory().addItem(new ItemStack(Material.EGG, temp));
 					p.updateInventory();
 				}
+				
+				int temp_ = Shop.getPlayerShopComponent(m, p.getName(), "megagrenades");
+				if(temp_ > 0){
+					p.getInventory().addItem(Shop.enchantedItemStack(new ItemStack(Material.EGG, temp_)));
+					p.updateInventory();
+				}
 			}
 		}, 5);
 	}

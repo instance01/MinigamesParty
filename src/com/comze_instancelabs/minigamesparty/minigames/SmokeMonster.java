@@ -18,7 +18,8 @@ import org.bukkit.util.Vector;
 
 import com.comze_instancelabs.minigamesparty.Main;
 import com.comze_instancelabs.minigamesparty.Minigame;
-import com.comze_instancelabs.minigamesparty.ParticleManager;
+import com.comze_instancelabs.minigamesparty.NMSManager;
+import com.comze_instancelabs.minigamesparty.Shop;
 
 public class SmokeMonster extends Minigame implements Listener {
 
@@ -75,6 +76,11 @@ public class SmokeMonster extends Minigame implements Listener {
 			@Override
 			public void run() {
 				p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 64, 4));
+				int temp = Shop.getPlayerShopComponent(m, p.getName(), "smokemonster_boost");
+				if(temp > 0){
+					p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 60, 2));
+					Shop.removeFromPlayerShopComponent(m, p.getName(), "smokemonster_boost", 1);
+				}
 			}
 		}, 5);
 	}
@@ -166,7 +172,7 @@ public class SmokeMonster extends Minigame implements Listener {
 					l.getWorld().createExplosion(l.add(0D, -2D, 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -0.5D, 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -1.5D, 0D), -1F);*/
-					ParticleManager.runManager(l, 1, 1);
+					NMSManager.createParticles(l, 1, 1);
 				}
 			}
 			
@@ -179,7 +185,7 @@ public class SmokeMonster extends Minigame implements Listener {
 					l.getWorld().createExplosion(l.add(0D, -2D, 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -0.5D, 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -1.5D, 0D), -1F);*/
-					ParticleManager.runManager(l, 1, 1);
+					NMSManager.createParticles(l, 1, 1);
 				}
 			}
 		}
@@ -246,7 +252,7 @@ public class SmokeMonster extends Minigame implements Listener {
 					l.getWorld().createExplosion(l.add(0D, -2D + (mod / 2), 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -0.5D + (mod / 2), 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -1.5D + (mod / 2), 0D), -1F);*/
-					ParticleManager.runManager(l.add(0D, (mod / 2), 0D), 1, 1);
+					NMSManager.createParticles(l.add(0D, (mod / 2), 0D), 1, 1);
 				}
 			}
 			
@@ -270,7 +276,7 @@ public class SmokeMonster extends Minigame implements Listener {
 					l.getWorld().createExplosion(l.add(0D, -2D + (mod / 2), 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -0.5D + (mod / 2), 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -1.5D + (mod / 2), 0D), -1F);*/
-					ParticleManager.runManager(l.add(0D, (mod / 2), 0D), 1, 1);
+					NMSManager.createParticles(l.add(0D, (mod / 2), 0D), 1, 1);
 				}
 			}
 		}

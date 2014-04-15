@@ -3,6 +3,7 @@ package com.comze_instancelabs.minigamesparty;
 import java.util.Arrays;
 
 import org.bukkit.Bukkit;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -35,9 +36,9 @@ public class IconMenu implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
  
-    public IconMenu setOption(int position, ItemStack icon, String name, String... info) {
+    public IconMenu setOption(int position, ItemStack icon, String name, boolean glow, String... info) {
         optionNames[position] = name;
-        optionIcons[position] = setItemNameAndLore(icon, name, info);
+        optionIcons[position] = setItemNameAndLore(icon, name, info, glow);
         return this;
     }
  
@@ -138,11 +139,15 @@ public class IconMenu implements Listener {
         }
     }
  
-    private ItemStack setItemNameAndLore(ItemStack item, String name, String[] lore) {
+    private ItemStack setItemNameAndLore(ItemStack item, String name, String[] lore, boolean glow) {
         ItemMeta im = item.getItemMeta();
         im.setDisplayName(name);
         im.setLore(Arrays.asList(lore));
         item.setItemMeta(im);
+        if(glow){
+        	item.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 10);
+            return NMSManager.fakeGlow(item);
+        }
         return item;
     }
  

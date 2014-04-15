@@ -13,10 +13,13 @@ import org.bukkit.entity.Chicken;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.comze_instancelabs.minigamesparty.Main;
 import com.comze_instancelabs.minigamesparty.Minigame;
+import com.comze_instancelabs.minigamesparty.Shop;
 
 public class ChickenTag extends Minigame implements Listener{
 	
@@ -111,7 +114,7 @@ public class ChickenTag extends Minigame implements Listener{
 							p.setExp(1 - (0.083F * xpsec));
 							xpsecp.put(p, xpsec + 1);
 						}
-					}, (20L - n) / 12, (20L - n) / 12));
+					}, (100L - n) / 12, (100L - n) / 12));
 				}
 				Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(m, new Runnable(){
 					public void run(){
@@ -126,7 +129,7 @@ public class ChickenTag extends Minigame implements Listener{
 							}
 						});
 					}
-				}, 20L - n);
+				}, 120L - n);
 				
 				
 				//BukkitTask id = Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(m, new Runnable() {
@@ -137,6 +140,9 @@ public class ChickenTag extends Minigame implements Listener{
 							public void run(){
 								for(String pl : m.players){
 									Player p = Bukkit.getPlayerExact(pl);
+									if(!m.hasChicken.containsKey(pl)){
+										m.hasChicken.put(pl, false);
+									}
 									if(m.hasChicken.get(pl)){
 										lost.add(p);
 										int count = 0;
@@ -167,6 +173,30 @@ public class ChickenTag extends Minigame implements Listener{
 		}, 20, 140); // 7 seconds
 		
 		return id__;
+	}
+	
+	
+	@Override
+	public void leave(Player p){
+		super.leave(p);
+		if(p.getPassenger()  != null){
+			p.getPassenger().remove();
+			p.setPassenger(null);
+		}
+	}
+	
+	@Override
+	public void join(final Player p){
+		super.join(p);
+		Bukkit.getScheduler().runTaskLater(m, new Runnable(){
+			public void run(){
+				int temp = Shop.getPlayerShopComponent(m, p.getName(), "chickentag_boost");
+				if(temp > 0){
+					p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 60, 2));
+					Shop.removeFromPlayerShopComponent(m, p.getName(), "chickentag_boost", 1);
+				}
+			}
+		}, 5L);
 	}
 
 }

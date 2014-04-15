@@ -13,10 +13,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.comze_instancelabs.minigamesparty.Main;
 import com.comze_instancelabs.minigamesparty.Minigame;
+import com.comze_instancelabs.minigamesparty.Shop;
 
 public class SlapFight extends Minigame implements Listener{
 	
@@ -43,8 +45,15 @@ public class SlapFight extends Minigame implements Listener{
 				p.updateInventory();
 				ItemStack item = new ItemStack(Material.STICK);
 				ItemMeta meta = item.getItemMeta();
-				meta.addEnchant(Enchantment.KNOCKBACK, 5, true);
-				meta.setDisplayName(ChatColor.RED + "SLAPPER");
+				int temp = Shop.getPlayerShopComponent(m, p.getName(), "slapfight_knockback");
+				if(temp > 0){
+					meta.addEnchant(Enchantment.KNOCKBACK, 10, true);
+					meta.setDisplayName(ChatColor.RED + "ULTRA SLAPPER");
+					Shop.removeFromPlayerShopComponent(m, p.getName(), "slapfight_knockback", 1);
+				}else{
+					meta.addEnchant(Enchantment.KNOCKBACK, 5, true);
+					meta.setDisplayName(ChatColor.RED + "MEDIUM SLAPPER");
+				}
 				item.setItemMeta(meta);
 				p.getInventory().addItem(item);
 				p.updateInventory();

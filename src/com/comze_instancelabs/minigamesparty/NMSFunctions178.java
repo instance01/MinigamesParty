@@ -2,14 +2,18 @@ package com.comze_instancelabs.minigamesparty;
 
 import java.lang.reflect.Field;
 
+import net.minecraft.server.v1_7_R3.NBTTagCompound;
+import net.minecraft.server.v1_7_R3.NBTTagList;
 import net.minecraft.server.v1_7_R3.PacketPlayOutWorldParticles;
 
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
-public enum ParticleEffect178 {
+public enum NMSFunctions178 {
 	/**
 	 * Each ParticleEffect has the packet name, and the environment in witch it will be succesfully displayed.
 	 */
@@ -63,7 +67,7 @@ public enum ParticleEffect178 {
      * @param packetName
      * @param environment
      */
-    ParticleEffect178 (String packetName, Environment environment) {
+    NMSFunctions178 (String packetName, Environment environment) {
     	this.packetName = packetName;
     	this.environment = environment;
     }
@@ -194,6 +198,22 @@ public enum ParticleEffect178 {
 		Field field = instance.getClass().getDeclaredField(fieldName);
 		field.setAccessible(true);
 		field.set(instance, value);
+	}
+
+
+	public static ItemStack addGlow(ItemStack item) {
+		net.minecraft.server.v1_7_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+		NBTTagCompound tag = null;
+		if (!nmsStack.hasTag()) {
+			tag = new NBTTagCompound();
+			nmsStack.setTag(tag);
+		}
+		if (tag == null)
+			tag = nmsStack.getTag();
+		NBTTagList ench = new NBTTagList();
+		tag.set("ench", ench);
+		nmsStack.setTag(tag);
+		return CraftItemStack.asCraftMirror(nmsStack);
 	}
 
 }
