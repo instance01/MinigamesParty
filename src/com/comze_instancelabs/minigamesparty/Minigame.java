@@ -87,6 +87,10 @@ public class Minigame {
 		if(p.hasPotionEffect(PotionEffectType.SPEED)){
 			p.removePotionEffect(PotionEffectType.SPEED);
 		}
+		if(p.getPassenger()  != null){
+			p.getPassenger().remove();
+			p.setPassenger(null);
+		}
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(m, new Runnable() {
 			@Override
 			public void run() {

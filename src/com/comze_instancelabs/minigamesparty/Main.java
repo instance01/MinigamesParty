@@ -2,6 +2,7 @@ package com.comze_instancelabs.minigamesparty;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -1305,6 +1306,10 @@ public class Main extends JavaPlugin implements Listener {
 				currentmg = -1;
 				currentid = null;
 
+				// TODO test out
+				// randomize minigames order
+				this.shuffleMinigames();
+				
 				// start first minigame
 				//currentid = nextMinigame();
 				nextMinigame();
@@ -1952,5 +1957,10 @@ public class Main extends JavaPlugin implements Listener {
 	    		}
 	    	}
 	    }
+	}
+	
+	
+	public void shuffleMinigames(){
+		Collections.shuffle(minigames);
 	}
 }
