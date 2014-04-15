@@ -190,6 +190,7 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().addDefault("mysql.pw", "toor");
 		getConfig().addDefault("config.auto_updating", true);
 		getConfig().addDefault("config.min_players", 1);
+		getConfig().addDefault("config.max_players", 50);
 		getConfig().addDefault("config.game-on-join", false);
 		getConfig().addDefault("config.max_reward", 30);
 		getConfig().addDefault("config.min_reward", 10);
@@ -423,6 +424,10 @@ public class Main extends JavaPlugin implements Listener {
 					if(players.contains(p.getName())){
 						p.sendMessage(ChatColor.GOLD + "Use /mp leave to leave!");
 					}else{
+						if(players.size() > getConfig().getInt("config.max_players") - 1){
+							p.sendMessage(ChatColor.RED + "You can't join because the minigames party is full!");
+							return true;
+						}
 						players.add(p.getName());
 						// if its the first player to join, start the whole minigame
 						if(players.size() < min_players + 1){
@@ -579,6 +584,10 @@ public class Main extends JavaPlugin implements Listener {
 						if(players.contains(event.getPlayer().getName())){
 							event.getPlayer().sendMessage(ChatColor.GOLD + "Use /mp leave to leave!");
 						}else{
+							if(players.size() > getConfig().getInt("config.max_players") - 1){
+								event.getPlayer().sendMessage(ChatColor.RED + "You can't join because the minigames party is full!");
+								return;
+							}
 							players.add(event.getPlayer().getName());
 							// if its the first player to join, start the whole minigame
 							if(players.size() < min_players + 1){
