@@ -1011,6 +1011,11 @@ public class Main extends JavaPlugin implements Listener {
 		this.updatePlayerStats(p.getName(), "wins", getPlayerStats(p.getName(), "wins") + 1);
 		Random r = new Random();
 		int reward = r.nextInt((maxreward - minreward) + 1) + minreward;
+		if(p.hasPermission("mg.double_coins")){
+			reward = reward * 2;
+		}else if(p.hasPermission("mp.triple_coins")){
+			reward = reward * 3;
+		}
 		this.updatePlayerStats(p.getName(), "credits", getPlayerStats(p.getName(), "credits") + reward);		
 
 		if(getConfig().getBoolean("config.announcements")){
@@ -1030,6 +1035,11 @@ public class Main extends JavaPlugin implements Listener {
 		
 		if(item_rewards){
 			int reward_ = r.nextInt((item_maxreward - item_minreward) + 1) + item_minreward;
+			if(p.hasPermission("mg.double_coins")){
+				reward_ = reward_ * 2;
+			}else if(p.hasPermission("mp.triple_coins")){
+				reward_ = reward_ * 3;
+			}
 			p.sendMessage("§aYou earned " + Integer.toString(reward_) + " " + Material.getMaterial(item_id).name() + " this round. You'll get them at the end.");
 			if(rewardcount.containsKey(p.getName())){
 				reward_ += rewardcount.get(p.getName());
