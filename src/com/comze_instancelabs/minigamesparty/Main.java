@@ -1052,11 +1052,15 @@ public class Main extends JavaPlugin implements Listener {
 	}*/
 
 	public void win(Player p){
+		if(p == null){
+			getLogger().severe("Could not resolve winner: " + Integer.toString(currentmg));
+			return;
+		}
 		//p.sendMessage(ChatColor.GOLD + "You won this round!");
 		this.updatePlayerStats(p.getName(), "wins", getPlayerStats(p.getName(), "wins") + 1);
 		Random r = new Random();
 		int reward = r.nextInt((maxreward - minreward) + 1) + minreward;
-		if(p.hasPermission("mg.double_coins")){
+		if(p.hasPermission("mp.double_coins")){
 			reward = reward * 2;
 		}else if(p.hasPermission("mp.triple_coins")){
 			reward = reward * 3;
@@ -1080,7 +1084,7 @@ public class Main extends JavaPlugin implements Listener {
 		
 		if(item_rewards){
 			int reward_ = r.nextInt((item_maxreward - item_minreward) + 1) + item_minreward;
-			if(p.hasPermission("mg.double_coins")){
+			if(p.hasPermission("mp.double_coins")){
 				reward_ = reward_ * 2;
 			}else if(p.hasPermission("mp.triple_coins")){
 				reward_ = reward_ * 3;
