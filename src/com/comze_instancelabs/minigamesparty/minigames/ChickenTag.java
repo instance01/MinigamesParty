@@ -1,8 +1,8 @@
 package com.comze_instancelabs.minigamesparty.minigames;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,9 +28,6 @@ public class ChickenTag extends Minigame implements Listener{
 	public ChickenTag(Main arg2, Location arg3, Location arg4, Location arg5) {
 		super("ChickenTag", MinigameUtil.getDescription(arg2, "ChickenTag"), arg2, arg3, arg4, arg5, null);
 	}
-	
-	static Random r = new Random();
-
 	
 	static int[][] chicken_word = new int[][]{
 	  { 1, 1, 1, 1, 0, 1, 0, 0, 1, 0,1, 0, 1, 1, 1, 1, 0, 1, 0, 0,1, 0, 1, 1, 1, 1, 0, 1, 1, 0,0, 1 },
@@ -86,10 +83,19 @@ public class ChickenTag extends Minigame implements Listener{
 		final BukkitTask id__ = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(m, new Runnable() {
 			@Override
 			public void run(){
+				ArrayList<Boolean> playerHasChicken = new ArrayList<Boolean>();
+				for(int ip=1;ip<=m.players.size();ip++){
+					if(ip<=m.players.size()/2)
+						playerHasChicken.add(true);
+					else
+						playerHasChicken.add(false);
+				}
+				Collections.shuffle(playerHasChicken);
+				int ip=0;
 				for(String pl : m.players){
 					final Player p = Bukkit.getPlayerExact(pl);
 					// approx. half of the players get a chicken
-					if(r.nextBoolean()){
+					if(playerHasChicken.get(ip)==true){
 						m.hasChicken.put(pl, true);
 						final Chicken c = (Chicken) p.getWorld().spawnEntity(p.getLocation(), EntityType.CHICKEN);
 						Bukkit.getScheduler().runTaskLater(m, new Runnable(){
@@ -99,6 +105,7 @@ public class ChickenTag extends Minigame implements Listener{
 						}, 5L);
 						p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You got a Chicken! Pass it to someone else!");
 					}
+					ip++;//for random user
 
 					// set inventory and exp bar
 					p.setExp(0.97F);
