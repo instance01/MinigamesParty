@@ -102,7 +102,7 @@ public class ChickenTag extends Minigame implements Listener{
 							public void run(){
 								p.setPassenger(c);
 							}
-						}, 5L);
+						}, 2L);
 						p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You got a Chicken! Pass it to someone else!");
 					}
 					ip++;//for random user

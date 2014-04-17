@@ -814,6 +814,10 @@ public class Main extends JavaPlugin implements Listener {
 								event.setCancelled(true);
 							}
 							// TODO pass the chicken
+							if(hasChicken.get(p.getName())){
+								// if the player already has the chicken, don't allow passing to him
+								return;
+							}
 							if(event instanceof EntityDamageByEntityEvent){
 								EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
 								if(e.getDamager() instanceof Player){
@@ -831,9 +835,8 @@ public class Main extends JavaPlugin implements Listener {
 								public void run(){
 									p.setPassenger(c);
 								}
-							}, 5L);
+							}, 2L);
 							p.setHealth(20D);
-							
 						}else{
 							event.setCancelled(true);
 						}
