@@ -439,9 +439,13 @@ public class Main extends JavaPlugin implements Listener {
 						}else{ // else: just join the minigame
 							try{
 								pinv.put(p.getName(), p.getInventory().getContents());
+<<<<<<< HEAD
 								//minigames.get(currentmg).join(p);
 								minigames.get(currentmg).lost.add(p);
 								minigames.get(currentmg).spectate(p);
+=======
+								minigames.get(currentmg).join(p);
+>>>>>>> 977a50a35810e82f07b2a412b16df946f7283923
 							}catch(Exception e){}
 							p.sendMessage(ChatColor.GREEN + "You joined the queue. There are " + ChatColor.GOLD + Integer.toString(min_players) + ChatColor.GREEN + " players needed to start.");
 						}	
@@ -583,7 +587,10 @@ public class Main extends JavaPlugin implements Listener {
 				{
 					final Sign s = (Sign) event.getClickedBlock().getState();
 					if (s.getLine(1).equalsIgnoreCase(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + "[PARTY]")){
+<<<<<<< HEAD
 						getLogger().info("t3");
+=======
+>>>>>>> 977a50a35810e82f07b2a412b16df946f7283923
 						if(players.contains(event.getPlayer().getName())){
 							event.getPlayer().sendMessage(ChatColor.GOLD + "Use /mp leave to leave!");
 						}else{
@@ -599,15 +606,22 @@ public class Main extends JavaPlugin implements Listener {
 								if(min_players > 1){
 									event.getPlayer().sendMessage(ChatColor.GREEN + "You joined the queue. There are " + ChatColor.GOLD + Integer.toString(min_players) + ChatColor.GREEN + " players needed to start.");
 								}
+<<<<<<< HEAD
 								System.out.println("t2");
+=======
+>>>>>>> 977a50a35810e82f07b2a412b16df946f7283923
 							}else{ // else: just join the minigame
 								try{
 									pinv.put(event.getPlayer().getName(), event.getPlayer().getInventory().getContents());
 									if(currentmg > -1){
+<<<<<<< HEAD
 										System.out.println("t");
 										minigames.get(currentmg).lost.add(event.getPlayer());
 										minigames.get(currentmg).spectate(event.getPlayer());
 										//minigames.get(currentmg).join(event.getPlayer());
+=======
+										minigames.get(currentmg).join(event.getPlayer());
+>>>>>>> 977a50a35810e82f07b2a412b16df946f7283923
 									}
 								}catch(Exception e){
 									event.getPlayer().sendMessage(ChatColor.RED + "An error occured.");
