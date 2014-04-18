@@ -735,6 +735,12 @@ public class Main extends JavaPlugin implements Listener {
 									}, 5);
 									return;
 								}
+								if(current.name.equalsIgnoreCase("slapfight")){
+									// in slapfight you only die if you're under 0, because otherwise the double jump won't really have any use
+									if(event.getPlayer().getLocation().getBlockY() > 0){
+										return;
+									}
+								}
 								current.lost.add(event.getPlayer());
 								int count = 0;
 								for(String pl : m.players){
