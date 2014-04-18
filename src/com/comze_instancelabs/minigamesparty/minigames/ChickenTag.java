@@ -84,22 +84,22 @@ public class ChickenTag extends Minigame implements Listener{
 			@Override
 			public void run(){
 				ArrayList<Boolean> playerHasChicken = new ArrayList<Boolean>();
-				for(int ip=1;ip<=m.players.size();ip++){
-					if(ip<=m.players.size()/2)
+				for (int ip = 0; ip <= m.players.size() - 1; ip++) {
+					if (ip <= m.players.size() / 2 + 2)
 						playerHasChicken.add(true);
 					else
 						playerHasChicken.add(false);
 				}
 				Collections.shuffle(playerHasChicken);
-				int ip=0;
+				int ip = 0;
 				for(String pl : m.players){
 					final Player p = Bukkit.getPlayerExact(pl);
 					// approx. half of the players get a chicken
-					if(playerHasChicken.get(ip)==true){
+					if (playerHasChicken.get(ip) == true) {
 						m.hasChicken.put(pl, true);
 						final Chicken c = (Chicken) p.getWorld().spawnEntity(p.getLocation(), EntityType.CHICKEN);
-						Bukkit.getScheduler().runTaskLater(m, new Runnable(){
-							public void run(){
+						Bukkit.getScheduler().runTaskLater(m, new Runnable() {
+							public void run() {
 								p.setPassenger(c);
 							}
 						}, 2L);
@@ -186,7 +186,7 @@ public class ChickenTag extends Minigame implements Listener{
 	@Override
 	public void leave(Player p){
 		super.leave(p);
-		if(p.getPassenger()  != null){
+		if(p.getPassenger() != null){
 			p.getPassenger().remove();
 			p.setPassenger(null);
 		}

@@ -94,6 +94,10 @@ public class Minigame {
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(m, new Runnable() {
 			@Override
 			public void run() {
+				if(p.getPassenger() != null){
+					p.getPassenger().remove();
+					p.setPassenger(null);
+				}
 				p.teleport(spawn);
 				p.setGameMode(GameMode.SURVIVAL);
 				p.setAllowFlight(false);
@@ -124,6 +128,10 @@ public class Minigame {
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(m, new Runnable() {
 			@Override
 			public void run() {
+				if(p.getPassenger() != null){
+					p.getPassenger().remove();
+					p.setPassenger(null);
+				}
 				p.teleport(lobby);
 				p.setAllowFlight(false);
 				p.setFlying(false);
@@ -149,6 +157,10 @@ public class Minigame {
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(m, new Runnable() {
 			@Override
 			public void run() {
+				if(p.getPassenger() != null){
+					p.getPassenger().remove();
+					p.setPassenger(null);
+				}
 				p.setAllowFlight(true);
 				p.setFlying(true);
 				p.teleport(spectatorlobby);

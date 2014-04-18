@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -25,7 +26,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Egg;
@@ -45,7 +45,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -54,10 +53,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
@@ -1603,6 +1602,9 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	public Location getLobby(){
+		if(!getConfig().isSet("lobby.location")){
+			getLogger().severe(ChatColor.BLUE + "A LOBBY COULD NOT BE FOUND. PLEASE FIX THIS WITH /mp setlobby.");
+		}
 		return new Location(getServer().getWorld(getConfig().getString("lobby.world")), getConfig().getInt("lobby.location.x"), getConfig().getInt("lobby.location.y"), getConfig().getInt("lobby.location.z"));
 	}
 
@@ -1969,5 +1971,59 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public void shuffleMinigames(){
 		Collections.shuffle(minigames);
+	}
+	
+	
+	
+	// Teleportation fix
+	// I really think this is nothing important, but whatever, people need it so much
+	
+	// Thanks to Comphenix and mbaxter
+	// Ref: https://forums.bukkit.org/threads/invisible-teleport-bug-really-need-it-fixed.102135/
+	
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPlayerTeleport(PlayerTeleportEvent event) {
+		final Player player = event.getPlayer();
+		final int visibleDistance = getServer().getViewDistance() * 16;
+		// Fix the visibility issue one tick later
+		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			@Override
+			public void run() {
+				// Refresh nearby clients
+				final List<Player> nearby = getPlayersWithin(player, visibleDistance);
+				// Hide every player
+				updateEntities(player, nearby, false);
+				// Then show them again
+				getServer().getScheduler().scheduleSyncDelayedTask(m, new Runnable() {
+					@Override
+					public void run() {
+						updateEntities(player, nearby, true);
+					}
+				}, 1);
+			}
+		}, 15);
+	}
+
+	private void updateEntities(Player tpedPlayer, List<Player> players_, boolean visible) {
+		for (Player player : players_) {
+			if (visible) {
+				tpedPlayer.showPlayer(player);
+				player.showPlayer(tpedPlayer);
+			} else {
+				tpedPlayer.hidePlayer(player);
+				player.hidePlayer(tpedPlayer);
+			}
+		}
+	}
+
+	private List<Player> getPlayersWithin(Player player, int distance) {
+		List<Player> res = new ArrayList<Player>();
+		int d2 = distance * distance;
+		for (Player p : getServer().getOnlinePlayers()) {
+			if (p != player && p.getWorld() == player.getWorld() && p.getLocation().distanceSquared(player.getLocation()) <= d2) {
+				res.add(p);
+			}
+		}
+		return res;
 	}
 }
