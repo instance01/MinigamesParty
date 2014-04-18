@@ -259,12 +259,12 @@ public class ColorMatch extends Minigame implements Listener{
 					for(int i_ = 0; i_ < 4; i_++){
 						for(int j_ = 0; j_ < 4; j_++){
 							Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x_ + i_, y, z_ + j_));
-
-							mbu.setBlock(x_ + i_, y, z_ + j_, 35, current);
-							//mbu.setBlock(x_ + i_, y_, z_ + j_, 89);
-							
-							//b.setType(Material.WOOL);
-							//b.setData((byte)current);
+							try{
+								mbu.setBlock(x_ + i_, y, z_ + j_, 35, current);
+							}catch(Exception e){
+								b.setType(Material.WOOL);
+								b.setData((byte)current);
+							}
 						}
 					}
 				}
@@ -323,8 +323,11 @@ public class ColorMatch extends Minigame implements Listener{
 			for(int j = 0; j < 64; j++){
 				Block b = start.getWorld().getBlockAt(new Location(start.getWorld(), x + i, y, z + j));
 				if(b.getData() != data){
-					//b.setType(Material.AIR);
-					mbu.setBlock(x + i, y, z + j, 0);
+					try{
+						mbu.setBlock(x + i, y, z + j, 0);
+					}catch(Exception e){
+						b.setType(Material.AIR);
+					}
 				}
 			}
 		}

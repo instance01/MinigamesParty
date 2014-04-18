@@ -41,13 +41,14 @@ public class CraftMassBlockUpdate implements MassBlockUpdate, Runnable {
 	
 	public int getServerVersion(){
 		//System.out.println(Bukkit.getVersion());
-		if (Bukkit.getVersion().contains("1.6.4") || Bukkit.getVersion().contains("1.6.2")) {
+		String version = Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf(".") + 1);
+		if (version.contains("1_6_R3")) {
 			return 164;
-		}else if(Bukkit.getVersion().contains("MC: 1.7.2")){
+		}else if(version.contains("1_7_R1")){
 			return 172;
-		}else if(Bukkit.getVersion().contains("MC: 1.7.5")){
+		}else if(version.contains("1_7_R2")){
 			return 175;
-		}else if(Bukkit.getVersion().contains("MC: 1.7.8")){
+		}else if(version.contains("1_7_R3")){
 			return 178;
 		}
 		return 172;

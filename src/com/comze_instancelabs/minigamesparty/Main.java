@@ -219,8 +219,7 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().addDefault("strings.description.chickentag", "Pass the chicken to others or you'll lose!");
 
 		getConfig().addDefault("strings.your_place", "You are <place> place.");
-		
-		
+
 		Shop.initShop(this);
 		
 		getConfig().options().copyDefaults(true);
@@ -262,13 +261,16 @@ public class Main extends JavaPlugin implements Listener {
 			Updater updater = new Updater(this, 71596, this.getFile(), Updater.UpdateType.DEFAULT, false);
 		}
 
-
 		if(economy){
 			if (!setupEconomy()) {
 	            getLogger().severe(String.format("[%s] - No iConomy dependency found! Disabling Economy.", getDescription().getName()));
 	            economy = false;
 	        }
 		}
+		
+		// let's check which version we're on.
+		String version = Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf(".") + 1);
+		Bukkit.getConsoleSender().sendMessage(ChatColor.BLUE + "MinigamesParty is running on " + version + ".");
 	}
 
 
@@ -1641,6 +1643,11 @@ public class Main extends JavaPlugin implements Listener {
 	public Location getLobby(){
 		if(!getConfig().isSet("lobby.location")){
 			getLogger().severe(ChatColor.BLUE + "A LOBBY COULD NOT BE FOUND. PLEASE FIX THIS WITH /mp setlobby.");
+			for(Player p : Bukkit.getOnlinePlayers()){
+				if(p.isOp()){
+					p.sendMessage(ChatColor.BLUE + "[MinigamesParty] " + ChatColor.RED + "A lobby could NOT be found, which leads to errors in the console. Please fix this with " + ChatColor.GOLD + "/mp setlobby.");
+				}
+			}
 		}
 		return new Location(getServer().getWorld(getConfig().getString("lobby.world")), getConfig().getInt("lobby.location.x"), getConfig().getInt("lobby.location.y"), getConfig().getInt("lobby.location.z"));
 	}
