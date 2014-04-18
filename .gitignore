@@ -1,0 +1,8 @@
+.settings
+.git
+bin
+.classpath
+.project
+*.bak
+*.rar
+*.zip
