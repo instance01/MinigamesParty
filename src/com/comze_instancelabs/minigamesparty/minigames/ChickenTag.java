@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Chicken;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -85,7 +86,7 @@ public class ChickenTag extends Minigame implements Listener{
 			public void run(){
 				ArrayList<Boolean> playerHasChicken = new ArrayList<Boolean>();
 				for (int ip = 0; ip <= m.players.size() - 1; ip++) {
-					if (ip <= m.players.size() / 2 + 2)
+					if (ip <= m.players.size() / 2 - 1)
 						playerHasChicken.add(true);
 					else
 						playerHasChicken.add(false);
@@ -187,8 +188,9 @@ public class ChickenTag extends Minigame implements Listener{
 	public void leave(Player p){
 		super.leave(p);
 		if(p.getPassenger() != null){
-			p.getPassenger().remove();
-			p.setPassenger(null);
+			Entity t = p.getPassenger();
+			p.eject();
+			t.remove();
 		}
 	}
 	

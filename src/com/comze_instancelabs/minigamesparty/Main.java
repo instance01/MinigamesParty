@@ -1153,7 +1153,7 @@ public class Main extends JavaPlugin implements Listener {
 	BukkitTask t = null;
 	public int currentmg = 0;
 	BukkitTask currentid = null;
-	public void secondsTick(){
+	public void secondsTick(int disabledMinigamesC){
 		
 		if(!ingame_started){
 			return;
@@ -1163,7 +1163,7 @@ public class Main extends JavaPlugin implements Listener {
 		updateScoreboard(seconds - c);
 
 		// stop the whole party after some rounds
-		if(c_ > minigames.size() * seconds - 3){
+		if(c_ > (minigames.size() - disabledMinigamesC) * seconds - 3){
 			//Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable(){
 			Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 				public void run(){
@@ -1236,14 +1236,26 @@ public class Main extends JavaPlugin implements Listener {
 	
 	//public BukkitTask nextMinigame(){
 	public void nextMinigame(){
+		
 		ingame_started = false;
 		Minigame cmg = null;
 		
 		if(currentmg > -1){
 			cmg = minigames.get(currentmg);
+			System.out.println(currentmg + " " + cmg.isEnabled());
 		}
 		
-		if(currentmg < minigames.size() - 1){
+		// check disabled minigames at the end
+		int count = 0;
+		for(int i = minigames.size() - 1; i > -1; i--){
+			if(!minigames.get(i).isEnabled()){
+				count++;
+			}else{
+				break;
+			}
+		}
+		
+		if(currentmg < minigames.size() - 1 - count){
 			currentmg += 1;
 		}else{
 			if(currentid != null){
@@ -1318,6 +1330,7 @@ public class Main extends JavaPlugin implements Listener {
 		currentid = minigame;
 	}
 
+	int disabledMinigamesCount = 0;
 	public void startNew(){
 		if(!started && !ingame_started){
 			if(players.size() > min_players - 1){
@@ -1335,12 +1348,20 @@ public class Main extends JavaPlugin implements Listener {
 				// start first minigame
 				//currentid = nextMinigame();
 				nextMinigame();
-
+				
+				// calculate the amount of disabled minigames
+				disabledMinigamesCount = 0;
+				for(Minigame m : minigames){
+					if(!m.isEnabled()){
+						disabledMinigamesCount++;
+					}
+				}
+				
 				// start main timer
 				//t = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable(){
 				t = Bukkit.getServer().getScheduler().runTaskTimer(this, new Runnable(){
 					public void run(){
-						secondsTick();
+						secondsTick(disabledMinigamesCount);
 					}
 				}, 120, 20);
 
@@ -1997,7 +2018,10 @@ public class Main extends JavaPlugin implements Listener {
 	// Thanks to Comphenix and mbaxter
 	// Ref: https://forums.bukkit.org/threads/invisible-teleport-bug-really-need-it-fixed.102135/
 	
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	// Nope nope nope nope sometimes simply crashes
+	// will look into that later
+	
+	/*@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		final Player player = event.getPlayer();
 		final int visibleDistance = getServer().getViewDistance() * 16;
@@ -2041,5 +2065,5 @@ public class Main extends JavaPlugin implements Listener {
 			}
 		}
 		return res;
-	}
+	}*/
 }

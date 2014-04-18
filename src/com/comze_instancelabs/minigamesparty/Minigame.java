@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
@@ -88,15 +89,17 @@ public class Minigame {
 			p.removePotionEffect(PotionEffectType.SPEED);
 		}
 		if(p.getPassenger()  != null){
-			p.getPassenger().remove();
-			p.setPassenger(null);
+			Entity t = p.getPassenger();
+			p.eject();
+			t.remove();
 		}
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(m, new Runnable() {
 			@Override
 			public void run() {
 				if(p.getPassenger() != null){
-					p.getPassenger().remove();
-					p.setPassenger(null);
+					Entity t = p.getPassenger();
+					p.eject();
+					t.remove();
 				}
 				p.teleport(spawn);
 				p.setGameMode(GameMode.SURVIVAL);
@@ -129,8 +132,9 @@ public class Minigame {
 			@Override
 			public void run() {
 				if(p.getPassenger() != null){
-					p.getPassenger().remove();
-					p.setPassenger(null);
+					Entity t = p.getPassenger();
+					p.eject();
+					t.remove();
 				}
 				p.teleport(lobby);
 				p.setAllowFlight(false);
@@ -158,8 +162,9 @@ public class Minigame {
 			@Override
 			public void run() {
 				if(p.getPassenger() != null){
-					p.getPassenger().remove();
-					p.setPassenger(null);
+					Entity t = p.getPassenger();
+					p.eject();
+					t.remove();
 				}
 				p.setAllowFlight(true);
 				p.setFlying(true);
