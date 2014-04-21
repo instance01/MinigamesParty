@@ -15,10 +15,10 @@ public class NMSManager {
 			}else if(version.contains("1_7_R1")){
 				NMSFunctions172 explosion = NMSFunctions172.HUGE_EXPLOSION;
 				explosion.animateAtLocation(l, i, j);
-			}else if(Bukkit.getVersion().contains("1_7_R2")){
+			}else if(version.contains("1_7_R2")){
 				NMSFunctions175 explosion = NMSFunctions175.HUGE_EXPLOSION;
 				explosion.animateAtLocation(l, i, j);
-			}else if(Bukkit.getVersion().contains("1_7_R3")){
+			}else if(version.contains("1_7_R3")){
 				NMSFunctions178 explosion = NMSFunctions178.HUGE_EXPLOSION;
 				explosion.animateAtLocation(l, i, j);
 			}else{

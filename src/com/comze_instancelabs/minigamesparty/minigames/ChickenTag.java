@@ -207,5 +207,23 @@ public class ChickenTag extends Minigame implements Listener{
 			}
 		}, 5L);
 	}
+	
+	@Override
+	public void reset(Location l){
+		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(m, new Runnable(){
+			public void run(){
+				Bukkit.getScheduler().runTask(m, new Runnable(){
+					public void run(){
+						for (BukkitTask t : tasks) {
+							t.cancel();
+						}
+						for (Player p : xpsecp.keySet()) {
+							xpsecp.put(p, 1);
+						}
+					}
+				});
+			}
+		}, 5L);
+	}
 
 }

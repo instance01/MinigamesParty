@@ -29,6 +29,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Egg;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
@@ -748,8 +749,7 @@ public class Main extends JavaPlugin implements Listener {
 									return;
 								}
 								if(current.name.equalsIgnoreCase("slapfight")){
-									// in slapfight you only die if you're under 0, because otherwise the double jump won't really have any use
-									if(event.getPlayer().getLocation().getBlockY() > 0){
+									if(event.getPlayer().getLocation().getBlockY() > current.spawn.getBlockY() - 5){
 										return;
 									}
 								}
@@ -831,9 +831,11 @@ public class Main extends JavaPlugin implements Listener {
 								event.setCancelled(true);
 							}
 							// TODO pass the chicken
-							if(hasChicken.get(p.getName())){
-								// if the player already has the chicken, don't allow passing to him
-								return;
+							if(hasChicken.containsKey(p.getName())){
+								if(hasChicken.get(p.getName())){
+									// if the player already has the chicken, don't allow passing to him
+									return;
+								}	
 							}
 							if(event instanceof EntityDamageByEntityEvent){
 								EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
@@ -841,7 +843,9 @@ public class Main extends JavaPlugin implements Listener {
 									Player p2 = (Player) e.getDamager();
 									if(hasChicken.containsKey(p2.getName())){
 										hasChicken.put(p2.getName(), false);
-										p2.setPassenger(null);
+										Entity t = p2.getPassenger();
+										p2.eject();
+										t.remove();
 									}
 									p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + p2.getName() + " passed his Chicken to you! Try to get rid of it!");
 								}
@@ -1291,8 +1295,10 @@ public class Main extends JavaPlugin implements Listener {
 					for(Minigame mg : minigames){
 						mg.lost.clear();
 					}
+					//System.out.println(c_ + " " + (minigames.size() - disabledMinigamesCount) * seconds);
+					//c_ += seconds;
+					//System.out.println("Turned to " + c_ + " " + (minigames.size() - disabledMinigamesCount) * seconds);
 					nextMinigame();
-					c_ += seconds;
 					return;
 				}
 			}
@@ -1302,6 +1308,23 @@ public class Main extends JavaPlugin implements Listener {
 			mg.lost.clear();
 		}
 
+		System.out.println(currentmg);
+		
+		// TODO test out
+		if(currentmg > -1){
+			if(!minigames.get(currentmg).isEnabled()){
+				currentscore.clear();
+				for(Minigame mg : minigames){
+					mg.lost.clear();
+				}
+				//System.out.println(c_ + " " + (minigames.size() - disabledMinigamesCount) * seconds);
+				//c_ += seconds;
+				//System.out.println("Turned to " + c_ + " " + (minigames.size() - disabledMinigamesCount) * seconds);
+				nextMinigame();
+				return;
+			}
+		}
+		
 		for(String pl : players){
 			final Player p = Bukkit.getPlayerExact(pl);
 			if(p.isOnline()){
@@ -1320,6 +1343,8 @@ public class Main extends JavaPlugin implements Listener {
 			}
 		}
 
+
+		
 		if(currentmg > -1 && currentmg < minigames.size()){
 			//return minigames.get(currentmg).start();
 			minigames.get(currentmg).startCooldown();

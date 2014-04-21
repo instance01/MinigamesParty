@@ -193,9 +193,9 @@ public class ColorMatch extends Minigame implements Listener{
 					}
 				}, 120);
 				// update count
-				n-=1;
+				n-=2;
 			}
-		}, 20, 140); // 7 seconds
+		}, 20, 140-n); // 7 seconds
 		
 		return id__;
 	}
