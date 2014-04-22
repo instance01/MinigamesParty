@@ -1308,7 +1308,7 @@ public class Main extends JavaPlugin implements Listener {
 			mg.lost.clear();
 		}
 
-		System.out.println(currentmg);
+		//System.out.println(currentmg);
 		
 		// TODO test out
 		if(currentmg > -1){

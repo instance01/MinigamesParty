@@ -98,12 +98,16 @@ public class ChickenTag extends Minigame implements Listener{
 					// approx. half of the players get a chicken
 					if (playerHasChicken.get(ip) == true) {
 						m.hasChicken.put(pl, true);
-						final Chicken c = (Chicken) p.getWorld().spawnEntity(p.getLocation(), EntityType.CHICKEN);
-						Bukkit.getScheduler().runTaskLater(m, new Runnable() {
-							public void run() {
-								p.setPassenger(c);
+						Bukkit.getScheduler().runTask(m, new Runnable(){
+							public void run(){
+								final Chicken c = (Chicken) p.getWorld().spawnEntity(p.getLocation(), EntityType.CHICKEN);
+								Bukkit.getScheduler().runTaskLater(m, new Runnable() {
+									public void run() {
+										p.setPassenger(c);
+									}
+								}, 2L);
 							}
-						}, 2L);
+						});
 						p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You got a Chicken! Pass it to someone else!");
 					}
 					ip++;//for random user
