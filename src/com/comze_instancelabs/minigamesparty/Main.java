@@ -1267,6 +1267,10 @@ public class Main extends JavaPlugin implements Listener {
 		}else{
 			if(currentid != null){
 				stop(currentid);
+				if(minigames.get(minigames.size() -1).name.equalsIgnoreCase("minefield")){
+					Location t = this.getComponentForMinigame("MineField", "spawn");
+					minigames.get(minigames.size() - 1).reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
+				}
 				minigames.get(minigames.size() - 1).reset(this.getComponentForMinigame(minigames.get(minigames.size() - 1).name, "spawn"));
 				return;
 			}
@@ -1311,7 +1315,6 @@ public class Main extends JavaPlugin implements Listener {
 
 		//System.out.println(currentmg);
 		
-		// TODO test out
 		if(currentmg > -1){
 			if(!minigames.get(currentmg).isEnabled()){
 				currentscore.clear();
@@ -1369,7 +1372,6 @@ public class Main extends JavaPlugin implements Listener {
 				currentmg = -1;
 				currentid = null;
 
-				// TODO test out
 				// randomize minigames order
 				this.shuffleMinigames();
 				
@@ -1672,8 +1674,17 @@ public class Main extends JavaPlugin implements Listener {
 		Bukkit.getServer().getScheduler().cancelTasks(this);
 		
 		for(String pl : players){
-			Player p = Bukkit.getPlayerExact(pl);
+			final Player p = Bukkit.getPlayerExact(pl);
 			if(p.isOnline()){
+				p.getInventory().clear();
+				p.updateInventory();
+				Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+					public void run(){
+						p.getInventory().setContents(pinv.get(p.getName()));
+						p.updateInventory();
+					}
+				}, 10L);
+				
 				minigames.get(minigames.size() - 1).leave(p);
 				p.sendMessage(ChatColor.DARK_RED + "Stopping minigame.");
 			}
@@ -1804,7 +1815,7 @@ public class Main extends JavaPlugin implements Listener {
 			for(Minigame m : minigames){
 				if(m.name.toLowerCase().equalsIgnoreCase("minefield")){
 					Location t = this.getComponentForMinigame("MineField", "spawn");
-					m.reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));	
+					m.reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
 				}else{
 					m.reset(this.getComponentForMinigame(m.name, "spawn"));
 				}
