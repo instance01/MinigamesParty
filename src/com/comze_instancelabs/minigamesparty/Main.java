@@ -1249,7 +1249,7 @@ public class Main extends JavaPlugin implements Listener {
 		
 		if(currentmg > -1){
 			cmg = minigames.get(currentmg);
-			System.out.println(currentmg + " " + cmg.isEnabled());
+			//System.out.println(currentmg + " " + cmg.isEnabled());
 		}
 		
 		// check disabled minigames at the end

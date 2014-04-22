@@ -35,7 +35,6 @@ public class MineField extends Minigame implements Listener{
 	}
 	
 	public static void setup(Location start, Main main, String name_){
-		System.out.println("Setting up Minefield at Location: " + start.toString());
 		int x = start.getBlockX() - 32;
 		int y = start.getBlockY();
 		int z = start.getBlockZ() - 32;
@@ -68,8 +67,6 @@ public class MineField extends Minigame implements Listener{
 	
 	@Override
 	public void reset(Location start){
-		System.out.println("Resetting Minefield at Location: " + start.toString());
-
 		int x = start.getBlockX() - 32;
 		int y = start.getBlockY() - 2;
 		int z = start.getBlockZ() - 32;
