@@ -1686,7 +1686,7 @@ public class Main extends JavaPlugin implements Listener {
 				}, 10L);
 				
 				minigames.get(minigames.size() - 1).leave(p);
-				p.sendMessage(ChatColor.DARK_RED + "Stopping minigame.");
+				p.sendMessage(ChatColor.RED + "Stopping minigame, because there are less players than required! (" + Integer.toString(min_players) + ")");
 			}
 		}
 

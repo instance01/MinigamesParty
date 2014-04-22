@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 import com.comze_instancelabs.minigamesparty.Main;
 import com.comze_instancelabs.minigamesparty.Minigame;
@@ -38,6 +40,29 @@ public class DeadEnd extends Minigame implements Listener{
 				}
 			}
 		}, 5);
+	}
+	
+	@Override
+	public BukkitTask start(){
+		return Bukkit.getScheduler().runTaskTimer(m, new Runnable(){
+			public void run(){
+				for(String p_ : m.players){
+					Player p = Bukkit.getPlayer(p_);
+					if(p.isOnline()){
+						if(!lost.contains(p)){
+							Location l_ = p.getLocation();
+							l_.setPitch(0F);
+							Vector dir = l_.getDirection().normalize().multiply(0.5D); // 0.4
+							Vector dir_ = new Vector(dir.getX(), 0.0001D, dir.getZ());
+							p.setVelocity(dir_);
+
+							Vector v = p.getLocation().getDirection().normalize();
+							Location l = p.getLocation().subtract((new Vector(v.getX(), 0.0001D, v.getZ()).multiply(-1D)));
+						}
+					}
+				}
+			}
+		}, 3L, 3L);
 	}
 	
 	public static void setup(Location start, Main main, String name_){
