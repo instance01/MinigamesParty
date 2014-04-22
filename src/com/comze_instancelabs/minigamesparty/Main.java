@@ -19,6 +19,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -1443,7 +1444,23 @@ public class Main extends JavaPlugin implements Listener {
 						}else{
 							currentscore.put(pl_, score);
 						}
-						objective.getScore(p_).setScore(score);
+						if(currentmg > -1 && currentmg < minigames.size()){
+							if(minigames.get(currentmg).lost.contains(p_)){
+								String tempn = ChatColor.RED + pl_;
+								if(p_.getName().length() > 14){
+									tempn = ChatColor.RED + pl_.substring(0, pl_.length() - 3);
+								}
+								objective.getScore(Bukkit.getOfflinePlayer(tempn)).setScore(score);
+							}else{
+								String tempn = ChatColor.GREEN + pl_;
+								if(p_.getName().length() > 14){
+									tempn = ChatColor.GREEN + pl_.substring(0, pl_.length() - 3);
+								}
+								objective.getScore(Bukkit.getOfflinePlayer(tempn)).setScore(score);
+							}
+						}else{
+							objective.getScore(p_).setScore(score);
+						}
 					}else{
 						if(!currentscore.containsKey(pl_)){
 							currentscore.put(pl_, 0);
@@ -1451,7 +1468,23 @@ public class Main extends JavaPlugin implements Listener {
 						objective.getScore(p_).setScore(currentscore.get(pl_));
 					}
 				}else{
-					objective.getScore(p_).setScore(0);
+					if(currentmg > -1 && currentmg < minigames.size()){
+						if(minigames.get(currentmg).lost.contains(p_)){
+							String tempn = ChatColor.RED + pl_;
+							if(p_.getName().length() > 14){
+								tempn = ChatColor.RED + pl_.substring(0, pl_.length() - 3);
+							}
+							objective.getScore(Bukkit.getOfflinePlayer(tempn)).setScore(0);
+						}else{
+							String tempn = ChatColor.GREEN + pl_;
+							if(p_.getName().length() > 14){
+								tempn = ChatColor.GREEN + pl_.substring(0, pl_.length() - 3);
+							}
+							objective.getScore(Bukkit.getOfflinePlayer(tempn)).setScore(0);
+						}
+					}else{
+						objective.getScore(p_).setScore(0);
+					}
 				}
 			}
 
