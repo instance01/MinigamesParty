@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -62,50 +63,31 @@ public class NMSEffectManager {
 	}
 	
 	public static void createSheepFreenzyEffect(Location t){
-		try{
-			String version = Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf(".") + 1);
-			if (version.contains("1_6_R3")) {
-				
-			}else if(version.contains("1_7_R1")){
-				
-			}else if(version.contains("1_7_R2")){
-				NMSFunctions175 effect = NMSFunctions175.FIREWORK_SPARK;
-				effect.animateAtLocation(t, 2, 1);
-			}else if(version.contains("1_7_R3")){
-				
-			}else{
-				//fallback
-				
-			}
-		}catch(Exception e){
-			System.out.println("Your Bukkit build appears to be unsupported! Please post a comment with the following string on the project page: " + Bukkit.getVersion());
-
-		}
+		t.getWorld().playEffect(t, Effect.POTION_BREAK, 1);
 	}
 	
 	public static void createMinefieldEffect(Location t){
 		try{
 			String version = Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf(".") + 1);
 			if (version.contains("1_6_R3")) {
-				NMSFunctions164 effect = NMSFunctions164.EXPLODE;
+				NMSFunctions164 effect = NMSFunctions164.HUGE_EXPLOSION;
 				effect.animateAtLocation(t, 1, 1);
 			}else if(version.contains("1_7_R1")){
-				NMSFunctions172 effect = NMSFunctions172.EXPLODE;
+				NMSFunctions172 effect = NMSFunctions172.HUGE_EXPLOSION;
 				effect.animateAtLocation(t, 1, 1);
 			}else if(version.contains("1_7_R2")){
-				NMSFunctions175 effect = NMSFunctions175.EXPLODE;
+				NMSFunctions175 effect = NMSFunctions175.HUGE_EXPLOSION;
 				effect.animateAtLocation(t, 1, 1);
 			}else if(version.contains("1_7_R3")){
-				NMSFunctions178 effect = NMSFunctions178.EXPLODE;
+				NMSFunctions178 effect = NMSFunctions178.HUGE_EXPLOSION;
 				effect.animateAtLocation(t, 1, 1);
 			}else{
 				//fallback
-				NMSFunctions172 effect = NMSFunctions172.EXPLODE;
+				NMSFunctions172 effect = NMSFunctions172.HUGE_EXPLOSION;
 				effect.animateAtLocation(t, 1, 1);
 			}
 		}catch(Exception e){
 			System.out.println("Your Bukkit build appears to be unsupported! Please post a comment with the following string on the project page: " + Bukkit.getVersion());
-
 		}
 	}
 	
@@ -114,7 +96,6 @@ public class NMSEffectManager {
 		for(int i = 0; i < r.nextInt(7) + 5; i++){
 			t.getWorld().dropItemNaturally(t, new ItemStack(Material.INK_SACK, 1, (short)1));
 		}
-		// removes these after four seconds again
 		Bukkit.getScheduler().runTaskLater(m, new Runnable(){
 			public void run(){
 				Entity[] entities = PluginUtil.getNearbyEntities(t, 5);
@@ -124,6 +105,6 @@ public class NMSEffectManager {
 					}
 				}
 			}
-		}, 20 * 4);
+		}, 20);
 	}
 }
