@@ -18,8 +18,8 @@ import org.bukkit.util.Vector;
 
 import com.comze_instancelabs.minigamesparty.Main;
 import com.comze_instancelabs.minigamesparty.Minigame;
-import com.comze_instancelabs.minigamesparty.NMSManager;
 import com.comze_instancelabs.minigamesparty.Shop;
+import com.comze_instancelabs.minigamesparty.nms.NMSManager;
 
 public class SmokeMonster extends Minigame implements Listener {
 

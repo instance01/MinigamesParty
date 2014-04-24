@@ -1,4 +1,4 @@
-package com.comze_instancelabs.minigamesparty;
+package com.comze_instancelabs.minigamesparty.nms;
 
 import org.bukkit.Bukkit;
 

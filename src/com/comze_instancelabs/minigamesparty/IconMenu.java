@@ -15,6 +15,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+
+import com.comze_instancelabs.minigamesparty.nms.NMSManager;
  
 public class IconMenu implements Listener {
  

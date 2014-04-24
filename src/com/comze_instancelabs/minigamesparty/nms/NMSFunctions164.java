@@ -1,19 +1,19 @@
-package com.comze_instancelabs.minigamesparty;
+package com.comze_instancelabs.minigamesparty.nms;
 
 import java.lang.reflect.Field;
 
-import net.minecraft.server.v1_7_R1.PacketPlayOutWorldParticles;
-import net.minecraft.server.v1_7_R1.NBTTagCompound;
-import net.minecraft.server.v1_7_R1.NBTTagList;
+import net.minecraft.server.v1_6_R3.Packet63WorldParticles;
+import net.minecraft.server.v1_6_R3.NBTTagCompound;
+import net.minecraft.server.v1_6_R3.NBTTagList;
 
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_6_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public enum NMSFunctions172 {
+public enum NMSFunctions164 {
 	/**
 	 * Each ParticleEffect has the packet name, and the environment in witch it will be succesfully displayed.
 	 */
@@ -67,7 +67,7 @@ public enum NMSFunctions172 {
      * @param packetName
      * @param environment
      */
-    NMSFunctions172 (String packetName, Environment environment) {
+    NMSFunctions164 (String packetName, Environment environment) {
     	this.packetName = packetName;
     	this.environment = environment;
     }
@@ -173,8 +173,8 @@ public enum NMSFunctions172 {
      * @return
      * @throws Exception
      */
-	private PacketPlayOutWorldParticles getParticle (Location location, float offsetX, float offsetY, float offsetZ, float speed, int count) throws Exception {
-		PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles();
+	private Packet63WorldParticles getParticle (Location location, float offsetX, float offsetY, float offsetZ, float speed, int count) throws Exception {
+		Packet63WorldParticles packet = new Packet63WorldParticles();
 		setValue(packet, "a", packetName.replace("%id%", ""+_id).replace("%data%", ""+_data));
 		setValue(packet, "b", (float) location.getX());
 		setValue(packet, "c", (float) location.getY());
@@ -202,7 +202,7 @@ public enum NMSFunctions172 {
 	
 	
 	public static ItemStack addGlow(ItemStack item) {
-		net.minecraft.server.v1_7_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+		net.minecraft.server.v1_6_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
 		NBTTagCompound tag = null;
 		if (!nmsStack.hasTag()) {
 			tag = new NBTTagCompound();

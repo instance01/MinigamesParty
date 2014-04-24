@@ -9,6 +9,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import com.comze_instancelabs.minigamesparty.nms.NMSManager;
+
 public class Shop {
 
 	public static int grenades_price = 0;
