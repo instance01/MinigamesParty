@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 
 public enum NMSFunctions175 {
 	/**
-	 * Each ParticleEffect has the packet name, and the environment in witch it will be succesfully displayed.
+	 * Each ParticleEffect has the packet name, and the environment in which it will be succesfully displayed.
 	 */
     HUGE_EXPLOSION("hugeexplosion", Environment.ANY), //works in any block type
     LARGE_EXPLODE("largeexplode", Environment.ANY),

@@ -80,6 +80,7 @@ import com.comze_instancelabs.minigamesparty.minigames.SheepFreenzy;
 import com.comze_instancelabs.minigamesparty.minigames.SlapFight;
 import com.comze_instancelabs.minigamesparty.minigames.SmokeMonster;
 import com.comze_instancelabs.minigamesparty.minigames.Spleef;
+import com.comze_instancelabs.minigamesparty.nms.NMSEffectManager;
 import com.comze_instancelabs.minigamesparty.sql.MainSQL;
 
 public class Main extends JavaPlugin implements Listener {
@@ -628,6 +629,7 @@ public class Main extends JavaPlugin implements Listener {
 			if(event.getClickedBlock().getType() == Material.STONE_PLATE){
 				if(players.contains(event.getPlayer().getName())){
 					final Player p = event.getPlayer();
+					NMSEffectManager.createMinefieldEffect(p.getLocation());
 					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 						@Override
 						public void run() {
@@ -848,6 +850,7 @@ public class Main extends JavaPlugin implements Listener {
 										p2.eject();
 										t.remove();
 									}
+									NMSEffectManager.createBloodEffect(m, p.getLocation().add(0, 0.5, 0));
 									p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + p2.getName() + " passed his Chicken to you! Try to get rid of it!");
 								}
 							}
@@ -884,6 +887,7 @@ public class Main extends JavaPlugin implements Listener {
 							if(!current.lost.contains(p)){
 								if(started && ingame_started){
 									current.lost.add(p);
+									NMSEffectManager.createBloodEffect(m, p.getLocation().add(0, 0.5, 0));
 									int count = 0;
 									for(String pl : m.players){
 										Player p_ = Bukkit.getPlayerExact(pl);
@@ -1052,6 +1056,7 @@ public class Main extends JavaPlugin implements Listener {
 			}else{
 				currentscore.put(event.getPlayer().getName(), currentscore.get(event.getPlayer().getName()) + 1);
 			}
+			NMSEffectManager.createSheepFreenzyEffect(event.getEntity().getLocation());
 			event.getEntity().remove();
 		}
 	}
@@ -1185,7 +1190,13 @@ public class Main extends JavaPlugin implements Listener {
 				currentid.cancel();
 			}
 			
-			minigames.get(minigames.size() - 1).reset(this.getComponentForMinigame(minigames.get(minigames.size() - 1).name, "spawn"));
+			
+			if(!minigames.get(minigames.size() - 1).name.toLowerCase().equalsIgnoreCase("minefield")){
+				minigames.get(minigames.size() - 1).reset(this.getComponentForMinigame(minigames.get(minigames.size() - 1).name, "spawn"));
+			}else{
+				Location t = this.getComponentForMinigame("MineField", "spawn");
+				minigames.get(minigames.size() - 1).reset(new Location(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ() + 30));
+			}
 			
 			ArrayList<String> remove = new ArrayList<String>();
 			for(String pl : players){

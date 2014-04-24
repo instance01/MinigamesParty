@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
-import com.comze_instancelabs.minigamesparty.nms.NMSManager;
+import com.comze_instancelabs.minigamesparty.nms.NMSEffectManager;
  
 public class IconMenu implements Listener {
  
@@ -148,7 +148,7 @@ public class IconMenu implements Listener {
         item.setItemMeta(im);
         if(glow){
         	item.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 10);
-            return NMSManager.fakeGlow(item);
+            return NMSEffectManager.fakeGlow(item);
         }
         return item;
     }

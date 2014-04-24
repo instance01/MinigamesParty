@@ -19,7 +19,7 @@ import org.bukkit.util.Vector;
 import com.comze_instancelabs.minigamesparty.Main;
 import com.comze_instancelabs.minigamesparty.Minigame;
 import com.comze_instancelabs.minigamesparty.Shop;
-import com.comze_instancelabs.minigamesparty.nms.NMSManager;
+import com.comze_instancelabs.minigamesparty.nms.NMSEffectManager;
 
 public class SmokeMonster extends Minigame implements Listener {
 
@@ -172,7 +172,7 @@ public class SmokeMonster extends Minigame implements Listener {
 					l.getWorld().createExplosion(l.add(0D, -2D, 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -0.5D, 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -1.5D, 0D), -1F);*/
-					NMSManager.createParticles(l, 1, 1);
+					NMSEffectManager.createParticles(l, 1, 1);
 				}
 			}
 			
@@ -185,7 +185,7 @@ public class SmokeMonster extends Minigame implements Listener {
 					l.getWorld().createExplosion(l.add(0D, -2D, 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -0.5D, 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -1.5D, 0D), -1F);*/
-					NMSManager.createParticles(l, 1, 1);
+					NMSEffectManager.createParticles(l, 1, 1);
 				}
 			}
 		}
@@ -252,7 +252,7 @@ public class SmokeMonster extends Minigame implements Listener {
 					l.getWorld().createExplosion(l.add(0D, -2D + (mod / 2), 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -0.5D + (mod / 2), 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -1.5D + (mod / 2), 0D), -1F);*/
-					NMSManager.createParticles(l.add(0D, (mod / 2), 0D), 1, 1);
+					NMSEffectManager.createParticles(l.add(0D, (mod / 2), 0D), 1, 1);
 				}
 			}
 			
@@ -276,7 +276,7 @@ public class SmokeMonster extends Minigame implements Listener {
 					l.getWorld().createExplosion(l.add(0D, -2D + (mod / 2), 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -0.5D + (mod / 2), 0D), -1F);
 					l.getWorld().createExplosion(l.add(0D, -1.5D + (mod / 2), 0D), -1F);*/
-					NMSManager.createParticles(l.add(0D, (mod / 2), 0D), 1, 1);
+					NMSEffectManager.createParticles(l.add(0D, (mod / 2), 0D), 1, 1);
 				}
 			}
 		}

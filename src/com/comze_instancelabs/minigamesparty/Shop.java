@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.comze_instancelabs.minigamesparty.nms.NMSManager;
+import com.comze_instancelabs.minigamesparty.nms.NMSEffectManager;
 
 public class Shop {
 
@@ -153,7 +153,7 @@ public class Shop {
 		im.setDisplayName(name);
         item.setItemMeta(im);
         item.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 10);
-        return NMSManager.fakeGlow(item);
+        return NMSEffectManager.fakeGlow(item);
 	}
 	
 	
