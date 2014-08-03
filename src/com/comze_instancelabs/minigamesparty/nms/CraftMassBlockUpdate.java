@@ -38,18 +38,20 @@ public class CraftMassBlockUpdate implements MassBlockUpdate, Runnable {
 			throw new IllegalStateException("NMS abstraction API is not available");
 		}
 	}
-	
-	public int getServerVersion(){
-		//System.out.println(Bukkit.getVersion());
+
+	public int getServerVersion() {
+		// System.out.println(Bukkit.getVersion());
 		String version = Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf(".") + 1);
 		if (version.contains("1_6_R3")) {
 			return 164;
-		}else if(version.contains("1_7_R1")){
+		} else if (version.contains("1_7_R1")) {
 			return 172;
-		}else if(version.contains("1_7_R2")){
+		} else if (version.contains("1_7_R2")) {
 			return 175;
-		}else if(version.contains("1_7_R3")){
+		} else if (version.contains("1_7_R3")) {
 			return 178;
+		} else if (version.contains("1_7_R4")) {
+			return 1710;
 		}
 		return 172;
 	}
@@ -66,11 +68,10 @@ public class CraftMassBlockUpdate implements MassBlockUpdate, Runnable {
 
 		blocksModified++;
 		int oldBlockId = world.getBlockTypeIdAt(x, y, z);
-		boolean res = nms.setBlockFast(world, x, y, z, blockId, (byte)data);
+		boolean res = nms.setBlockFast(world, x, y, z, blockId, (byte) data);
 
 		if (relightingStrategy != RelightingStrategy.NEVER) {
-			if (nms.getBlockLightBlocking(oldBlockId) != nms.getBlockLightBlocking(blockId)
-					|| nms.getBlockLightEmission(oldBlockId) != nms.getBlockLightEmission(blockId)) {
+			if (nms.getBlockLightBlocking(oldBlockId) != nms.getBlockLightBlocking(blockId) || nms.getBlockLightEmission(oldBlockId) != nms.getBlockLightEmission(blockId)) {
 				// lighting or light blocking by this block has changed; force a recalculation
 				if (relightingStrategy == RelightingStrategy.IMMEDIATE) {
 					nms.recalculateBlockLighting(world, x, y, z);
@@ -144,8 +145,10 @@ public class CraftMassBlockUpdate implements MassBlockUpdate, Runnable {
 		if (blocksModified == 0) {
 			return res;
 		}
-		int x1 = minX >> 4; int x2 = maxX >> 4;
-		int z1 = minZ >> 4; int z2 = maxZ >> 4;
+		int x1 = minX >> 4;
+		int x2 = maxX >> 4;
+		int z1 = minZ >> 4;
+		int z2 = maxZ >> 4;
 		for (int x = x1; x <= x2; x++) {
 			for (int z = z1; z <= z2; z++) {
 				res.add(new ChunkCoords(x, z));
@@ -156,7 +159,7 @@ public class CraftMassBlockUpdate implements MassBlockUpdate, Runnable {
 
 	/**
 	 * TODO: this should be a method in the Bukkit CraftWorld class, e.g world.createMassBlockUpdate()
-	 *
+	 * 
 	 * @param world
 	 * @return
 	 */
@@ -166,6 +169,7 @@ public class CraftMassBlockUpdate implements MassBlockUpdate, Runnable {
 
 	private class ChunkCoords {
 		public final int x, z;
+
 		public ChunkCoords(int x, int z) {
 			this.x = x;
 			this.z = z;
