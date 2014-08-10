@@ -31,6 +31,9 @@ public class NMSEffectManager {
 			}else if(version.contains("1_7_R3")){
 				NMSFunctions178 explosion = NMSFunctions178.HUGE_EXPLOSION;
 				explosion.animateAtLocation(l, i, j);
+			}else if(version.contains("1_7_R4")){
+				NMSFunctions1710 explosion = NMSFunctions1710.HUGE_EXPLOSION;
+				explosion.animateAtLocation(l, i, j);
 			}else{
 				//fallback
 				NMSFunctions172 explosion = NMSFunctions172.HUGE_EXPLOSION;
@@ -52,6 +55,8 @@ public class NMSEffectManager {
 				return NMSFunctions175.addGlow(item);
 			}else if(version.contains("1_7_R3")){
 				return NMSFunctions178.addGlow(item);
+			}else if(version.contains("1_7_R4")){
+				return NMSFunctions1710.addGlow(item);
 			}else{
 				//fallback
 				return NMSFunctions172.addGlow(item);
@@ -80,6 +85,9 @@ public class NMSEffectManager {
 				effect.animateAtLocation(t, 1, 1);
 			}else if(version.contains("1_7_R3")){
 				NMSFunctions178 effect = NMSFunctions178.HUGE_EXPLOSION;
+				effect.animateAtLocation(t, 1, 1);
+			}else if(version.contains("1_7_R4")){
+				NMSFunctions1710 effect = NMSFunctions1710.HUGE_EXPLOSION;
 				effect.animateAtLocation(t, 1, 1);
 			}else{
 				//fallback
